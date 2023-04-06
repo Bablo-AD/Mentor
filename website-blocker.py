@@ -4,7 +4,7 @@ import subprocess
 import os
 
 # Enter the path to the file that contains the list of websites
-websites_file = "/path/to/websites.txt"
+websites_file = "websites.txt"
 
 # Enter the hours you want to block the websites for
 start_hour = 15
