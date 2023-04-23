@@ -1,0 +1,6 @@
+@echo off
+
+set YOUTUBE_API_KEY=AIzaSyCW7z74rdOcXyVnCNFucNBdIjfBvX2FETw
+set OPENAI_API_KEY=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
+
+python youtube_recommend.py
