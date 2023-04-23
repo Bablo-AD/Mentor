@@ -36,15 +36,13 @@ for search_result in search_response.get("items", []):
     video_tags = search_result["snippet"]["tags"] if "tags" in search_result["snippet"] else []
 
     # Generate a relevance score for the video based on the ChatGPT language model
-    relevance_score = openai.Completion.create(
-        model="text-davinci-002",
-        prompt=f"Recommended video: {video_title} {video_description} {video_tags} {aspiration}",
-        max_tokens=50,
-        n=1,
-        stop=None,
-        temperature=0.5
-    ).choices[0].text.strip()
-
+    completion = openai.ChatCompletion.create(
+        model="gpt-3.5-turbo",
+        messages=[
+            {"role": "user", "content": f"User journal: [user's journal here]. Recommend quality YouTube videos related to [occupation/aspiration/values]. Video details: [video_title], [video_description], [video_tags] "}
+        ]
+        )
+    relevance_score = completion.choices[0].text.strip()
     # Add the video and its relevance score to the recommended videos list
     recommended_videos.append((video_title, video_id, relevance_score))
 

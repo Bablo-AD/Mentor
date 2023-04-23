@@ -1,6 +1,7 @@
 @echo off
 
 set YOUTUBE_API_KEY=AIzaSyCW7z74rdOcXyVnCNFucNBdIjfBvX2FETw
-set OPENAI_API_KEY=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
-
-python youtube_recommend.py
+set OPENAI_API_KEY=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
+:: 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 for chatgpt
+:: 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
+python chatgpt.py
