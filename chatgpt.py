@@ -2,6 +2,7 @@
 
 import openai
 import os
+import re
 
 openai.api_key = os.environ.get('OPENAI_API_KEY')
 THE_VIDEOS = [('Genius makeup tutorial and beauty hacks you&#39;ll love', 'kr2WjPgPny8'), ('LSD - Genius ft. Sia, Diplo, Labrinth | EASY Piano Tutorial', 'oxcGeyPm27s'), ('How to become a Math Genius.✔️ How do genius people See a math problem! by mathOgenius', '1_DSMABQZbk'), ('Sign Up Genius Tutorial', 'm7EpNx1xXIg'), ('Sketch Genius Review &amp; Hindi Demo | The best tool to edit unique and creative videos- Sketch Genius', '3ASBAqOSOis'), ('This is GENIUS!', 't3miXQ8ToZY'), ('Genius Paper Bag Pockets By Lize - Accordion Folder Pockets', 'l-J0pgQ9cw8'), ('How To Make A Genius Video | Official Tutorial', 'D2231YAnU2g'), ('Dimsport genius how to use tutorial part 1 of 3', 'iF9ERy9jtRA'), ('Seiko Magic Lever, A Genius Mechanism', 'FmcV4nEVynQ')]
@@ -10,18 +11,22 @@ interest = "Genius"
 completion = openai.ChatCompletion.create(
   model="gpt-3.5-turbo",
   messages=[
-    {"role": "user", "content":f"{aspiration} Provide a very short summary of the user's personal story, highlighting only their interest so it can be used to feed an youtube recommender system."}
-  ]
+    {"role": "user", "content":f"{aspiration} Provide a very short summary of the user's personal story, highlighting their interest in areas of good so it can be used to feed an youtube recommender system."}
+  ],
+  temperature=0
 )
+print(completion.choices[0].message['content'])
+#print(f"User journal: {completion.choices[0].message['content']}. Recommend quality YouTube videos related to {interest}. Video details: {[x[0] for x in THE_VIDEOS]}")
+completion = openai.ChatCompletion.create(
+  model="gpt-3.5-turbo",
+  messages=[
+    {"role": "user","content":f"User journal: {completion.choices[0].message['content']}. Now i need you to help the user by selecting three youtube videos in the interest of {interest} from this list  {[x[0] for x in THE_VIDEOS]}"}
 
+     ],
+     temperature=0
+)
+print(completion.choices[0].message['content'])
 
-print(completion.choices[0].message["content"])
-
-for i in THE_VIDEOS:
-    completion_q = openai.ChatCompletion.create(
-    model="gpt-3.5-turbo",
-    messages=[
-        {"role": "user", "content":f"User journal: {completion.choices[0].message['content']}. Recommend quality YouTube videos related to {interest}. Video details: {i[0]}"}
-    ]
-    )
-    print(completion_q.choices[0].message["content"])
+# Extract video titles using regular expression
+video_titles = re.findall(r'\d+\. (.+)', completion.choices[0].message['content'])
+print(video_titles)
