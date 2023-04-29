@@ -1,5 +1,0 @@
-import requests
-
-BASE_URL = "http://127.0.0.1:5000/"
-response = requests.put(BASE_URL + "youtube_recommend",{"journal":"i was born in India in 2005 to a great mom and dad who took me care from the kid i got interest in electronics and robotics i grew up in victim mentality and i was a huge procrastinator i don't do well in school but everything changed when the covid and lockdown came i got access to the computer and i learnt to code and watched motivational video self help videos and got myself exercising and i gone into twitter to just be admired at this guy called elon musk who landed a rocket and make autopilot electric cars. I started building some great products and everything was going fine until the youtube and google which i used turned against me i mean i used it wrong i watched porn masturbated and got addicted to youtube, i got hydroxyphobia i feared about rabies and blood cancer","aspiration":"to learn finance"})
-print(response.json())
