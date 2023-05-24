@@ -72,11 +72,12 @@ class youtube_recommender:
           if title.strip("'") == video[0].strip("'"):
               
             result_list[title]= f"https://www.youtube.com/watch?v={video[1]}"
+    print(result_list)
     return result_list
 
   def execute(self,aspiration,journal="",short_journal=""):
     self.aspiration = aspiration
-    if journal == "":
+    if journal == "" and short_journal != "":
       self.short_journal = short_journal
       if short_journal == "":
         raise Exception("Pass short_journal atleast if you cannot pass the journal")
