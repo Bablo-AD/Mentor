@@ -7,7 +7,7 @@ api = Api(app)
 youtube = youtube_recommender()
 class youtube_handler(Resource):
     def put(self):
-        aspiration = request.form['aspiration']
+        aspiration = request.form['interest']
         try:
             short_journal = request.form['short_journal']
         except KeyError:
@@ -18,11 +18,13 @@ class youtube_handler(Resource):
             journal = None
         
         if short_journal is not None:
+            print(short_journal)
             return youtube.execute(aspiration,short_journal=short_journal)
         elif journal is not None:
+            print(journal)
             return youtube.execute(aspiration,journal=journal)
 
 api.add_resource(youtube_handler, '/youtube_recommend')
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True,host='0.0.0.0')
