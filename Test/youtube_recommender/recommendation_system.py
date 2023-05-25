@@ -71,15 +71,14 @@ class youtube_recommender:
       {"role": "user","content":f"User journal: {self.short_journal}. Now i need you to help the user by selecting three youtube videos in the interest of {self.aspiration} from this list  {[x[0] for x in self.youtube_videos]}"}
 
       ],
-      temperature=0
-  ) 
-    return completion
+      temperature=0)
+    return completion.choices[0].message['content']
     
   
   def refine_completion(self,msg):
     video_titles = re.findall(r'\d+\. (.+)', msg)
     result_list = {"completetion_response":msg}
-    print(completion.choices[0].message['content'])
+    
     for title in video_titles:
         for video in self.youtube_videos:
           #second.append(video[0].strip("'"))
@@ -97,12 +96,12 @@ class youtube_recommender:
         raise Exception("Pass short_journal atleast if you cannot pass the journal")
     else:
       self.journal = journal
-      self.short_journal = tools()
+      self.short_journal = Tools.journal2short_journal(journal)
     self.querier()
     self.youtube_searcher()
     completion = self.AI_filter()
     
-    return self.refine_completion(completion.choices[0].message['content'])
+    return self.refine_completion(completion)
 
 
 
