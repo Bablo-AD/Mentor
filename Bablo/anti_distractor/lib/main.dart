@@ -246,6 +246,12 @@ class _HomePageState extends State<HomePage> {
                           border: InputBorder.none,
                         ),
                         style: TextStyle(fontSize: 16.0),
+                        onSubmitted: (value) {
+                          setState(() {
+                            interest = value;
+                          });
+                          fetchVideos(); // Call your submission method here
+                        },
                         onChanged: (value) {
                           setState(() {
                             interest = value;
