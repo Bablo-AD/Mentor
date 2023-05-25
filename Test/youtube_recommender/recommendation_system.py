@@ -5,6 +5,16 @@ from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
 import re
 
+class Tools:
+  def journal2short_journal(journal):
+    completion = openai.ChatCompletion.create(
+      model="gpt-3.5-turbo",
+      messages=[
+        {"role": "user", "content":f"{journal} Provide a very short summary of the user's personal story, highlighting their interest in areas of good so it can be used to feed an youtube recommender system."}
+      ],
+      temperature=0
+    )
+    return completion.choices[0].message['content']
 
 class youtube_recommender:
   def __init__(self):
@@ -62,10 +72,14 @@ class youtube_recommender:
 
       ],
       temperature=0
-  )
-    video_titles = re.findall(r'\d+\. (.+)', completion.choices[0].message['content'])
-    result_list = {}
-
+  ) 
+    return completion
+    
+  
+  def refine_completion(self,msg):
+    video_titles = re.findall(r'\d+\. (.+)', msg)
+    result_list = {"completetion_response":msg}
+    print(completion.choices[0].message['content'])
     for title in video_titles:
         for video in self.youtube_videos:
           #second.append(video[0].strip("'"))
@@ -83,10 +97,12 @@ class youtube_recommender:
         raise Exception("Pass short_journal atleast if you cannot pass the journal")
     else:
       self.journal = journal
-      self.journal2short_journal()
+      self.short_journal = tools()
     self.querier()
     self.youtube_searcher()
-    return self.AI_filter()
+    completion = self.AI_filter()
+    
+    return self.refine_completion(completion.choices[0].message['content'])
 
 
 

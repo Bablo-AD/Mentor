@@ -1,13 +1,14 @@
 from flask import Flask,request
 from flask_restful import Resource, Api
-from youtube_recommend import youtube_recommender
+import recommendation_system
 
 app = Flask(__name__)
 api = Api(app)
-youtube = youtube_recommender()
+youtube = recommendation_system.youtube_recommender()
 class youtube_handler(Resource):
     def put(self):
         aspiration = request.form['interest']
+        print(aspiration)
         try:
             short_journal = request.form['short_journal']
         except KeyError:
@@ -24,7 +25,12 @@ class youtube_handler(Resource):
             print(journal)
             return youtube.execute(aspiration,journal=journal)
 
-api.add_resource(youtube_handler, '/youtube_recommend')
+class journal2short_journal(Resource):
+    def put(self):
+        journal = request.form['journal']
+        return {"short_journal":recommendation_system.Tools.journal2short_journal(journal)}
 
+api.add_resource(youtube_handler, '/recommendation_system/youtube_recommend')
+api.add_resource(journal2short_journal, '/recommendation_system/tools/journal2short_journal')
 if __name__ == '__main__':
     app.run(debug=True,host='0.0.0.0')
