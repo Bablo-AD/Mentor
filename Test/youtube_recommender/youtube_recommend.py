@@ -71,7 +71,7 @@ class youtube_recommender:
           #second.append(video[0].strip("'"))
           if title.strip("'") == video[0].strip("'"):
               
-            result_list[title]= f"https://www.youtube.com/watch?v={video[1]}"
+            result_list[title]= video[1]
     print(result_list)
     return result_list
 
