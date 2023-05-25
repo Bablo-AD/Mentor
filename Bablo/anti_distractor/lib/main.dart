@@ -272,7 +272,7 @@ class _HomePageState extends State<HomePage> {
                 Center(
                   child: CircularProgressIndicator(),
                 )
-              else if (videos.isNotEmpty)
+              else
                 Card(
                     child: ListTile(
                         leading: Icon(Icons.computer),
