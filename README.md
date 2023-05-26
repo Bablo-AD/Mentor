@@ -1,6 +1,10 @@
-# AI Social Media Assistant App
+# Bablo Personalised AI Social Media Assistant App
 
 This is an open-source Flutter application for building an AI social media assistant. The app understands user goals, beliefs, and interests to offer personalized social media posts. The code provided includes both the Flutter front-end and Flask server back-end.
+![Bablo in Android](https://github.com/prasannan-robots/Bablo/assets/64462247/a67fc3e2-e4f8-4023-b421-4f240b5f2e85)
+![Personalised Journal](https://github.com/prasannan-robots/Bablo/assets/64462247/61d4e42c-b6b1-4cec-ba73-6bde5c426ccf)
+![Bablo for Windows](https://github.com/prasannan-robots/Bablo/assets/64462247/542e11e4-4923-4e53-b252-dfafb9ae8be9)
+
 
 ## Features
 
