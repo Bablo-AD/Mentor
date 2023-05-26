@@ -5,7 +5,7 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-void main() => runApp(MyApp());
+void main() => runApp(const MyApp());
 
 class Video {
   final String title;
@@ -22,6 +22,8 @@ class Video {
 }
 
 class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -30,12 +32,14 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.teal,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      home: HomePage(),
+      home: const HomePage(),
     );
   }
 }
 
 class HomePage extends StatefulWidget {
+  const HomePage({super.key});
+
   @override
   _HomePageState createState() => _HomePageState();
 }
@@ -86,14 +90,14 @@ class _HomePageState extends State<HomePage> {
       showDialog(
         context: context,
         builder: (context) => AlertDialog(
-          title: Text('Error'),
-          content: Text('Please enter both Interest and Journal.'),
+          title: const Text('Error'),
+          content: const Text('Please enter both Interest and Journal.'),
           actions: [
             TextButton(
               onPressed: () {
                 Navigator.pop(context);
               },
-              child: Text('OK'),
+              child: const Text('OK'),
             ),
           ],
         ),
@@ -106,10 +110,9 @@ class _HomePageState extends State<HomePage> {
       videos.clear(); // Clear previous videos
     });
 
-    final url =
-        'http://192.168.0.111:5000/recommendation_system/youtube_recommend';
-    final short_journal_generator =
-        'http://192.168.0.111:5000/recommendation_system/tools/journal2short_journal';
+    const url =
+        'http://prasannanrobots.pythonanywhere.com/recommendation_system/youtube_recommend';
+    //const shortJournalGenerator ='http://192.168.0.111:5000/recommendation_system/tools/journal2short_journal';
 
     final body = {
       'interest': interest,
@@ -121,7 +124,7 @@ class _HomePageState extends State<HomePage> {
 
       if (response.statusCode == 200) {
         Map<String, dynamic> responseData = jsonDecode(response.body);
-        final completion_memory = responseData['completetion_response'];
+        final completionMemory = responseData['completetion_response'];
         responseData.remove('completetion_response');
         final videoList = (responseData)
             .entries
@@ -133,20 +136,20 @@ class _HomePageState extends State<HomePage> {
 
         setState(() {
           videos = videoList;
-          completion = completion_memory;
+          completion = completionMemory;
         });
       } else {
         showDialog(
           context: context,
           builder: (context) => AlertDialog(
-            title: Text('Error'),
-            content: Text('Failed to fetch videos.'),
+            title: const Text('Error'),
+            content: const Text('Failed to fetch videos.'),
             actions: [
               TextButton(
                 onPressed: () {
                   Navigator.pop(context);
                 },
-                child: Text('OK'),
+                child: const Text('OK'),
               ),
             ],
           ),
@@ -156,13 +159,13 @@ class _HomePageState extends State<HomePage> {
       showDialog(
         context: context,
         builder: (context) => AlertDialog(
-          title: Text('Error'),
+          title: const Text('Error'),
           content: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
             children: [
-              Text('An error occurred:'),
-              SizedBox(height: 8.0),
+              const Text('An error occurred:'),
+              const SizedBox(height: 8.0),
               Text(error.toString()), // Display the error message
             ],
           ),
@@ -171,7 +174,7 @@ class _HomePageState extends State<HomePage> {
               onPressed: () {
                 Navigator.pop(context);
               },
-              child: Text('OK'),
+              child: const Text('OK'),
             ),
           ],
         ),
@@ -187,10 +190,10 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Bablo'),
+        title: const Text('Bablo'),
       ),
       body: Padding(
-        padding: EdgeInsets.all(13.0),
+        padding: const EdgeInsets.all(13.0),
         child: SingleChildScrollView(
           // Wrap with SingleChildScrollView
           child: Column(
@@ -213,7 +216,7 @@ class _HomePageState extends State<HomePage> {
                     border: Border.all(color: Colors.grey),
                     borderRadius: BorderRadius.circular(8.0),
                   ),
-                  padding: EdgeInsets.all(8.0),
+                  padding: const EdgeInsets.all(8.0),
                   child: Row(
                     children: [
                       Expanded(
@@ -229,23 +232,23 @@ class _HomePageState extends State<HomePage> {
                   ),
                 ),
               ),
-              SizedBox(height: 16.0),
+              const SizedBox(height: 16.0),
               Container(
                 decoration: BoxDecoration(
                   color: Colors.grey[200],
                   borderRadius: BorderRadius.circular(8.0),
                 ),
-                padding: EdgeInsets.symmetric(horizontal: 8.0),
+                padding: const EdgeInsets.symmetric(horizontal: 8.0),
                 child: Row(
                   children: [
                     Expanded(
                       child: TextField(
                         controller: interestController,
-                        decoration: InputDecoration(
+                        decoration: const InputDecoration(
                           hintText: 'Interest',
                           border: InputBorder.none,
                         ),
-                        style: TextStyle(fontSize: 16.0),
+                        style: const TextStyle(fontSize: 16.0),
                         onSubmitted: (value) {
                           setState(() {
                             interest = value;
@@ -261,24 +264,23 @@ class _HomePageState extends State<HomePage> {
                     ),
                     IconButton(
                       onPressed: isLoading ? null : fetchVideos,
-                      icon: Icon(Icons.search),
+                      icon: const Icon(Icons.search),
                       color: Colors.grey[600],
                     ),
                   ],
                 ),
               ),
-              SizedBox(height: 16.0),
+              const SizedBox(height: 16.0),
               if (isLoading)
-                Center(
+                const Center(
                   child: CircularProgressIndicator(),
                 )
               else
                 Card(
                     child: ListTile(
-                        leading: Icon(Icons.computer),
-                        title: Text("Bablo's Recommendation",
-                            style:
-                                const TextStyle(fontWeight: FontWeight.bold)),
+                        leading: const Icon(Icons.computer),
+                        title: const Text("Bablo's Recommendation",
+                            style: TextStyle(fontWeight: FontWeight.bold)),
                         subtitle: Text(completion))),
               ListView.builder(
                 physics: const NeverScrollableScrollPhysics(),
@@ -288,18 +290,17 @@ class _HomePageState extends State<HomePage> {
                   final video = videos[index];
                   final youtubePlayerController = YoutubePlayerController(
                     initialVideoId: video.videoId,
-                    flags: YoutubePlayerFlags(
+                    flags: const YoutubePlayerFlags(
                       autoPlay: false,
                     ),
                   );
 
                   return SizedBox(
                       width: double.infinity,
-                      height: 300,
                       child: Card(
                           elevation: 5,
                           child: ListTile(
-                            visualDensity: VisualDensity(vertical: 3),
+                            visualDensity: const VisualDensity(vertical: 3),
                             onTap: () {
                               _launchURL(video.videoId);
                             },
@@ -326,7 +327,8 @@ class JournalPage extends StatefulWidget {
   final String journal;
   final Function(String) onSaveJournal;
 
-  JournalPage({required this.journal, required this.onSaveJournal});
+  const JournalPage(
+      {super.key, required this.journal, required this.onSaveJournal});
 
   @override
   _JournalPageState createState() => _JournalPageState();
@@ -351,10 +353,10 @@ class _JournalPageState extends State<JournalPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Journal'),
+        title: const Text('Journal'),
       ),
       body: Padding(
-        padding: EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
@@ -363,19 +365,19 @@ class _JournalPageState extends State<JournalPage> {
                 controller: _journalController,
                 maxLines: null,
                 keyboardType: TextInputType.multiline,
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   hintText: 'Write about yourself and your beliefs',
                   border: OutlineInputBorder(),
                 ),
               ),
             ),
-            SizedBox(height: 16.0),
+            const SizedBox(height: 16.0),
             ElevatedButton(
               onPressed: () {
                 widget.onSaveJournal(_journalController.text);
                 Navigator.pop(context);
               },
-              child: Text('Save Journal'),
+              child: const Text('Save Journal'),
             ),
           ],
         ),
