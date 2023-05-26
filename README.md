@@ -1,8 +1,25 @@
 # Bablo Personalised AI Social Media Assistant App
-"Distraction is like a parasite to the mind. If you don’t kill distraction, distraction will kill your dreams." -Some Giga Chad
+### "Distraction is like a parasite to the mind. If you don’t kill distraction, distraction will kill your dreams." -Some Giga Chad
+
+## Why are we doing this?
+Social media are working on increasing the amount of time spent on their sites. **We are leveraging AI to feed us social media posts that make you grow as a human being** and to optimize the amount of time spent in this universe instead of wasting time by making you go in downward dopamine spiral. Let's make the world a better place and improve our productivity
+
+## Downloads
+[Windows](https://github.com/prasannan-robots/Bablo/releases/download/v1-alpha/windows-v1.alpha.release.zip)
+
+[Android](https://github.com/prasannan-robots/Bablo/releases/download/v1-alpha/app-arm64-v8a-release.apk)
+## How this works?
+Our code is open source and we use chatGPT to select media post based on the person's goal, their past life and their journal
+
+### Working Flow
+
+- Users can write about themselves and their beliefs in the journal section.
+- Users can enter their interests.
+- The app fetches recommended YouTube videos based on the user's interests and journal.
+- Recommended videos are displayed with titles and an embedded YouTube player.
+- The app uses OpenAI's GPT-3.5 Turbo language model for AI interactions.
 
 This is an open-source Flutter application for building an AI social media assistant. The app understands user goals, beliefs, and interests to offer personalized social media posts. The code provided includes both the Flutter front-end and Flask server back-end.
-
 # Some Screenshots
 ![Personalised Journal](https://github.com/prasannan-robots/Bablo/assets/64462247/61d4e42c-b6b1-4cec-ba73-6bde5c426ccf)
 ![Bablo for Windows](https://github.com/prasannan-robots/Bablo/assets/64462247/542e11e4-4923-4e53-b252-dfafb9ae8be9)
