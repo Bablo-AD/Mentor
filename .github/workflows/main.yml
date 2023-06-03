@@ -1,0 +1,13 @@
+name: flutter_build
+run-name: ${{ github.actor }} is building Flutter App :)
+on: 
+  workflow_dispatch:
+jobs:
+  check-bats-version:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable' # or: 'beta', 'dev' or 'master'
+      - run: flutter --version
