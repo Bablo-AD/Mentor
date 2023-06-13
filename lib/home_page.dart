@@ -4,7 +4,7 @@ import 'package:http/http.dart' as http;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter/services.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:youtube_player_flutter/youtube_player_flutter.dart';
+import 'video_page.dart';
 
 class MentorPage extends StatefulWidget {
   const MentorPage({super.key});
@@ -181,40 +181,34 @@ class _MentorPageState extends State<MentorPage> {
                             subtitle: Text(result,
                                 style: const TextStyle(color: Colors.green)))),
                   ListView.builder(
-                      physics: const NeverScrollableScrollPhysics(),
-                      shrinkWrap: true,
-                      itemCount: videos.length,
-                      itemBuilder: (context, index) {
-                        final video = videos[index];
-                        final youtubePlayerController = YoutubePlayerController(
-                          initialVideoId: video.videoId,
-                          flags: const YoutubePlayerFlags(
-                            autoPlay: false,
-                          ),
-                        );
+                    physics: const NeverScrollableScrollPhysics(),
+                    shrinkWrap: true,
+                    itemCount: videos.length,
+                    itemBuilder: (context, index) {
+                      final video = videos[index];
 
-                        return SizedBox(
-                            width: double.infinity,
-                            child: Card(
-                                color: const Color.fromARGB(255, 19, 19, 19),
-                                elevation: 5,
-                                child: ListTile(
-                                  visualDensity:
-                                      const VisualDensity(vertical: 3),
-                                  onTap: () {
-                                    _launchURL(video.videoId);
-                                  },
-                                  title: Text(video.title,
-                                      style: const TextStyle(
-                                          color: Colors.green,
-                                          fontWeight: FontWeight.bold)),
-                                  subtitle: YoutubePlayer(
-                                    controller: youtubePlayerController,
-                                    showVideoProgressIndicator: true,
-                                    progressIndicatorColor: Colors.amber,
-                                  ),
-                                )));
-                      })
+                      return Card(
+                          color: const Color.fromARGB(255, 19, 19, 19),
+                          child: ListTile(
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) =>
+                                      VideoPage(videoId: video.videoId),
+                                ),
+                              );
+                            },
+                            title: Text(
+                              video.title,
+                              style: const TextStyle(
+                                color: Colors.green,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ));
+                    },
+                  )
                 ],
               ),
             ),
