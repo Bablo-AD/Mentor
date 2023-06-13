@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'home_page/home_page.dart';
+import 'home_page.dart';
+import 'settings_page.dart';
 
 void main() => runApp(const MyApp());
 
@@ -9,12 +10,12 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Bablo',
-      theme: ThemeData(
-        primarySwatch: Colors.teal,
-        visualDensity: VisualDensity.adaptivePlatformDensity,
-      ),
-      home: const HomePage(),
+      title: 'Mentor',
+      theme: ThemeData(primarySwatch: Colors.green),
+      home: const MentorPage(),
+      routes: {
+        '/settings': (context) => const SettingsPage(),
+      },
     );
   }
 }

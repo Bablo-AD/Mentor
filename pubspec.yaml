@@ -41,6 +41,7 @@ dependencies:
   youtube_player_flutter: ^8.1.2
   shared_preferences: ^2.1.1
   flutter_launcher_icons: ^0.13.1
+  flutter_secure_storage: ^8.0.0
 
 dev_dependencies:
   flutter_test:
