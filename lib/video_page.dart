@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class VideoPage extends StatelessWidget {
   final String videoId;
@@ -18,7 +19,7 @@ class VideoPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text(
-          'Video Player',
+          'Mentor',
           style: TextStyle(color: Colors.green),
         ),
         backgroundColor: Colors.black,
@@ -33,4 +34,13 @@ class VideoPage extends StatelessWidget {
       ),
     );
   }
+}
+
+_launchURL(String videoId) async {
+  final url = 'https://www.youtube.com/watch?v=$videoId';
+  Uri uri = Uri.parse(url);
+  if (!await canLaunchUrl(uri)) {
+    throw Exception('Could not launch $url');
+  }
+  await launchUrl(uri);
 }

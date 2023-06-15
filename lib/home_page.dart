@@ -3,8 +3,11 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter/services.dart';
-import 'package:url_launcher/url_launcher.dart';
 import 'video_page.dart';
+import 'settings_page.dart';
+import 'journal_page.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class MentorPage extends StatefulWidget {
   const MentorPage({super.key});
@@ -14,12 +17,14 @@ class MentorPage extends StatefulWidget {
 }
 
 class _MentorPageState extends State<MentorPage> {
+  final _storage = const FlutterSecureStorage();
   final interestController = TextEditingController();
   String interest = '';
-  String completion = '';
+  String? userId = FirebaseAuth.instance.currentUser?.uid;
+  String result = '';
   List<Video> videos = [];
   bool isLoading = false;
-
+  int _selectedIndex = 0;
   void _emulateRequest() async {
     setState(() {
       isLoading = true;
@@ -28,35 +33,42 @@ class _MentorPageState extends State<MentorPage> {
     // Retrieve the saved settings
     String? habiticaUserId = await _storage.read(key: 'habitica_user_id');
     String? habiticaApiKey = await _storage.read(key: 'habitica_api_key');
-    String? googleKeepEmail = await _storage.read(key: 'google_keep_email');
     String? serverurl = await _storage.read(key: 'server_url');
-    String? googleKeepPassword =
-        await _storage.read(key: 'google_keep_password');
 
-    if (habiticaUserId != null &&
-        habiticaApiKey != null &&
-        googleKeepEmail != null &&
-        googleKeepPassword != null) {
-      // Prepare the data to send in the request
-      Map<String, String> data = {
-        'habitica_user_id': habiticaUserId,
-        'habitica_api_key': habiticaApiKey,
-        'email': googleKeepEmail,
-        'password': googleKeepPassword,
-        'goal': interest,
-      };
+    final QuerySnapshot orderthing = await FirebaseFirestore.instance
+        .collection('journals')
+        .where('userId', isEqualTo: userId)
+        .orderBy('title', descending: true)
+        .get();
+    final QuerySnapshot snapshot = await FirebaseFirestore.instance
+        .collection('journals')
+        .where('userId', isEqualTo: userId)
+        .where('title',
+            isGreaterThan:
+                Timestamp.fromDate(DateTime.now().subtract(Duration(days: 3))))
+        .get();
+    List<QueryDocumentSnapshot> documents = snapshot.docs;
+    List<Map<String, dynamic>> journalDataList =
+        documents.map((doc) => doc.data() as Map<String, dynamic>).toList();
 
-      //try {
-      var response = await http.post(
-        Uri.parse(serverurl
-            .toString()), // Replace with the actual URL of your Flask API
+    // Prepare the data to send in the request
+    Map<String, String> data = {
+      'habitica_user_id': habiticaUserId.toString(),
+      'habitica_api_key': habiticaApiKey.toString(),
+      'goal': interest,
+      'journal': journalDataList.toString(),
+    };
+
+    try {
+      var __response = await http.post(
+        Uri.parse(serverurl.toString()),
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode(data),
       );
 
-      if (response.statusCode == 200) {
-        var completionMemory = jsonDecode(response.body);
-        completion = completionMemory['completion'];
+      if (__response.statusCode == 200) {
+        var completionMemory = jsonDecode(__response.body);
+        result = completionMemory['completion'];
         completionMemory.remove('completion');
         Map<String, dynamic> responseData = completionMemory;
 
@@ -67,31 +79,36 @@ class _MentorPageState extends State<MentorPage> {
                   'videoId': entry.value,
                 }))
             .toList();
-
-        setState(() {
-          isLoading = false;
-          videos = videoList;
-          result = completion;
-        });
+        if (this.mounted) {
+          setState(() {
+            isLoading = false;
+            videos = videoList;
+            result = result;
+          });
+        }
       } else {
+        if (this.mounted) {
+          setState(() {
+            result =
+                'Request failed with status code ${__response.statusCode}: ${__response.body}';
+          });
+        }
+      }
+    } catch (error) {
+      if (this.mounted) {
         setState(() {
-          result =
-              'Request failed with status code ${response.statusCode}: ${response.body}';
+          result = 'An error occured ${error}';
         });
       }
-      //}// catch (error) {
-      // setState(() {
-      //   result = 'An error occured ${error}';
-      // });
-      // } finally {
-      //   setState(() {
-      //     isLoading = false;
-      //   });
+    } finally {
+      if (this.mounted) {
+        setState(() {
+          isLoading = false;
+        });
+      }
     }
   }
 
-  final _storage = const FlutterSecureStorage();
-  String result = '';
   @override
   void initState() {
     super.initState();
@@ -108,14 +125,8 @@ class _MentorPageState extends State<MentorPage> {
         ),
         child: Scaffold(
           appBar: AppBar(
-            title: const Text('Mentor', style: TextStyle(color: Colors.green)),
-            actions: [
-              IconButton(
-                  icon: Icon(Icons.settings),
-                  onPressed: () {
-                    Navigator.pushNamed(context, '/settings');
-                  })
-            ],
+            title: const Text('Mentor',
+                style: TextStyle(color: Color.fromARGB(255, 50, 204, 102))),
             backgroundColor: Colors.black,
           ),
           backgroundColor: Colors.black,
@@ -142,8 +153,7 @@ class _MentorPageState extends State<MentorPage> {
                           ),
                           style: const TextStyle(
                             fontSize: 16.0,
-                            backgroundColor: Color(0xFF000000),
-                            color: Colors.green,
+                            color: Color.fromARGB(255, 50, 204, 102),
                           ),
                           onSubmitted: (value) {
                             setState(() {
@@ -161,7 +171,7 @@ class _MentorPageState extends State<MentorPage> {
                       IconButton(
                         onPressed: isLoading ? null : _emulateRequest,
                         icon: const Icon(Icons.search),
-                        color: Colors.green,
+                        color: Color.fromARGB(255, 50, 204, 102),
                       ),
                     ],
                   ),
@@ -175,11 +185,15 @@ class _MentorPageState extends State<MentorPage> {
                         color: const Color.fromARGB(255, 19, 19, 19),
                         child: ListTile(
                             title: const Text(
-                              "Bablo: ",
-                              style: const TextStyle(color: Colors.green),
+                              "Mentor: ",
+                              style: const TextStyle(
+                                color: Color.fromARGB(255, 50, 204, 102),
+                              ),
                             ),
                             subtitle: Text(result,
-                                style: const TextStyle(color: Colors.green)))),
+                                style: const TextStyle(
+                                  color: Color.fromARGB(255, 50, 204, 102),
+                                )))),
                   ListView.builder(
                     physics: const NeverScrollableScrollPhysics(),
                     shrinkWrap: true,
@@ -202,7 +216,7 @@ class _MentorPageState extends State<MentorPage> {
                             title: Text(
                               video.title,
                               style: const TextStyle(
-                                color: Colors.green,
+                                color: Color.fromARGB(255, 50, 204, 102),
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
@@ -213,17 +227,44 @@ class _MentorPageState extends State<MentorPage> {
               ),
             ),
           ),
+          bottomNavigationBar: BottomNavigationBar(
+            items: const <BottomNavigationBarItem>[
+              BottomNavigationBarItem(
+                icon: Icon(Icons.home),
+                label: 'Home',
+              ),
+              BottomNavigationBarItem(
+                icon: Icon(Icons.notes),
+                label: 'Journal',
+              ),
+              BottomNavigationBarItem(
+                icon: Icon(Icons.settings),
+                label: 'Settings',
+              ),
+            ],
+            currentIndex: _selectedIndex,
+            selectedItemColor: Color.fromARGB(255, 50, 204, 102),
+            unselectedItemColor: Colors.white,
+            backgroundColor: Colors.black,
+            onTap: (int index) {
+              switch (index) {
+                case 0:
+                  Navigator.pushReplacement(context,
+                      MaterialPageRoute(builder: (context) => MentorPage()));
+                  break;
+                case 1:
+                  Navigator.pushReplacement(context,
+                      MaterialPageRoute(builder: (context) => JournalPage()));
+                  break;
+                case 2:
+                  Navigator.pushReplacement(context,
+                      MaterialPageRoute(builder: (context) => SettingsPage()));
+                  break;
+              }
+            },
+          ),
         ));
   }
-}
-
-_launchURL(String videoId) async {
-  final url = 'https://www.youtube.com/watch?v=$videoId';
-  Uri uri = Uri.parse(url);
-  if (!await canLaunchUrl(uri)) {
-    throw Exception('Could not launch $url');
-  }
-  await launchUrl(uri);
 }
 
 class Video {
