@@ -86,9 +86,14 @@ class _SettingsPageState extends State<SettingsPage> {
 
     _habiticaUserIdController.text = habiticaUserId ?? '';
     _habiticaApiKeyController.text = habiticaApiKey ?? '';
+<<<<<<< Updated upstream
     _googleKeepEmailController.text = googleKeepEmail ?? '';
     _googleKeepPasswordController.text = googleKeepPassword ?? '';
     _serverurlController.text = serverurl ?? '';
+=======
+    _serverurlController.text =
+        serverurl ?? 'https://prasannanrobots.pythonanywhere.com/mentor';
+>>>>>>> Stashed changes
   }
 
   @override
@@ -148,6 +153,7 @@ class _SettingsPageState extends State<SettingsPage> {
                           borderSide: BorderSide(color: Colors.green),
                         ),
                       ),
+<<<<<<< Updated upstream
                       validator: (value) {
                         if (value!.isEmpty) {
                           return 'Please enter a valid Habitica User ID';
@@ -167,6 +173,23 @@ class _SettingsPageState extends State<SettingsPage> {
                         ),
                         focusedBorder: UnderlineInputBorder(
                           borderSide: BorderSide(color: Colors.green),
+=======
+                      const SizedBox(height: 16.0),
+                      ElevatedButton(
+                        onPressed: () async {
+                          await FirebaseAuth.instance.signOut();
+                          await SessionManager.saveLoginState(false);
+                          setState(() {
+                            Navigator.pushReplacement(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => EmailAuth()));
+                          });
+                          // Additional code after successful sign-out
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.red,
+>>>>>>> Stashed changes
                         ),
                       ),
                       validator: (value) {

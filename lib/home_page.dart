@@ -5,6 +5,14 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter/services.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'video_page.dart';
+<<<<<<< Updated upstream
+=======
+import 'settings_page.dart';
+import 'journal_page.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+>>>>>>> Stashed changes
 
 class MentorPage extends StatefulWidget {
   const MentorPage({super.key});
@@ -16,7 +24,25 @@ class MentorPage extends StatefulWidget {
 class _MentorPageState extends State<MentorPage> {
   final interestController = TextEditingController();
   String interest = '';
+<<<<<<< Updated upstream
   String completion = '';
+=======
+  String? userId = FirebaseAuth.instance.currentUser?.uid;
+  String result = '';
+  Future<void> _loadCompletionFromSharedPreferences() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? storedCompletion = prefs.getString('completion');
+
+    setState(() {
+      result = storedCompletion ?? '';
+      if (result.isEmpty || result == '') {
+        print(result);
+        _emulateRequest();
+      }
+    });
+  }
+
+>>>>>>> Stashed changes
   List<Video> videos = [];
   bool isLoading = false;
 
@@ -30,6 +56,7 @@ class _MentorPageState extends State<MentorPage> {
     String? habiticaApiKey = await _storage.read(key: 'habitica_api_key');
     String? googleKeepEmail = await _storage.read(key: 'google_keep_email');
     String? serverurl = await _storage.read(key: 'server_url');
+<<<<<<< Updated upstream
     String? googleKeepPassword =
         await _storage.read(key: 'google_keep_password');
 
@@ -45,6 +72,20 @@ class _MentorPageState extends State<MentorPage> {
         'password': googleKeepPassword,
         'goal': interest,
       };
+=======
+    serverurl =
+        serverurl ?? 'https://prasannanrobots.pythonanywhere.com/mentor';
+    final QuerySnapshot snapshot = await FirebaseFirestore.instance
+        .collection('journals')
+        .where('userId', isEqualTo: userId)
+        .where('title',
+            isGreaterThan:
+                Timestamp.fromDate(DateTime.now().subtract(Duration(days: 3))))
+        .get();
+    List<QueryDocumentSnapshot> documents = snapshot.docs;
+    List<Map<String, dynamic>> journalDataList =
+        documents.map((doc) => doc.data() as Map<String, dynamic>).toList();
+>>>>>>> Stashed changes
 
       //try {
       var response = await http.post(
@@ -54,9 +95,17 @@ class _MentorPageState extends State<MentorPage> {
         body: jsonEncode(data),
       );
 
+<<<<<<< Updated upstream
       if (response.statusCode == 200) {
         var completionMemory = jsonDecode(response.body);
         completion = completionMemory['completion'];
+=======
+      if (__response.statusCode == 200) {
+        var completionMemory = jsonDecode(__response.body);
+        result = completionMemory['completion'];
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+        await prefs.setString('completion', result);
+>>>>>>> Stashed changes
         completionMemory.remove('completion');
         Map<String, dynamic> responseData = completionMemory;
 
@@ -95,7 +144,7 @@ class _MentorPageState extends State<MentorPage> {
   @override
   void initState() {
     super.initState();
-    _emulateRequest();
+    _loadCompletionFromSharedPreferences();
   }
 
   @override
