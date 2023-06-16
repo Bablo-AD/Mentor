@@ -42,6 +42,8 @@ dependencies:
   shared_preferences: ^2.1.1
   flutter_launcher_icons: ^0.13.1
   flutter_secure_storage: ^8.0.0
+  cloud_firestore: ^4.8.1
+  firebase_auth: ^4.6.3
 
 dev_dependencies:
   flutter_test:
@@ -95,9 +97,15 @@ flutter:
   # in this "flutter" section. Each entry in this list should have a
   # "family" key with the font family name, and a "fonts" key with a
   # list giving the asset and other descriptors for the font. For
-  # example:
-  # fonts:
-  #   - family: Schyler
+  
+  fonts:
+    - family: Monospace
+      fonts:
+        - asset: asset/font/SpaceMono-Regular.ttf
+        - asset: asset/font/SpaceMono-Italic.ttf
+          style: italic
+        - asset: asset/font/SpaceMono-Bold.ttf
+        - asset: asset/font/SpaceMono-BoldItalic.ttf  
   #     fonts:
   #       - asset: fonts/Schyler-Regular.ttf
   #       - asset: fonts/Schyler-Italic.ttf
