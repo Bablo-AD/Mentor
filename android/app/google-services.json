@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "1045034252917",
+    "project_id": "anti-distractor",
+    "storage_bucket": "anti-distractor.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1045034252917:android:a9fa46111b4efa8d7ed63c",
+        "android_client_info": {
+          "package_name": "com.example.anti_distractor"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1045034252917-7d1o1b7tmtf9sjeekjad516olbjt507r.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCleJ7fK1h5-1k_4kvy8E4vqh9EwgknFZA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1045034252917-7d1o1b7tmtf9sjeekjad516olbjt507r.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "1045034252917-fomavjanuhv01pfg90jcmnb3g89ktl7e.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.antiDistractor"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
