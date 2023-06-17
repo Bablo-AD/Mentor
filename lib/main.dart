@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'home_page.dart';
-import 'settings_page.dart';
+import 'home/home_page.dart';
+import 'settings/settings_page.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'journal_page.dart';
+import 'journal/journal_page.dart';
 import 'firebase_options.dart';
 import 'authentication_page.dart';
 
