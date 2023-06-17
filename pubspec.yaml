@@ -44,6 +44,8 @@ dependencies:
   flutter_secure_storage: ^8.0.0
   cloud_firestore: ^4.8.1
   firebase_auth: ^4.6.3
+  csv: ^5.0.2
+  intl: ^0.18.1
 
 dev_dependencies:
   flutter_test:

@@ -9,6 +9,7 @@ import '../journal/journal_page.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'habitica.dart';
 
 class MentorPage extends StatefulWidget {
   const MentorPage({super.key});
@@ -40,15 +41,18 @@ class _MentorPageState extends State<MentorPage> {
   bool isLoading = false;
   int _selectedIndex = 0;
   void _emulateRequest() async {
+    // Preparing the screen
     setState(() {
       isLoading = true;
       videos.clear(); // Clear previous videos
     });
+
     // Retrieve the saved settings
     String? habiticaUserId = await _storage.read(key: 'habitica_user_id');
     String? habiticaApiKey = await _storage.read(key: 'habitica_api_key');
     String? serverurl = await _storage.read(key: 'server_url');
 
+    //Preparing Journal data
     final QuerySnapshot snapshot = await FirebaseFirestore.instance
         .collection('journals')
         .where('userId', isEqualTo: userId)
@@ -60,10 +64,14 @@ class _MentorPageState extends State<MentorPage> {
     List<Map<String, dynamic>> journalDataList =
         documents.map((doc) => doc.data() as Map<String, dynamic>).toList();
 
+    //Preparing Habitica Data
+    final habitica_data =
+        HabiticaData(habiticaUserId.toString(), habiticaApiKey.toString());
+    String habits = await habitica_data.execute();
+
     // Prepare the data to send in the request
     Map<String, String> data = {
-      'habitica_user_id': habiticaUserId.toString(),
-      'habitica_api_key': habiticaApiKey.toString(),
+      'habits': habits,
       'goal': interest,
       'journal': journalDataList.toString(),
     };
