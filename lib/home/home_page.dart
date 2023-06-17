@@ -65,9 +65,12 @@ class _MentorPageState extends State<MentorPage> {
         documents.map((doc) => doc.data() as Map<String, dynamic>).toList();
 
     //Preparing Habitica Data
-    final habitica_data =
-        HabiticaData(habiticaUserId.toString(), habiticaApiKey.toString());
-    String habits = await habitica_data.execute();
+    String habits = '';
+    if (habiticaUserId != null && habiticaApiKey != null) {
+      final habitica_data =
+          HabiticaData(habiticaUserId.toString(), habiticaApiKey.toString());
+      habits = await habitica_data.execute();
+    }
 
     // Prepare the data to send in the request
     Map<String, String> data = {
