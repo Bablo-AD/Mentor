@@ -4,35 +4,58 @@ import 'package:url_launcher/url_launcher.dart';
 
 class VideoPage extends StatelessWidget {
   final String videoId;
+  final String description;
 
-  VideoPage({required this.videoId});
+  VideoPage({required this.videoId, required this.description});
 
   @override
   Widget build(BuildContext context) {
     final youtubePlayerController = YoutubePlayerController(
       initialVideoId: videoId,
       flags: const YoutubePlayerFlags(
-        autoPlay: true,
+        autoPlay: false,
       ),
     );
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text(
-          'Mentor',
-          style: TextStyle(color: Colors.green),
+        appBar: AppBar(
+          title: const Text(
+            'Mentor',
+            style: TextStyle(color: Colors.green),
+          ),
+          backgroundColor: Colors.black,
         ),
         backgroundColor: Colors.black,
-      ),
-      backgroundColor: Colors.black,
-      body: Center(
-        child: YoutubePlayer(
-          controller: youtubePlayerController,
-          showVideoProgressIndicator: true,
-          progressIndicatorColor: Colors.green,
-        ),
-      ),
-    );
+        body: SingleChildScrollView(
+          child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    IconButton(
+                      icon: Icon(Icons.open_in_browser,
+                          color: Color.fromARGB(255, 50, 204, 102)),
+                      onPressed: () {
+                        _launchURL(this.videoId);
+                      },
+                    ),
+                    const SizedBox(
+                      height: 2,
+                    ),
+                    YoutubePlayer(
+                      controller: youtubePlayerController,
+                      showVideoProgressIndicator: true,
+                      progressIndicatorColor: Color.fromARGB(255, 50, 204, 102),
+                    ),
+                    const SizedBox(height: 16.0),
+                    Text(
+                      this.description,
+                      style:
+                          TextStyle(color: Color.fromARGB(255, 50, 204, 102)),
+                    ),
+                  ])),
+        ));
   }
 }
 

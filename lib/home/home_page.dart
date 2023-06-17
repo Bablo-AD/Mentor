@@ -8,8 +8,8 @@ import '../settings/settings_page.dart';
 import '../journal/journal_page.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'habitica.dart';
+import 'chat_page.dart';
 
 class MentorPage extends StatefulWidget {
   const MentorPage({super.key});
@@ -21,25 +21,58 @@ class MentorPage extends StatefulWidget {
 class _MentorPageState extends State<MentorPage> {
   final _storage = const FlutterSecureStorage();
   final interestController = TextEditingController();
-  String interest = '';
   String? userId = FirebaseAuth.instance.currentUser?.uid;
+  String interest = '';
   String result = '';
-  Future<void> _loadCompletionFromSharedPreferences() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    String? storedCompletion = prefs.getString('completion');
+  bool isLoading = false;
+  int _selectedIndex = 0;
+  List<Video> videos = [];
+  List<Messages> messages_data = [];
+  String serverurl = '';
 
+  Future<void> _loadCompletionFromSharedPreferences() async {
+    final storedData = await _storage.read(key: 'completion');
+    String? serverurl = await _storage.read(key: 'server_url');
+    serverurl = serverurl;
     setState(() {
-      result = storedCompletion ?? '';
+      result = storedData ?? '';
       if (result.isEmpty || result == '') {
-        print(result);
         _emulateRequest();
+      } else {
+        __postprocessdata(storedData);
       }
     });
   }
 
-  List<Video> videos = [];
-  bool isLoading = false;
-  int _selectedIndex = 0;
+  void __postprocessdata(var response) {
+    var completionMemory = jsonDecode(response);
+    Map<String, dynamic> responseData = completionMemory['videos'];
+    String Completion_Message = completionMemory['completion'].toString();
+    messages_data.add(Messages(role: 'assistant', content: Completion_Message));
+    final videoList = (responseData)
+        .entries
+        .map((entry) => Video.fromJson({
+              'title': entry.key,
+              'videoId': entry.value[0],
+              'videoDescription': entry.value[1],
+            }))
+        .toList();
+    if (this.mounted) {
+      setState(() {
+        isLoading = false;
+        videos = videoList;
+        result = Completion_Message;
+      });
+    } else {
+      if (this.mounted) {
+        setState(() {
+          result =
+              'Request failed with status code ${response.statusCode}: ${response.body}';
+        });
+      }
+    }
+  }
+
   void _emulateRequest() async {
     // Preparing the screen
     setState(() {
@@ -51,6 +84,7 @@ class _MentorPageState extends State<MentorPage> {
     String? habiticaUserId = await _storage.read(key: 'habitica_user_id');
     String? habiticaApiKey = await _storage.read(key: 'habitica_api_key');
     String? serverurl = await _storage.read(key: 'server_url');
+    serverurl = serverurl;
 
     //Preparing Journal data
     final QuerySnapshot snapshot = await FirebaseFirestore.instance
@@ -81,56 +115,30 @@ class _MentorPageState extends State<MentorPage> {
     serverurl =
         serverurl ?? 'https://prasannanrobots.pythonanywhere.com/mentor';
 
-    try {
-      var __response = await http.post(
-        Uri.parse(serverurl.toString()),
-        headers: {'Content-Type': 'application/json'},
-        body: jsonEncode(data),
-      );
+    //try {
+    var __response = await http.post(
+      Uri.parse(serverurl.toString()),
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode(data),
+    );
 
-      if (__response.statusCode == 200) {
-        var completionMemory = jsonDecode(__response.body);
-        result = completionMemory['completion'];
-        SharedPreferences prefs = await SharedPreferences.getInstance();
-        await prefs.setString('completion', result);
-        completionMemory.remove('completion');
-        Map<String, dynamic> responseData = completionMemory;
-
-        final videoList = (responseData)
-            .entries
-            .map((entry) => Video.fromJson({
-                  'title': entry.key,
-                  'videoId': entry.value,
-                }))
-            .toList();
-        if (this.mounted) {
-          setState(() {
-            isLoading = false;
-            videos = videoList;
-            result = result;
-          });
-        }
-      } else {
-        if (this.mounted) {
-          setState(() {
-            result =
-                'Request failed with status code ${__response.statusCode}: ${__response.body}';
-          });
-        }
-      }
-    } catch (error) {
-      if (this.mounted) {
-        setState(() {
-          result = 'An error occured ${error}';
-        });
-      }
-    } finally {
-      if (this.mounted) {
-        setState(() {
-          isLoading = false;
-        });
-      }
+    if (__response.statusCode == 200) {
+      await _storage.write(key: 'completion', value: __response.body);
+      __postprocessdata(__response.body);
     }
+    //  } catch (error) {
+    //   if (this.mounted) {
+    //     setState(() {
+    //       result = 'An error occured ${error}';
+    //     });
+    //   }
+    //   } finally {
+    if (this.mounted) {
+      setState(() {
+        isLoading = false;
+      });
+    }
+    // }
   }
 
   @override
@@ -205,19 +213,28 @@ class _MentorPageState extends State<MentorPage> {
                       child: CircularProgressIndicator(),
                     )
                   else
-                    Card(
-                        color: const Color.fromARGB(255, 19, 19, 19),
-                        child: ListTile(
-                            title: const Text(
-                              "Mentor: ",
-                              style: const TextStyle(
-                                color: Color.fromARGB(255, 50, 204, 102),
-                              ),
-                            ),
-                            subtitle: Text(result,
-                                style: const TextStyle(
-                                  color: Color.fromARGB(255, 50, 204, 102),
-                                )))),
+                    GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) =>
+                                    ChatPage(messages: messages_data)),
+                          );
+                        },
+                        child: Card(
+                            color: const Color.fromARGB(255, 19, 19, 19),
+                            child: ListTile(
+                                title: const Text(
+                                  "Mentor: ",
+                                  style: const TextStyle(
+                                    color: Color.fromARGB(255, 50, 204, 102),
+                                  ),
+                                ),
+                                subtitle: Text(result,
+                                    style: const TextStyle(
+                                      color: Color.fromARGB(255, 50, 204, 102),
+                                    ))))),
                   ListView.builder(
                     physics: const NeverScrollableScrollPhysics(),
                     shrinkWrap: true,
@@ -232,8 +249,9 @@ class _MentorPageState extends State<MentorPage> {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (context) =>
-                                      VideoPage(videoId: video.videoId),
+                                  builder: (context) => VideoPage(
+                                      videoId: video.videoId,
+                                      description: video.videoDescription),
                                 ),
                               );
                             },
@@ -294,13 +312,31 @@ class _MentorPageState extends State<MentorPage> {
 class Video {
   final String title;
   final String videoId;
+  final String videoDescription;
 
-  Video({required this.title, required this.videoId});
+  Video(
+      {required this.title,
+      required this.videoId,
+      required this.videoDescription});
 
   factory Video.fromJson(Map<String, dynamic> json) {
     return Video(
-      title: json['title'] ?? '',
-      videoId: json['videoId'] ?? '',
+      title: json['title'].toString() ?? '',
+      videoId: json['videoId'].toString() ?? '',
+      videoDescription: json['videoDescription'].toString() ?? '',
     );
+  }
+}
+
+class Messages {
+  final String role;
+  final String content;
+
+  Messages({required this.role, required this.content});
+  Map<String, dynamic> toJson() {
+    return {
+      'role': role,
+      'content': content,
+    };
   }
 }

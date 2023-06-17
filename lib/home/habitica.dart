@@ -65,7 +65,7 @@ class HabiticaData {
     return filteredData;
   }
 
-  String getPastDates(String target_date, int num_days) {
+  List getPastDates(String target_date, int num_days) {
     final targetDate = DateFormat('yyyy-MM-dd').parse(target_date);
     final startDate = targetDate.subtract(Duration(days: num_days));
 
@@ -73,14 +73,24 @@ class HabiticaData {
       final rowDate = DateFormat('yyyy-MM-dd').parse(row[1] as String);
       return rowDate.isAfter(startDate);
     }).toList();
-    return filteredData.toString();
+    return filteredData;
   }
 
   Future<String> execute({String? target_date, int num_days = 5}) async {
+    String result = '';
     target_date ??= DateFormat('yyyy-MM-dd').format(DateTime.now());
     await getUserData();
     final habiticaData = getPastDates(target_date, num_days);
-    return habiticaData;
+    // Append the item to the result string
+    for (var item in habiticaData) {
+      result += '\n';
+      for (var i in item) {
+        result += i.toString();
+        result += ' ';
+      }
+    }
+
+    return result;
   }
 }
 // Example of how to use the habitica
