@@ -10,6 +10,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'habitica.dart';
 import 'chat_page.dart';
+import 'package:usage_stats/usage_stats.dart';
+import 'dart:io';
+import 'package:intl/intl.dart';
 
 class MentorPage extends StatefulWidget {
   const MentorPage({super.key});
@@ -42,6 +45,81 @@ class _MentorPageState extends State<MentorPage> {
         __postprocessdata(storedData);
       }
     });
+  }
+
+  //Gets user's usage data
+  Future<String> getUsage() async {
+    DateTime endDate = DateTime.now();
+    DateTime startDate = endDate.subtract(const Duration(days: 3));
+    String outputString = "";
+
+    // check if permission is granted
+    bool? isPermission = await UsageStats.checkUsagePermission();
+    if (isPermission == true) {
+      List<UsageInfo> usageStats =
+          await UsageStats.queryUsageStats(startDate, endDate);
+      if (usageStats.isNotEmpty) {
+        for (UsageInfo appUsage in usageStats) {
+          if (int.parse(appUsage.totalTimeInForeground!) > 0) {
+            Duration duration = Duration(
+                milliseconds:
+                    int.parse(appUsage.totalTimeInForeground.toString()));
+            int hours = duration.inHours;
+            int minutes = duration.inMinutes.remainder(60);
+            if (hours > 0 || minutes > 0) {
+              outputString += 'Package name: ${appUsage.packageName} ';
+              outputString +=
+                  'Total time in foreground: $hours hours $minutes minutes';
+              outputString += ', ';
+            }
+          }
+        }
+      }
+    } else {
+      showDialog(
+        context:
+            context, // Replace 'context' with the actual context from your app
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text('Permission Required'),
+            content:
+                Text('Please grant the usage permission to track app usage.'),
+            actions: [
+              TextButton(
+                child: Text('OK'),
+                onPressed: () {
+                  Navigator.pop(context);
+                  UsageStats.grantUsagePermission();
+                },
+              ),
+            ],
+          );
+        },
+      );
+      bool? isPermission = await UsageStats.checkUsagePermission();
+      if (isPermission == true) {
+        List<UsageInfo> usageStats =
+            await UsageStats.queryUsageStats(startDate, endDate);
+        if (usageStats.isNotEmpty) {
+          for (UsageInfo appUsage in usageStats) {
+            if (int.parse(appUsage.totalTimeInForeground!) > 0) {
+              Duration duration = Duration(
+                  milliseconds:
+                      int.parse(appUsage.totalTimeInForeground.toString()));
+              int hours = duration.inHours;
+              int minutes = duration.inMinutes.remainder(60);
+              if (hours > 0 || minutes > 0) {
+                outputString += 'Package name: ${appUsage.packageName}';
+                outputString +=
+                    'Total time in foreground: $hours hours $minutes minutes';
+              }
+            }
+          }
+        }
+      }
+    }
+    print(outputString);
+    return outputString;
   }
 
   void __postprocessdata(var response) {
@@ -85,6 +163,13 @@ class _MentorPageState extends State<MentorPage> {
     String? habiticaApiKey = await _storage.read(key: 'habitica_api_key');
     String? serverurl = await _storage.read(key: 'server_url');
     serverurl = serverurl;
+    String phone_usage_data = '';
+
+    //Preparing the phone usage data
+    if (Platform.isAndroid) {
+      String? phone_usage = await getUsage();
+      phone_usage_data = phone_usage!.toString();
+    }
 
     //Preparing Journal data
     final QuerySnapshot snapshot = await FirebaseFirestore.instance
@@ -95,8 +180,20 @@ class _MentorPageState extends State<MentorPage> {
                 Timestamp.fromDate(DateTime.now().subtract(Duration(days: 3))))
         .get();
     List<QueryDocumentSnapshot> documents = snapshot.docs;
-    List<Map<String, dynamic>> journalDataList =
-        documents.map((doc) => doc.data() as Map<String, dynamic>).toList();
+    List<Map<String, dynamic>> journalDataList = documents.map((doc) {
+      // Extract the date from the Timestamp
+      DateTime date = (doc['title'] as Timestamp).toDate();
+      String formattedDate = DateFormat('yyyy-MM-dd').format(date);
+
+      // Create a new map without the userId field
+      Map<String, dynamic> newData =
+          Map.from(doc.data() as Map<dynamic, dynamic>)..remove('userId');
+
+      // Set the 'title' field to the formatted date
+      newData['title'] = formattedDate;
+
+      return newData;
+    }).toList();
 
     //Preparing Habitica Data
     String habits = '';
@@ -111,6 +208,7 @@ class _MentorPageState extends State<MentorPage> {
       'habits': habits,
       'goal': interest,
       'journal': journalDataList.toString(),
+      'usage': phone_usage_data,
     };
     serverurl =
         serverurl ?? 'https://prasannanrobots.pythonanywhere.com/mentor';
