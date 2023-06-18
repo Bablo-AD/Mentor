@@ -3,9 +3,11 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter/services.dart';
 import '../home/home_page.dart';
 import '../journal/journal_page.dart';
-import '../authentication_page.dart';
+import '../setup/authentication_page.dart';
 import 'habitica_integration_page.dart'; // New page for Habitica integration
 import 'package:firebase_auth/firebase_auth.dart';
+import 'tellusmore_page.dart';
+import 'apps_selection_page.dart';
 
 class SettingsPage extends StatefulWidget {
   const SettingsPage({Key? key}) : super(key: key);
@@ -114,6 +116,36 @@ class _SettingsPageState extends State<SettingsPage> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
+                          builder: (context) => AppSelectionPage(),
+                        ),
+                      );
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Color.fromARGB(255, 50, 204, 102),
+                    ),
+                    child: const Text('Edit your home screen apps'),
+                  ),
+                  const SizedBox(height: 16.0),
+                  ElevatedButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => Knowingthestudent(),
+                        ),
+                      );
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Color.fromARGB(255, 50, 204, 102),
+                    ),
+                    child: const Text('Edit your goal and purpose'),
+                  ),
+                  const SizedBox(height: 16.0),
+                  ElevatedButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
                           builder: (context) => HabiticaIntegrationPage(),
                         ),
                       );
@@ -155,7 +187,7 @@ class _SettingsPageState extends State<SettingsPage> {
               label: 'Home',
             ),
             BottomNavigationBarItem(
-              icon: Icon(Icons.notes),
+              icon: Icon(Icons.book),
               label: 'Journal',
             ),
             BottomNavigationBarItem(
