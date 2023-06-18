@@ -127,7 +127,7 @@ class _JournalPageState extends State<JournalPage> {
             label: 'Home',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.notes),
+            icon: Icon(Icons.book),
             label: 'Journal',
           ),
           BottomNavigationBarItem(

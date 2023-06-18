@@ -155,7 +155,7 @@ class _SettingsPageState extends State<SettingsPage> {
               label: 'Home',
             ),
             BottomNavigationBarItem(
-              icon: Icon(Icons.notes),
+              icon: Icon(Icons.book),
               label: 'Journal',
             ),
             BottomNavigationBarItem(

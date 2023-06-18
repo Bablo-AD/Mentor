@@ -6,6 +6,7 @@ import 'package:flutter/services.dart';
 import 'video_page.dart';
 import '../settings/settings_page.dart';
 import '../journal/journal_page.dart';
+import '../journal/journal_editing_page.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'habitica.dart';
@@ -32,6 +33,7 @@ class _MentorPageState extends State<MentorPage> {
   List<Video> videos = [];
   List<Messages> messages_data = [];
   String serverurl = '';
+  late Stream<QuerySnapshot> _journalStream;
 
   Future<void> _loadCompletionFromSharedPreferences() async {
     final storedData = await _storage.read(key: 'completion');
@@ -213,30 +215,30 @@ class _MentorPageState extends State<MentorPage> {
     serverurl =
         serverurl ?? 'https://prasannanrobots.pythonanywhere.com/mentor';
 
-    //try {
-    var __response = await http.post(
-      Uri.parse(serverurl.toString()),
-      headers: {'Content-Type': 'application/json'},
-      body: jsonEncode(data),
-    );
+    try {
+      var __response = await http.post(
+        Uri.parse(serverurl.toString()),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode(data),
+      );
 
-    if (__response.statusCode == 200) {
-      await _storage.write(key: 'completion', value: __response.body);
-      __postprocessdata(__response.body);
+      if (__response.statusCode == 200) {
+        await _storage.write(key: 'completion', value: __response.body);
+        __postprocessdata(__response.body);
+      }
+    } catch (error) {
+      if (this.mounted) {
+        setState(() {
+          result = 'An error occured ${error}';
+        });
+      }
+    } finally {
+      if (this.mounted) {
+        setState(() {
+          isLoading = false;
+        });
+      }
     }
-    //  } catch (error) {
-    //   if (this.mounted) {
-    //     setState(() {
-    //       result = 'An error occured ${error}';
-    //     });
-    //   }
-    //   } finally {
-    if (this.mounted) {
-      setState(() {
-        isLoading = false;
-      });
-    }
-    // }
   }
 
   @override
@@ -268,6 +270,111 @@ class _MentorPageState extends State<MentorPage> {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
+                  const SizedBox(height: 16.0),
+                  StreamBuilder<QuerySnapshot>(
+                    stream: FirebaseFirestore.instance
+                        .collection('journals')
+                        .where('userId', isEqualTo: userId)
+                        .orderBy('title', descending: true)
+                        .snapshots(),
+                    builder: (context, snapshot) {
+                      if (snapshot.hasError) {
+                        return Text('Error: ${snapshot.error}');
+                      }
+
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return Center(
+                          child: CircularProgressIndicator(),
+                        );
+                      }
+
+                      final journalDocs = snapshot.data?.docs;
+
+                      if (journalDocs == null || journalDocs.isEmpty) {
+                        return Text('No journals available.');
+                      }
+
+                      final lastJournalData =
+                          journalDocs[0].data() as Map<String, dynamic>;
+                      final lastJournalTitle =
+                          lastJournalData['title'].toDate().toString();
+                      final lastJournalContent =
+                          lastJournalData['content'] as String;
+
+                      return Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Card(
+                            color: const Color.fromARGB(255, 19, 19, 19),
+                            child: ListTile(
+                              title: Text(
+                                lastJournalTitle,
+                                style: const TextStyle(
+                                  color: Color.fromARGB(255, 50, 204, 102),
+                                ),
+                              ),
+                              subtitle: Text(
+                                lastJournalContent,
+                                style: const TextStyle(
+                                  color: Color.fromARGB(255, 50, 204, 102),
+                                ),
+                              ),
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => JournalEditingPage(
+                                      journalTitle: lastJournalTitle,
+                                      journalContent: lastJournalContent,
+                                      documentId: journalDocs[0].id,
+                                      userId: userId.toString(),
+                                    ),
+                                  ),
+                                );
+                              },
+                            ),
+                          ),
+                        ],
+                      );
+                    },
+                  ),
+                  const SizedBox(height: 16.0),
+                  if (isLoading)
+                    Column(children: [
+                      Center(
+                        child: CircularProgressIndicator(),
+                      ),
+                      const SizedBox(height: 10.0),
+                      Text(
+                          "Note: It might take some time as the AI is in a relationship",
+                          style: TextStyle(
+                              color: Color.fromARGB(255, 50, 204, 102)))
+                    ])
+                  else
+                    GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) =>
+                                    ChatPage(messages: messages_data)),
+                          );
+                        },
+                        child: Card(
+                            color: const Color.fromARGB(255, 19, 19, 19),
+                            child: ListTile(
+                                title: const Text(
+                                  "Mentor: ",
+                                  style: const TextStyle(
+                                    color: Color.fromARGB(255, 50, 204, 102),
+                                  ),
+                                ),
+                                subtitle: Text(result,
+                                    style: const TextStyle(
+                                      color: Color.fromARGB(255, 50, 204, 102),
+                                    ))))),
+                  const SizedBox(height: 16.0),
                   Row(
                     children: [
                       Expanded(
@@ -306,33 +413,6 @@ class _MentorPageState extends State<MentorPage> {
                     ],
                   ),
                   const SizedBox(height: 16.0),
-                  if (isLoading)
-                    const Center(
-                      child: CircularProgressIndicator(),
-                    )
-                  else
-                    GestureDetector(
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) =>
-                                    ChatPage(messages: messages_data)),
-                          );
-                        },
-                        child: Card(
-                            color: const Color.fromARGB(255, 19, 19, 19),
-                            child: ListTile(
-                                title: const Text(
-                                  "Mentor: ",
-                                  style: const TextStyle(
-                                    color: Color.fromARGB(255, 50, 204, 102),
-                                  ),
-                                ),
-                                subtitle: Text(result,
-                                    style: const TextStyle(
-                                      color: Color.fromARGB(255, 50, 204, 102),
-                                    ))))),
                   ListView.builder(
                     physics: const NeverScrollableScrollPhysics(),
                     shrinkWrap: true,
@@ -374,7 +454,7 @@ class _MentorPageState extends State<MentorPage> {
                 label: 'Home',
               ),
               BottomNavigationBarItem(
-                icon: Icon(Icons.notes),
+                icon: Icon(Icons.book),
                 label: 'Journal',
               ),
               BottomNavigationBarItem(
