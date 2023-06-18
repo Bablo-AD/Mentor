@@ -1,33 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:device_apps/device_apps.dart';
 
-class AppsPage extends StatefulWidget {
-  const AppsPage({super.key});
+Future<List<Application>> loadApps() async {
+  List<Application> loaded_apps = await DeviceApps.getInstalledApplications(
+    includeSystemApps: true,
+    onlyAppsWithLaunchIntent: true,
+  );
+  return loaded_apps;
+}
 
+class AppsPage extends StatefulWidget {
+  const AppsPage({super.key, required this.apps});
+  final List<Application> apps;
   @override
   State<AppsPage> createState() => _AppsPageState();
 }
 
 class _AppsPageState extends State<AppsPage> {
-  List<Application> apps = [];
-  @override
-  void initState() {
-    super.initState();
-    loadApps();
-  }
-
-  loadApps() async {
-    List<Application> apps = await DeviceApps.getInstalledApplications(
-      includeSystemApps: true,
-      onlyAppsWithLaunchIntent: true,
-    );
-    apps = apps; //Adding to global variable
-    // for (int i = 0; i < apps.length; i++) {
-    //   Application app = apps[i];
-    //   Text(app.appName);
-    // }
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -40,19 +29,31 @@ class _AppsPageState extends State<AppsPage> {
         body: Column(children: [
           Expanded(
               child: ListView.builder(
-                  itemCount: apps.length,
+                  itemCount: widget.apps.length,
                   itemBuilder: (context, index) {
-                    final Application app = apps[index];
-
-                    return ListTile(
-                      title: Text(
-                        app.appName,
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          color: Color.fromARGB(255, 50, 204, 102),
+                    final Application app = widget.apps[index];
+                    return Column(children: [
+                      ListTile(
+                        tileColor: Color.fromARGB(255, 19, 19, 19),
+                        onTap: () async {
+                          bool isInstalled =
+                              await DeviceApps.isAppInstalled(app.packageName);
+                          if (isInstalled) {
+                            DeviceApps.openApp(app.packageName);
+                          }
+                        },
+                        title: Text(
+                          app.appName,
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: Color.fromARGB(255, 50, 204, 102),
+                          ),
                         ),
                       ),
-                    );
+                      SizedBox(
+                        height: 5,
+                      )
+                    ]);
                   }))
         ]));
   }

@@ -1,6 +1,6 @@
+import 'package:Bablo/settings/settings_page.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'journal/journal_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class SessionManager {
@@ -28,6 +28,16 @@ class _EmailAuthState extends State<EmailAuth> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final FirebaseAuth _auth = FirebaseAuth.instance;
+  pushNextPage(user) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setString('userId', user);
+    await SessionManager.saveLoginState(true);
+
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (context) => SettingsPage()),
+    );
+  }
 
   Future<void> _signIn() async {
     try {
@@ -38,13 +48,7 @@ class _EmailAuthState extends State<EmailAuth> {
       // User sign-in successful
       User? user = userCredential.user;
       if (user != null) {
-        SharedPreferences prefs = await SharedPreferences.getInstance();
-        prefs.setString('userId', user.uid);
-        await SessionManager.saveLoginState(true);
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => JournalPage()),
-        );
+        pushNextPage(user.uid);
       }
     } catch (e) {
       // Handle sign-in errors
@@ -79,13 +83,7 @@ class _EmailAuthState extends State<EmailAuth> {
       // User account creation successful
       User? user = userCredential.user;
       if (user != null) {
-        SharedPreferences prefs = await SharedPreferences.getInstance();
-        prefs.setString('userId', user.uid);
-        await SessionManager.saveLoginState(true);
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => JournalPage()),
-        );
+        pushNextPage(user.uid);
       }
     } catch (e) {
       // Handle sign-up errors

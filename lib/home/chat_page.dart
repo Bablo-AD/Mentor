@@ -108,7 +108,6 @@ class _ChatPageState extends State<ChatPage> {
                   title: Text(
                     message.content,
                     style: TextStyle(
-                      fontWeight: FontWeight.bold,
                       color: Color.fromARGB(255, 50, 204, 102),
                     ),
                   ),
@@ -131,6 +130,8 @@ class _ChatPageState extends State<ChatPage> {
                       color: Color.fromARGB(255, 50, 204, 102),
                     ),
                     decoration: const InputDecoration(
+                      filled: true,
+                      fillColor: Color.fromARGB(255, 19, 19, 19),
                       hintStyle: TextStyle(
                         color: Color.fromARGB(255, 50, 204, 102),
                       ),

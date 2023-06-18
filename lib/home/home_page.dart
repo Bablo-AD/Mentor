@@ -1,3 +1,4 @@
+import 'package:Bablo/home/apps_page.dart';
 import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
@@ -14,6 +15,9 @@ import 'chat_page.dart';
 import 'package:usage_stats/usage_stats.dart';
 import 'dart:io';
 import 'package:intl/intl.dart';
+import 'package:device_apps/device_apps.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import '../settings/apps_selection_page.dart';
 
 class MentorPage extends StatefulWidget {
   const MentorPage({super.key});
@@ -32,10 +36,23 @@ class _MentorPageState extends State<MentorPage> {
   int _selectedIndex = 0;
   List<Video> videos = [];
   List<Messages> messages_data = [];
+  List<Application> apps_data = [];
+  List<Application> selected_apps_data = [];
   String serverurl = '';
-  late Stream<QuerySnapshot> _journalStream;
+  Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
 
   Future<void> _loadCompletionFromSharedPreferences() async {
+    List<Application> apps = await loadApps();
+    apps_data = apps;
+    final SharedPreferences prefs = await _prefs;
+    List<String>? selectedAppNames = prefs.getStringList('selectedApps');
+    if (selectedAppNames != null) {
+      setState(() {
+        selected_apps_data = apps_data
+            .where((app) => selectedAppNames.contains(app.appName))
+            .toList();
+      });
+    }
     final storedData = await _storage.read(key: 'completion');
     String? serverurl = await _storage.read(key: 'server_url');
     serverurl = serverurl;
@@ -44,7 +61,11 @@ class _MentorPageState extends State<MentorPage> {
       if (result.isEmpty || result == '') {
         _emulateRequest();
       } else {
-        __postprocessdata(storedData);
+        try {
+          __postprocessdata(storedData);
+        } catch (error) {
+          _emulateRequest();
+        }
       }
     });
   }
@@ -120,7 +141,6 @@ class _MentorPageState extends State<MentorPage> {
         }
       }
     }
-    print(outputString);
     return outputString;
   }
 
@@ -164,13 +184,15 @@ class _MentorPageState extends State<MentorPage> {
     String? habiticaUserId = await _storage.read(key: 'habitica_user_id');
     String? habiticaApiKey = await _storage.read(key: 'habitica_api_key');
     String? serverurl = await _storage.read(key: 'server_url');
+    String? userGoal = await _storage.read(key: 'userGoal');
+    String? selfPerception = await _storage.read(key: 'selfPerception');
     serverurl = serverurl;
     String phone_usage_data = '';
 
     //Preparing the phone usage data
     if (Platform.isAndroid) {
       String? phone_usage = await getUsage();
-      phone_usage_data = phone_usage!.toString();
+      phone_usage_data = phone_usage.toString();
     }
 
     //Preparing Journal data
@@ -211,6 +233,8 @@ class _MentorPageState extends State<MentorPage> {
       'goal': interest,
       'journal': journalDataList.toString(),
       'usage': phone_usage_data,
+      'usergoal': userGoal.toString(),
+      'selfperception': selfPerception.toString(),
     };
     serverurl =
         serverurl ?? 'https://prasannanrobots.pythonanywhere.com/mentor';
@@ -270,6 +294,53 @@ class _MentorPageState extends State<MentorPage> {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
+                  Card(
+                      color: const Color.fromARGB(255, 19, 19, 19),
+                      child: ListTile(
+                        onLongPress: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => AppSelectionPage()),
+                          );
+                        },
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) =>
+                                    AppsPage(apps: apps_data)),
+                          );
+                        },
+                        title: Text("Apps",
+                            style: TextStyle(
+                                color: Color.fromARGB(255, 50, 204, 102))),
+                        subtitle: ListView.builder(
+                            physics: const NeverScrollableScrollPhysics(),
+                            shrinkWrap: true,
+                            itemCount: selected_apps_data.length,
+                            itemBuilder: (context, index) {
+                              final Application app = selected_apps_data[index];
+                              return ListTile(
+                                tileColor: Color.fromARGB(255, 19, 19, 19),
+                                onTap: () async {
+                                  bool isInstalled =
+                                      await DeviceApps.isAppInstalled(
+                                          app.packageName);
+                                  if (isInstalled) {
+                                    DeviceApps.openApp(app.packageName);
+                                  }
+                                },
+                                title: Text(
+                                  app.appName,
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    color: Color.fromARGB(255, 50, 204, 102),
+                                  ),
+                                ),
+                              );
+                            }),
+                      )),
                   const SizedBox(height: 16.0),
                   StreamBuilder<QuerySnapshot>(
                     stream: FirebaseFirestore.instance
@@ -342,6 +413,7 @@ class _MentorPageState extends State<MentorPage> {
                   const SizedBox(height: 16.0),
                   if (isLoading)
                     Column(children: [
+                      SizedBox(height: 16),
                       Center(
                         child: CircularProgressIndicator(),
                       ),
