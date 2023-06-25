@@ -8,6 +8,7 @@ import 'habitica_integration_page.dart'; // New page for Habitica integration
 import 'package:firebase_auth/firebase_auth.dart';
 import 'tellusmore_page.dart';
 import 'apps_selection_page.dart';
+import 'auto_request.dart';
 
 class SettingsPage extends StatefulWidget {
   const SettingsPage({Key? key}) : super(key: key);
@@ -126,6 +127,23 @@ class _SettingsPageState extends State<SettingsPage> {
                       backgroundColor: const Color.fromARGB(255, 50, 204, 102),
                     ),
                     child: const Text('Edit your home screen apps',
+                        style:
+                            TextStyle(color: Color.fromARGB(255, 19, 19, 19))),
+                  ),
+                  const SizedBox(height: 16.0),
+                  ElevatedButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const AutoRequest(),
+                        ),
+                      );
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color.fromARGB(255, 50, 204, 102),
+                    ),
+                    child: const Text('Set Auto Mentor',
                         style:
                             TextStyle(color: Color.fromARGB(255, 19, 19, 19))),
                   ),

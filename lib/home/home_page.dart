@@ -18,6 +18,8 @@ import 'package:intl/intl.dart';
 import 'package:device_apps/device_apps.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../settings/apps_selection_page.dart';
+import 'data.dart';
+import '../settings/auto_request.dart';
 
 class MentorPage extends StatefulWidget {
   const MentorPage({super.key});
@@ -40,9 +42,9 @@ class _MentorPageState extends State<MentorPage> {
   List<Application> selected_apps_data = [];
   String serverurl = '';
   final Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
+  late ScheduleManager scheduleManager;
 
   List<Application> loadedApps = [];
-
   Future<void> _loadstuffFromSharedPreferences() async {
     if (loadedApps.isEmpty) {
       loadedApps = await loadApps();
@@ -51,6 +53,15 @@ class _MentorPageState extends State<MentorPage> {
     apps_data = loadedApps;
 
     final SharedPreferences prefs = await _prefs;
+    late TimeOfDay defaultTime;
+    final scheduledTime = prefs.getString('scheduledTime');
+    defaultTime = scheduledTime != null
+        ? TimeOfDay.fromDateTime(DateTime.parse(scheduledTime))
+        : TimeOfDay.now();
+
+    scheduleManager = ScheduleManager(callback: _emulateRequest);
+    scheduleManager.scheduleEmulateRequest(defaultTime);
+
     List<String>? selectedAppNames = prefs.getStringList('selectedApps');
     if (selectedAppNames != null) {
       setState(() {
@@ -277,8 +288,15 @@ class _MentorPageState extends State<MentorPage> {
   void initState() {
     super.initState();
     _loadstuffFromSharedPreferences();
+
+    // scheduleManager = ScheduleManager(callback: _emulateRequest);
   }
 
+  // void _setScheduledTime(TimeOfDay selectedTime) {
+  //   setState(() {
+  //     scheduleManager.scheduleEmulateRequest(selectedTime);
+  //   });
+  // }
   @override
   Widget build(BuildContext context) {
     return AnnotatedRegion<SystemUiOverlayStyle>(
@@ -427,8 +445,7 @@ class _MentorPageState extends State<MentorPage> {
                         child: CircularProgressIndicator(),
                       ),
                       SizedBox(height: 10.0),
-                      Text(
-                          "Note: It might take some time as the AI is in a relationship",
+                      Text("YOLO",
                           style: TextStyle(
                               color: Color.fromARGB(255, 50, 204, 102)))
                     ])
@@ -443,18 +460,33 @@ class _MentorPageState extends State<MentorPage> {
                           );
                         },
                         child: Card(
-                            color: const Color.fromARGB(255, 19, 19, 19),
-                            child: ListTile(
-                                title: const Text(
+                          color: const Color.fromARGB(255, 19, 19, 19),
+                          child: ListTile(
+                            title: Row(
+                              children: [
+                                IconButton(
+                                  onPressed: () {
+                                    _emulateRequest();
+                                  },
+                                  icon: const Icon(Icons.refresh,
+                                      color: Color.fromARGB(255, 50, 204, 102)),
+                                ),
+                                const Text(
                                   "Mentor: ",
                                   style: TextStyle(
                                     color: Color.fromARGB(255, 50, 204, 102),
                                   ),
                                 ),
-                                subtitle: Text(result,
-                                    style: const TextStyle(
-                                      color: Color.fromARGB(255, 50, 204, 102),
-                                    ))))),
+                              ],
+                            ),
+                            subtitle: Text(
+                              result,
+                              style: const TextStyle(
+                                color: Color.fromARGB(255, 50, 204, 102),
+                              ),
+                            ),
+                          ),
+                        )),
                   const SizedBox(height: 16.0),
                   Row(
                     children: [
@@ -571,37 +603,5 @@ class _MentorPageState extends State<MentorPage> {
             },
           ),
         ));
-  }
-}
-
-class Video {
-  final String title;
-  final String videoId;
-  final String videoDescription;
-
-  Video(
-      {required this.title,
-      required this.videoId,
-      required this.videoDescription});
-
-  factory Video.fromJson(Map<String, dynamic> json) {
-    return Video(
-      title: json['title'].toString() ?? '',
-      videoId: json['videoId'].toString() ?? '',
-      videoDescription: json['videoDescription'].toString() ?? '',
-    );
-  }
-}
-
-class Messages {
-  final String role;
-  final String content;
-
-  Messages({required this.role, required this.content});
-  Map<String, dynamic> toJson() {
-    return {
-      'role': role,
-      'content': content,
-    };
   }
 }
