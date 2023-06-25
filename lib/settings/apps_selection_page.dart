@@ -17,6 +17,7 @@ class _AppSelectionPageState extends State<AppSelectionPage> {
       includeSystemApps: true,
       onlyAppsWithLaunchIntent: true,
     );
+    loadedApps.sort((a, b) => a.appName.compareTo(b.appName));
     setState(() {
       installedApps = loadedApps;
     });
@@ -71,25 +72,31 @@ class _AppSelectionPageState extends State<AppSelectionPage> {
                 final Application app = installedApps[index];
                 return Column(
                   children: [
-                    CheckboxListTile(
-                      activeColor: const Color.fromARGB(255, 50, 204, 102),
-                      tileColor: const Color.fromARGB(255, 19, 19, 19),
-                      title: Text(
-                        app.appName,
-                        style:
-                            const TextStyle(color: Color.fromARGB(255, 50, 204, 102)),
-                      ),
-                      value: selectedApps.contains(app),
-                      onChanged: (bool? value) {
-                        setState(() {
-                          if (value != null && value) {
-                            selectedApps.add(app);
-                          } else {
-                            selectedApps.remove(app);
-                          }
-                        });
-                      },
-                    ),
+                    Theme(
+                        data: ThemeData(
+                          unselectedWidgetColor:
+                              Color.fromARGB(255, 50, 204, 102),
+                        ),
+                        child: CheckboxListTile(
+                          activeColor: const Color.fromARGB(255, 50, 204, 102),
+                          checkColor: const Color.fromARGB(255, 19, 19, 19),
+                          tileColor: const Color.fromARGB(255, 19, 19, 19),
+                          title: Text(
+                            app.appName,
+                            style: const TextStyle(
+                                color: Color.fromARGB(255, 50, 204, 102)),
+                          ),
+                          value: selectedApps.contains(app),
+                          onChanged: (bool? value) {
+                            setState(() {
+                              if (value != null && value) {
+                                selectedApps.add(app);
+                              } else {
+                                selectedApps.remove(app);
+                              }
+                            });
+                          },
+                        )),
                     const SizedBox(height: 10),
                   ],
                 );
@@ -99,6 +106,9 @@ class _AppSelectionPageState extends State<AppSelectionPage> {
         ],
       ),
       floatingActionButton: FloatingActionButton(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+        backgroundColor: Color.fromARGB(255, 50, 204, 102),
+        foregroundColor: Color.fromARGB(255, 19, 19, 19),
         child: const Icon(Icons.check),
         onPressed: () async {
           await _saveSelectedApps();

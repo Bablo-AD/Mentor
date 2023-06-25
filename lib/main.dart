@@ -25,7 +25,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Mentor',
       theme: ThemeData(primarySwatch: Colors.green, fontFamily: 'Monospace'),
-      home: isLoggedIn ? const JournalPage() : const EmailAuth(),
+      home: isLoggedIn ? const MentorPage() : const EmailAuth(),
       routes: {
         '/settings': (context) => const SettingsPage(),
         '/journal': (context) => const JournalPage(),

@@ -108,7 +108,9 @@ class _SettingsPageState extends State<SettingsPage> {
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color.fromARGB(255, 50, 204, 102),
                     ),
-                    child: const Text('Save'),
+                    child: const Text('Save',
+                        style:
+                            TextStyle(color: Color.fromARGB(255, 19, 19, 19))),
                   ),
                   const SizedBox(height: 16.0),
                   ElevatedButton(
@@ -123,7 +125,9 @@ class _SettingsPageState extends State<SettingsPage> {
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color.fromARGB(255, 50, 204, 102),
                     ),
-                    child: const Text('Edit your home screen apps'),
+                    child: const Text('Edit your home screen apps',
+                        style:
+                            TextStyle(color: Color.fromARGB(255, 19, 19, 19))),
                   ),
                   const SizedBox(height: 16.0),
                   ElevatedButton(
@@ -138,7 +142,9 @@ class _SettingsPageState extends State<SettingsPage> {
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color.fromARGB(255, 50, 204, 102),
                     ),
-                    child: const Text('Edit your goal and purpose'),
+                    child: const Text('Edit your goal and purpose',
+                        style:
+                            TextStyle(color: Color.fromARGB(255, 19, 19, 19))),
                   ),
                   const SizedBox(height: 16.0),
                   ElevatedButton(
@@ -153,7 +159,9 @@ class _SettingsPageState extends State<SettingsPage> {
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color.fromARGB(255, 50, 204, 102),
                     ),
-                    child: const Text('Connect with Habitica'),
+                    child: const Text('Connect with Habitica',
+                        style:
+                            TextStyle(color: Color.fromARGB(255, 19, 19, 19))),
                   ),
                   const SizedBox(height: 16.0),
                   ElevatedButton(
@@ -173,7 +181,9 @@ class _SettingsPageState extends State<SettingsPage> {
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.red,
                     ),
-                    child: const Text('Sign Out'),
+                    child: const Text('Sign Out',
+                        style:
+                            TextStyle(color: Color.fromARGB(255, 19, 19, 19))),
                   ),
                 ],
               ),

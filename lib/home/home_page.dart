@@ -41,9 +41,15 @@ class _MentorPageState extends State<MentorPage> {
   String serverurl = '';
   final Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
 
-  Future<void> _loadCompletionFromSharedPreferences() async {
-    List<Application> apps = await loadApps();
-    apps_data = apps;
+  List<Application> loadedApps = [];
+
+  Future<void> _loadstuffFromSharedPreferences() async {
+    if (loadedApps.isEmpty) {
+      loadedApps = await loadApps();
+    }
+
+    apps_data = loadedApps;
+
     final SharedPreferences prefs = await _prefs;
     List<String>? selectedAppNames = prefs.getStringList('selectedApps');
     if (selectedAppNames != null) {
@@ -53,9 +59,11 @@ class _MentorPageState extends State<MentorPage> {
             .toList();
       });
     }
+
     final storedData = await _storage.read(key: 'completion');
     String? serverurl = await _storage.read(key: 'server_url');
     serverurl = serverurl;
+
     setState(() {
       result = storedData ?? '';
       if (result.isEmpty || result == '') {
@@ -105,8 +113,8 @@ class _MentorPageState extends State<MentorPage> {
         builder: (BuildContext context) {
           return AlertDialog(
             title: const Text('Permission Required'),
-            content:
-                const Text('Please grant the usage permission to track app usage.'),
+            content: const Text(
+                'Please grant the usage permission to track app usage.'),
             actions: [
               TextButton(
                 child: const Text('OK'),
@@ -200,8 +208,8 @@ class _MentorPageState extends State<MentorPage> {
         .collection('journals')
         .where('userId', isEqualTo: userId)
         .where('title',
-            isGreaterThan:
-                Timestamp.fromDate(DateTime.now().subtract(const Duration(days: 3))))
+            isGreaterThan: Timestamp.fromDate(
+                DateTime.now().subtract(const Duration(days: 3))))
         .get();
     List<QueryDocumentSnapshot> documents = snapshot.docs;
     List<Map<String, dynamic>> journalDataList = documents.map((doc) {
@@ -268,7 +276,7 @@ class _MentorPageState extends State<MentorPage> {
   @override
   void initState() {
     super.initState();
-    _loadCompletionFromSharedPreferences();
+    _loadstuffFromSharedPreferences();
   }
 
   @override
@@ -322,7 +330,8 @@ class _MentorPageState extends State<MentorPage> {
                             itemBuilder: (context, index) {
                               final Application app = selected_apps_data[index];
                               return ListTile(
-                                tileColor: const Color.fromARGB(255, 19, 19, 19),
+                                tileColor:
+                                    const Color.fromARGB(255, 19, 19, 19),
                                 onTap: () async {
                                   bool isInstalled =
                                       await DeviceApps.isAppInstalled(
@@ -541,16 +550,22 @@ class _MentorPageState extends State<MentorPage> {
             onTap: (int index) {
               switch (index) {
                 case 0:
-                  Navigator.pushReplacement(context,
-                      MaterialPageRoute(builder: (context) => const MentorPage()));
+                  Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const MentorPage()));
                   break;
                 case 1:
-                  Navigator.pushReplacement(context,
-                      MaterialPageRoute(builder: (context) => const JournalPage()));
+                  Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const JournalPage()));
                   break;
                 case 2:
-                  Navigator.pushReplacement(context,
-                      MaterialPageRoute(builder: (context) => const SettingsPage()));
+                  Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const SettingsPage()));
                   break;
               }
             },
