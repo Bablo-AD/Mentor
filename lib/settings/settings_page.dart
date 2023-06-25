@@ -17,7 +17,7 @@ class SettingsPage extends StatefulWidget {
 }
 
 class _SettingsPageState extends State<SettingsPage> {
-  int _selectedIndex = 2;
+  final int _selectedIndex = 2;
   final _formKey = GlobalKey<FormState>();
   final _storage = const FlutterSecureStorage();
 
@@ -106,7 +106,7 @@ class _SettingsPageState extends State<SettingsPage> {
                   ElevatedButton(
                     onPressed: _saveSettings,
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Color.fromARGB(255, 50, 204, 102),
+                      backgroundColor: const Color.fromARGB(255, 50, 204, 102),
                     ),
                     child: const Text('Save'),
                   ),
@@ -116,12 +116,12 @@ class _SettingsPageState extends State<SettingsPage> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => AppSelectionPage(),
+                          builder: (context) => const AppSelectionPage(),
                         ),
                       );
                     },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Color.fromARGB(255, 50, 204, 102),
+                      backgroundColor: const Color.fromARGB(255, 50, 204, 102),
                     ),
                     child: const Text('Edit your home screen apps'),
                   ),
@@ -131,12 +131,12 @@ class _SettingsPageState extends State<SettingsPage> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => Knowingthestudent(),
+                          builder: (context) => const Knowingthestudent(),
                         ),
                       );
                     },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Color.fromARGB(255, 50, 204, 102),
+                      backgroundColor: const Color.fromARGB(255, 50, 204, 102),
                     ),
                     child: const Text('Edit your goal and purpose'),
                   ),
@@ -146,12 +146,12 @@ class _SettingsPageState extends State<SettingsPage> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => HabiticaIntegrationPage(),
+                          builder: (context) => const HabiticaIntegrationPage(),
                         ),
                       );
                     },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Color.fromARGB(255, 50, 204, 102),
+                      backgroundColor: const Color.fromARGB(255, 50, 204, 102),
                     ),
                     child: const Text('Connect with Habitica'),
                   ),
@@ -164,7 +164,7 @@ class _SettingsPageState extends State<SettingsPage> {
                         Navigator.pushReplacement(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => EmailAuth(),
+                            builder: (context) => const EmailAuth(),
                           ),
                         );
                       });
@@ -196,7 +196,7 @@ class _SettingsPageState extends State<SettingsPage> {
             ),
           ],
           currentIndex: _selectedIndex,
-          selectedItemColor: Color.fromARGB(255, 50, 204, 102),
+          selectedItemColor: const Color.fromARGB(255, 50, 204, 102),
           unselectedItemColor: Colors.white,
           backgroundColor: Colors.black,
           onTap: (int index) {
@@ -205,7 +205,7 @@ class _SettingsPageState extends State<SettingsPage> {
                 Navigator.pushReplacement(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => MentorPage(),
+                    builder: (context) => const MentorPage(),
                   ),
                 );
                 break;
@@ -213,7 +213,7 @@ class _SettingsPageState extends State<SettingsPage> {
                 Navigator.pushReplacement(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => JournalPage(),
+                    builder: (context) => const JournalPage(),
                   ),
                 );
                 break;
@@ -221,7 +221,7 @@ class _SettingsPageState extends State<SettingsPage> {
                 Navigator.pushReplacement(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => SettingsPage(),
+                    builder: (context) => const SettingsPage(),
                   ),
                 );
                 break;

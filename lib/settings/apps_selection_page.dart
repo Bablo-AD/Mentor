@@ -3,7 +3,7 @@ import 'package:device_apps/device_apps.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AppSelectionPage extends StatefulWidget {
-  AppSelectionPage({super.key});
+  const AppSelectionPage({super.key});
 
   @override
   _AppSelectionPageState createState() => _AppSelectionPageState();
@@ -13,18 +13,18 @@ class _AppSelectionPageState extends State<AppSelectionPage> {
   List<Application> selectedApps = [];
   List<Application> installedApps = [];
   loadApps() async {
-    List<Application> loaded_apps = await DeviceApps.getInstalledApplications(
+    List<Application> loadedApps = await DeviceApps.getInstalledApplications(
       includeSystemApps: true,
       onlyAppsWithLaunchIntent: true,
     );
     setState(() {
-      installedApps = loaded_apps;
+      installedApps = loadedApps;
     });
 
     _loadSelectedApps();
   }
 
-  Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
+  final Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
 
   @override
   void initState() {
@@ -72,12 +72,12 @@ class _AppSelectionPageState extends State<AppSelectionPage> {
                 return Column(
                   children: [
                     CheckboxListTile(
-                      activeColor: Color.fromARGB(255, 50, 204, 102),
-                      tileColor: Color.fromARGB(255, 19, 19, 19),
+                      activeColor: const Color.fromARGB(255, 50, 204, 102),
+                      tileColor: const Color.fromARGB(255, 19, 19, 19),
                       title: Text(
                         app.appName,
                         style:
-                            TextStyle(color: Color.fromARGB(255, 50, 204, 102)),
+                            const TextStyle(color: Color.fromARGB(255, 50, 204, 102)),
                       ),
                       value: selectedApps.contains(app),
                       onChanged: (bool? value) {
@@ -90,7 +90,7 @@ class _AppSelectionPageState extends State<AppSelectionPage> {
                         });
                       },
                     ),
-                    SizedBox(height: 10),
+                    const SizedBox(height: 10),
                   ],
                 );
               },
@@ -99,7 +99,7 @@ class _AppSelectionPageState extends State<AppSelectionPage> {
         ],
       ),
       floatingActionButton: FloatingActionButton(
-        child: Icon(Icons.check),
+        child: const Icon(Icons.check),
         onPressed: () async {
           await _saveSelectedApps();
           Navigator.of(context).pop();

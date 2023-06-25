@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:device_apps/device_apps.dart';
 
 Future<List<Application>> loadApps() async {
-  List<Application> loaded_apps = await DeviceApps.getInstalledApplications(
+  List<Application> loadedApps = await DeviceApps.getInstalledApplications(
     includeSystemApps: true,
     onlyAppsWithLaunchIntent: true,
   );
-  return loaded_apps;
+  return loadedApps;
 }
 
 class AppsPage extends StatefulWidget {
@@ -34,7 +34,7 @@ class _AppsPageState extends State<AppsPage> {
                     final Application app = widget.apps[index];
                     return Column(children: [
                       ListTile(
-                        tileColor: Color.fromARGB(255, 19, 19, 19),
+                        tileColor: const Color.fromARGB(255, 19, 19, 19),
                         onTap: () async {
                           bool isInstalled =
                               await DeviceApps.isAppInstalled(app.packageName);
@@ -44,13 +44,13 @@ class _AppsPageState extends State<AppsPage> {
                         },
                         title: Text(
                           app.appName,
-                          style: TextStyle(
+                          style: const TextStyle(
                             fontWeight: FontWeight.bold,
                             color: Color.fromARGB(255, 50, 204, 102),
                           ),
                         ),
                       ),
-                      SizedBox(
+                      const SizedBox(
                         height: 5,
                       )
                     ]);

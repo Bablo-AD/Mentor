@@ -6,7 +6,7 @@ class VideoPage extends StatelessWidget {
   final String videoId;
   final String description;
 
-  VideoPage({required this.videoId, required this.description});
+  const VideoPage({super.key, required this.videoId, required this.description});
 
   @override
   Widget build(BuildContext context) {
@@ -34,10 +34,10 @@ class VideoPage extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     IconButton(
-                      icon: Icon(Icons.open_in_browser,
+                      icon: const Icon(Icons.open_in_browser,
                           color: Color.fromARGB(255, 50, 204, 102)),
                       onPressed: () {
-                        _launchURL(this.videoId);
+                        _launchURL(videoId);
                       },
                     ),
                     const SizedBox(
@@ -46,13 +46,13 @@ class VideoPage extends StatelessWidget {
                     YoutubePlayer(
                       controller: youtubePlayerController,
                       showVideoProgressIndicator: true,
-                      progressIndicatorColor: Color.fromARGB(255, 50, 204, 102),
+                      progressIndicatorColor: const Color.fromARGB(255, 50, 204, 102),
                     ),
                     const SizedBox(height: 16.0),
                     Text(
-                      this.description,
+                      description,
                       style:
-                          TextStyle(color: Color.fromARGB(255, 50, 204, 102)),
+                          const TextStyle(color: Color.fromARGB(255, 50, 204, 102)),
                     ),
                   ])),
         ));

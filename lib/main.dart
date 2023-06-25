@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'home/home_page.dart';
-import 'home/apps_page.dart';
 import 'settings/settings_page.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'journal/journal_page.dart';
@@ -26,7 +25,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Mentor',
       theme: ThemeData(primarySwatch: Colors.green, fontFamily: 'Monospace'),
-      home: isLoggedIn ? JournalPage() : EmailAuth(),
+      home: isLoggedIn ? const JournalPage() : const EmailAuth(),
       routes: {
         '/settings': (context) => const SettingsPage(),
         '/journal': (context) => const JournalPage(),

@@ -1,4 +1,3 @@
-import 'package:Bablo/journal/journal_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
@@ -11,9 +10,32 @@ class Knowingthestudent extends StatefulWidget {
 
 class _KnowingthestudentState extends State<Knowingthestudent> {
   final _formKey = GlobalKey<FormState>();
-  final storage = FlutterSecureStorage();
+  final storage = const FlutterSecureStorage();
   String userGoal = '';
   String selfPerception = '';
+
+  @override
+  void initState() {
+    super.initState();
+    loadUserData();
+  }
+
+  void loadUserData() async {
+    String? loadedUserGoal = await storage.read(key: 'userGoal');
+    String? loadedSelfPerception = await storage.read(key: 'selfPerception');
+
+    if (loadedUserGoal != null) {
+      setState(() {
+        userGoal = loadedUserGoal;
+      });
+    }
+
+    if (loadedSelfPerception != null) {
+      setState(() {
+        selfPerception = loadedSelfPerception;
+      });
+    }
+  }
 
   void saveUserData() async {
     if (_formKey.currentState!.validate()) {
@@ -42,11 +64,11 @@ class _KnowingthestudentState extends State<Knowingthestudent> {
         key: _formKey,
         child: Column(
           children: [
-            Text(
+            const Text(
               "What is your goal or your purpose?",
               style: TextStyle(color: Color.fromARGB(255, 50, 204, 102)),
             ),
-            SizedBox(height: 10),
+            const SizedBox(height: 10),
             TextFormField(
               validator: (value) {
                 if (value == null || value.isEmpty) {
@@ -54,10 +76,10 @@ class _KnowingthestudentState extends State<Knowingthestudent> {
                 }
                 return null; // Return null if the value is valid
               },
-              style: TextStyle(color: Color.fromARGB(255, 50, 204, 102)),
+              style: const TextStyle(color: Color.fromARGB(255, 50, 204, 102)),
               maxLines: null,
               keyboardType: TextInputType.multiline,
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 filled: true,
                 fillColor: Color.fromARGB(255, 19, 19, 19),
                 labelText: 'Your Goal',
@@ -68,13 +90,14 @@ class _KnowingthestudentState extends State<Knowingthestudent> {
                   userGoal = value;
                 });
               },
+              initialValue: userGoal, // Set the initial value
             ),
-            SizedBox(height: 16),
-            Text(
+            const SizedBox(height: 16),
+            const Text(
               "What do you think about yourself?",
               style: TextStyle(color: Color.fromARGB(255, 50, 204, 102)),
             ),
-            SizedBox(height: 10),
+            const SizedBox(height: 10),
             TextFormField(
               validator: (value) {
                 if (value == null || value.isEmpty) {
@@ -82,10 +105,10 @@ class _KnowingthestudentState extends State<Knowingthestudent> {
                 }
                 return null; // Return null if the value is valid
               },
-              style: TextStyle(color: Color.fromARGB(255, 50, 204, 102)),
+              style: const TextStyle(color: Color.fromARGB(255, 50, 204, 102)),
               maxLines: null,
               keyboardType: TextInputType.multiline,
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 filled: true,
                 fillColor: Color.fromARGB(255, 19, 19, 19),
                 labelText: 'Self-Perception',
@@ -96,11 +119,12 @@ class _KnowingthestudentState extends State<Knowingthestudent> {
                   selfPerception = value;
                 });
               },
+              initialValue: selfPerception, // Set the initial value
             ),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
             ElevatedButton(
               onPressed: saveUserData,
-              child: Text('Save'),
+              child: const Text('Save'),
             ),
           ],
         ),

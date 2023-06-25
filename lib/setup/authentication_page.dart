@@ -18,7 +18,7 @@ class SessionManager {
 }
 
 class EmailAuth extends StatefulWidget {
-  const EmailAuth({Key? key});
+  const EmailAuth({super.key});
 
   @override
   _EmailAuthState createState() => _EmailAuthState();
@@ -35,7 +35,7 @@ class _EmailAuthState extends State<EmailAuth> {
 
     Navigator.pushReplacement(
       context,
-      MaterialPageRoute(builder: (context) => SettingsPage()),
+      MaterialPageRoute(builder: (context) => const SettingsPage()),
     );
   }
 
@@ -128,7 +128,8 @@ class _EmailAuthState extends State<EmailAuth> {
             children: [
               TextField(
                 controller: _emailController,
-                style: TextStyle(color: Color.fromARGB(255, 50, 204, 102)),
+                style:
+                    const TextStyle(color: Color.fromARGB(255, 50, 204, 102)),
                 decoration: const InputDecoration(
                   filled: true,
                   fillColor: Color.fromARGB(255, 19, 19, 19),
@@ -140,7 +141,8 @@ class _EmailAuthState extends State<EmailAuth> {
               const SizedBox(height: 8.0),
               TextField(
                 controller: _passwordController,
-                style: TextStyle(color: Color.fromARGB(255, 50, 204, 102)),
+                style:
+                    const TextStyle(color: Color.fromARGB(255, 50, 204, 102)),
                 decoration: const InputDecoration(
                   filled: true,
                   fillColor: Color.fromARGB(255, 19, 19, 19),
@@ -152,13 +154,13 @@ class _EmailAuthState extends State<EmailAuth> {
               ),
               const SizedBox(height: 16.0),
               ElevatedButton(
-                child: const Text('Sign In'),
                 onPressed: _signIn,
+                child: const Text('Sign In'),
               ),
               const SizedBox(height: 8.0),
               ElevatedButton(
-                child: const Text('Sign Up'),
                 onPressed: _signUp,
+                child: const Text('Sign Up'),
               ),
             ],
           ),

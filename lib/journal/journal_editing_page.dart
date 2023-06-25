@@ -33,7 +33,6 @@ class _JournalEditingPageState extends State<JournalEditingPage> {
     } else {
       journalTitle = widget.journalTitle;
     }
-    ;
 
     journalContent = widget.journalContent;
     _contentController = TextEditingController(text: journalContent);
@@ -58,7 +57,7 @@ class _JournalEditingPageState extends State<JournalEditingPage> {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Saved!')),
       );
-      if (this.mounted) {
+      if (mounted) {
         setState(() {
           Navigator.pop(context);
         });
@@ -72,7 +71,7 @@ class _JournalEditingPageState extends State<JournalEditingPage> {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Journal deleted!')),
       );
-      if (this.mounted) {
+      if (mounted) {
         setState(() {
           Navigator.pop(context);
         });
@@ -107,7 +106,7 @@ class _JournalEditingPageState extends State<JournalEditingPage> {
                     onPressed: () {
                       _deleteJournal(widget.documentId);
                     },
-                    icon: Icon(Icons.delete),
+                    icon: const Icon(Icons.delete),
                     color: Colors.red,
                   ),
                 ],
@@ -121,7 +120,7 @@ class _JournalEditingPageState extends State<JournalEditingPage> {
                     const TextStyle(color: Color.fromARGB(255, 50, 204, 102)),
                 decoration: const InputDecoration(
                   filled: true,
-                  fillColor: const Color.fromARGB(255, 19, 19, 19),
+                  fillColor: Color.fromARGB(255, 19, 19, 19),
                   border: OutlineInputBorder(),
                 ),
                 onChanged: (value) {

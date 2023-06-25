@@ -13,8 +13,8 @@ class HabiticaIntegrationPage extends StatefulWidget {
 class _HabiticaIntegrationPageState extends State<HabiticaIntegrationPage> {
   final _storage = const FlutterSecureStorage();
   final _formKey = GlobalKey<FormState>();
-  TextEditingController _habiticaUserIdController = TextEditingController();
-  TextEditingController _habiticaApiKeyController = TextEditingController();
+  final TextEditingController _habiticaUserIdController = TextEditingController();
+  final TextEditingController _habiticaApiKeyController = TextEditingController();
   void _saveSettings() async {
     if (_formKey.currentState!.validate()) {
       // Retrieve the input values
@@ -102,7 +102,7 @@ class _HabiticaIntegrationPageState extends State<HabiticaIntegrationPage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                Text(
+                const Text(
                   'What is Habitica?',
                   style: TextStyle(
                     color: Color.fromARGB(255, 50, 204, 102),
@@ -111,12 +111,12 @@ class _HabiticaIntegrationPageState extends State<HabiticaIntegrationPage> {
                   ),
                 ),
                 const SizedBox(height: 8.0),
-                Text(
+                const Text(
                   'Habitica is a habit-tracking app that helps you improve your productivity and turn your tasks and goals into a game. To connect with Habitica, you need to provide your Habitica User ID and API Key.',
                   style: TextStyle(color: Color.fromARGB(255, 50, 204, 102)),
                 ),
                 const SizedBox(height: 16.0),
-                Text(
+                const Text(
                   "To find your API Token",
                   style: TextStyle(
                     color: Color.fromARGB(255, 50, 204, 102),
@@ -125,12 +125,12 @@ class _HabiticaIntegrationPageState extends State<HabiticaIntegrationPage> {
                   ),
                 ),
                 const SizedBox(height: 8.0),
-                Text(
+                const Text(
                   '1. For the website: User Icon > Settings > API.',
                   style: TextStyle(color: Color.fromARGB(255, 50, 204, 102)),
                 ),
                 const SizedBox(height: 8.0),
-                Text(
+                const Text(
                   '2. For iOS/Android App: Menu > API > API Token (tap on it to copy it to your clipboard).',
                   style: TextStyle(color: Color.fromARGB(255, 50, 204, 102)),
                 ),
@@ -190,7 +190,7 @@ class _HabiticaIntegrationPageState extends State<HabiticaIntegrationPage> {
                     _saveSettings();
                   },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Color.fromARGB(255, 50, 204, 102),
+                    backgroundColor: const Color.fromARGB(255, 50, 204, 102),
                   ),
                   child: const Text('Save'),
                 ),
