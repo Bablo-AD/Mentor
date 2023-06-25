@@ -2,6 +2,7 @@ import 'package:Bablo/settings/settings_page.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'setup_roller.dart';
 
 class SessionManager {
   static const String loggedInKey = 'loggedIn';
@@ -18,7 +19,7 @@ class SessionManager {
 }
 
 class EmailAuth extends StatefulWidget {
-  const EmailAuth({Key? key});
+  const EmailAuth({super.key});
 
   @override
   _EmailAuthState createState() => _EmailAuthState();
@@ -32,11 +33,6 @@ class _EmailAuthState extends State<EmailAuth> {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     prefs.setString('userId', user);
     await SessionManager.saveLoginState(true);
-
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(builder: (context) => SettingsPage()),
-    );
   }
 
   Future<void> _signIn() async {
@@ -48,7 +44,11 @@ class _EmailAuthState extends State<EmailAuth> {
       // User sign-in successful
       User? user = userCredential.user;
       if (user != null) {
-        pushNextPage(user.uid);
+        await pushNextPage(user.uid);
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const SettingsPage()),
+        );
       }
     } catch (e) {
       // Handle sign-in errors
@@ -83,7 +83,11 @@ class _EmailAuthState extends State<EmailAuth> {
       // User account creation successful
       User? user = userCredential.user;
       if (user != null) {
-        pushNextPage(user.uid);
+        await pushNextPage(user.uid);
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const SetupPage()),
+        );
       }
     } catch (e) {
       // Handle sign-up errors
@@ -128,7 +132,8 @@ class _EmailAuthState extends State<EmailAuth> {
             children: [
               TextField(
                 controller: _emailController,
-                style: TextStyle(color: Color.fromARGB(255, 50, 204, 102)),
+                style:
+                    const TextStyle(color: Color.fromARGB(255, 50, 204, 102)),
                 decoration: const InputDecoration(
                   filled: true,
                   fillColor: Color.fromARGB(255, 19, 19, 19),
@@ -140,7 +145,8 @@ class _EmailAuthState extends State<EmailAuth> {
               const SizedBox(height: 8.0),
               TextField(
                 controller: _passwordController,
-                style: TextStyle(color: Color.fromARGB(255, 50, 204, 102)),
+                style:
+                    const TextStyle(color: Color.fromARGB(255, 50, 204, 102)),
                 decoration: const InputDecoration(
                   filled: true,
                   fillColor: Color.fromARGB(255, 19, 19, 19),
@@ -152,13 +158,13 @@ class _EmailAuthState extends State<EmailAuth> {
               ),
               const SizedBox(height: 16.0),
               ElevatedButton(
-                child: const Text('Sign In'),
                 onPressed: _signIn,
+                child: const Text('Sign In'),
               ),
               const SizedBox(height: 8.0),
               ElevatedButton(
-                child: const Text('Sign Up'),
                 onPressed: _signUp,
+                child: const Text('Sign Up'),
               ),
             ],
           ),

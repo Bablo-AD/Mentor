@@ -11,9 +11,9 @@ class HabiticaData {
   late Map<String, String> header;
 
   HabiticaData(this.user_id, this.api_key) {
-    this.api_url = Uri.parse('https://habitica.com/api/v3');
-    this.habitica_session = http.Client();
-    this.header = {
+    api_url = Uri.parse('https://habitica.com/api/v3');
+    habitica_session = http.Client();
+    header = {
       "x-api-user": user_id,
       "x-api-key": api_key,
       "Content-Type": "application/json"
@@ -36,7 +36,7 @@ class HabiticaData {
   Future<List<List<dynamic>>> getUserData() async {
     final response = await habitica_session.get(
         Uri.parse('https://habitica.com/export/history.csv'),
-        headers: this.header);
+        headers: header);
 
     if (response.statusCode != 200) {
       throw Exception('Failed to load user data: ${response.statusCode}');
@@ -53,21 +53,21 @@ class HabiticaData {
     csvFile.sort((a, b) => DateTime.parse(a[1] as String)
         .compareTo(DateTime.parse(b[1] as String)));
 
-    this.csv_file = csvFile;
+    csv_file = csvFile;
 
     return csv_file;
   }
 
-  List<List<dynamic>> getDate(String target_date) {
+  List<List<dynamic>> getDate(String targetDate) {
     final filteredData = csv_file
-        .where((row) => (row[1] as String).startsWith(target_date))
+        .where((row) => (row[1] as String).startsWith(targetDate))
         .toList();
     return filteredData;
   }
 
-  List getPastDates(String target_date, int num_days) {
-    final targetDate = DateFormat('yyyy-MM-dd').parse(target_date);
-    final startDate = targetDate.subtract(Duration(days: num_days));
+  List getPastDates(String targetDateString, int numDays) {
+    final targetDate = DateFormat('yyyy-MM-dd').parse(targetDateString);
+    final startDate = targetDate.subtract(Duration(days: numDays));
 
     final filteredData = csv_file.where((row) {
       final rowDate = DateFormat('yyyy-MM-dd').parse(row[1] as String);

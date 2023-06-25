@@ -12,7 +12,7 @@ class ChatPage extends StatefulWidget {
 }
 
 class _ChatPageState extends State<ChatPage> {
-  ScrollController _scrollController = ScrollController();
+  final ScrollController _scrollController = ScrollController();
   TextEditingController textEditingController = TextEditingController();
   final _storage = const FlutterSecureStorage();
   String serverurl = '';
@@ -31,7 +31,7 @@ class _ChatPageState extends State<ChatPage> {
             })
         .toList();
     String? serverurl = await _storage.read(key: 'server_url');
-    String url = serverurl! + '/messages';
+    String url = '${serverurl!}/messages';
     final response = await http.post(
       Uri.parse(url),
       headers: {'Content-Type': 'application/json'},
@@ -81,7 +81,7 @@ class _ChatPageState extends State<ChatPage> {
   void initState() {
     super.initState();
     // Scroll to the last message when the page is loaded
-    WidgetsBinding.instance?.addPostFrameCallback((_) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
       _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
     });
   }
@@ -107,13 +107,13 @@ class _ChatPageState extends State<ChatPage> {
                 return ListTile(
                   title: Text(
                     message.content,
-                    style: TextStyle(
+                    style: const TextStyle(
                       color: Color.fromARGB(255, 50, 204, 102),
                     ),
                   ),
                   tileColor: message.role == 'user'
                       ? Colors.black
-                      : Color.fromARGB(255, 19, 19, 19),
+                      : const Color.fromARGB(255, 19, 19, 19),
                 );
               },
             ),

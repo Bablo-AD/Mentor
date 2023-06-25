@@ -6,14 +6,14 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'journal_editing_page.dart';
 
 class JournalPage extends StatefulWidget {
-  const JournalPage({Key? key});
+  const JournalPage({super.key});
 
   @override
   _JournalPageState createState() => _JournalPageState();
 }
 
 class _JournalPageState extends State<JournalPage> {
-  int _selectedIndex = 1;
+  final int _selectedIndex = 1;
   String? userId = FirebaseAuth.instance.currentUser?.uid;
   @override
   Widget build(BuildContext context) {
@@ -49,7 +49,7 @@ class _JournalPageState extends State<JournalPage> {
                   );
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Color.fromARGB(255, 50, 204, 102),
+                  backgroundColor: const Color.fromARGB(255, 50, 204, 102),
                 ),
                 child: const Text('New Journal'),
               ),
@@ -66,7 +66,7 @@ class _JournalPageState extends State<JournalPage> {
                   }
 
                   if (snapshot.connectionState == ConnectionState.waiting) {
-                    return Center(
+                    return const Center(
                       child: CircularProgressIndicator(),
                     );
                   }
@@ -76,7 +76,7 @@ class _JournalPageState extends State<JournalPage> {
                   return ListView.builder(
                     scrollDirection: Axis.vertical,
                     shrinkWrap: true,
-                    physics: NeverScrollableScrollPhysics(),
+                    physics: const NeverScrollableScrollPhysics(),
                     itemCount: journalDocs?.length ?? 0,
                     itemBuilder: (context, index) {
                       final journalData =
@@ -136,22 +136,24 @@ class _JournalPageState extends State<JournalPage> {
           ),
         ],
         currentIndex: _selectedIndex,
-        selectedItemColor: Color.fromARGB(255, 50, 204, 102),
+        selectedItemColor: const Color.fromARGB(255, 50, 204, 102),
         unselectedItemColor: Colors.white,
         backgroundColor: Colors.black,
         onTap: (int index) {
           switch (index) {
             case 0:
               Navigator.pushReplacement(context,
-                  MaterialPageRoute(builder: (context) => MentorPage()));
+                  MaterialPageRoute(builder: (context) => const MentorPage()));
               break;
             case 1:
               Navigator.pushReplacement(context,
-                  MaterialPageRoute(builder: (context) => JournalPage()));
+                  MaterialPageRoute(builder: (context) => const JournalPage()));
               break;
             case 2:
-              Navigator.pushReplacement(context,
-                  MaterialPageRoute(builder: (context) => SettingsPage()));
+              Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => const SettingsPage()));
               break;
           }
         },

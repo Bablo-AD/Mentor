@@ -33,17 +33,23 @@ class _MentorPageState extends State<MentorPage> {
   String interest = '';
   String result = '';
   bool isLoading = false;
-  int _selectedIndex = 0;
+  final int _selectedIndex = 0;
   List<Video> videos = [];
   List<Messages> messages_data = [];
   List<Application> apps_data = [];
   List<Application> selected_apps_data = [];
   String serverurl = '';
-  Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
+  final Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
 
-  Future<void> _loadCompletionFromSharedPreferences() async {
-    List<Application> apps = await loadApps();
-    apps_data = apps;
+  List<Application> loadedApps = [];
+
+  Future<void> _loadstuffFromSharedPreferences() async {
+    if (loadedApps.isEmpty) {
+      loadedApps = await loadApps();
+    }
+
+    apps_data = loadedApps;
+
     final SharedPreferences prefs = await _prefs;
     List<String>? selectedAppNames = prefs.getStringList('selectedApps');
     if (selectedAppNames != null) {
@@ -53,9 +59,11 @@ class _MentorPageState extends State<MentorPage> {
             .toList();
       });
     }
+
     final storedData = await _storage.read(key: 'completion');
     String? serverurl = await _storage.read(key: 'server_url');
     serverurl = serverurl;
+
     setState(() {
       result = storedData ?? '';
       if (result.isEmpty || result == '') {
@@ -104,12 +112,12 @@ class _MentorPageState extends State<MentorPage> {
             context, // Replace 'context' with the actual context from your app
         builder: (BuildContext context) {
           return AlertDialog(
-            title: Text('Permission Required'),
-            content:
-                Text('Please grant the usage permission to track app usage.'),
+            title: const Text('Permission Required'),
+            content: const Text(
+                'Please grant the usage permission to track app usage.'),
             actions: [
               TextButton(
-                child: Text('OK'),
+                child: const Text('OK'),
                 onPressed: () {
                   Navigator.pop(context);
                   UsageStats.grantUsagePermission();
@@ -147,8 +155,8 @@ class _MentorPageState extends State<MentorPage> {
   void __postprocessdata(var response) {
     var completionMemory = jsonDecode(response);
     Map<String, dynamic> responseData = completionMemory['videos'];
-    String Completion_Message = completionMemory['completion'].toString();
-    messages_data.add(Messages(role: 'assistant', content: Completion_Message));
+    String completionMessage = completionMemory['completion'].toString();
+    messages_data.add(Messages(role: 'assistant', content: completionMessage));
     final videoList = (responseData)
         .entries
         .map((entry) => Video.fromJson({
@@ -157,14 +165,14 @@ class _MentorPageState extends State<MentorPage> {
               'videoDescription': entry.value[1],
             }))
         .toList();
-    if (this.mounted) {
+    if (mounted) {
       setState(() {
         isLoading = false;
         videos = videoList;
-        result = Completion_Message;
+        result = completionMessage;
       });
     } else {
-      if (this.mounted) {
+      if (mounted) {
         setState(() {
           result =
               'Request failed with status code ${response.statusCode}: ${response.body}';
@@ -187,12 +195,12 @@ class _MentorPageState extends State<MentorPage> {
     String? userGoal = await _storage.read(key: 'userGoal');
     String? selfPerception = await _storage.read(key: 'selfPerception');
     serverurl = serverurl;
-    String phone_usage_data = '';
+    String phoneUsageData = '';
 
     //Preparing the phone usage data
     if (Platform.isAndroid) {
-      String? phone_usage = await getUsage();
-      phone_usage_data = phone_usage.toString();
+      String? phoneUsage = await getUsage();
+      phoneUsageData = phoneUsage.toString();
     }
 
     //Preparing Journal data
@@ -200,8 +208,8 @@ class _MentorPageState extends State<MentorPage> {
         .collection('journals')
         .where('userId', isEqualTo: userId)
         .where('title',
-            isGreaterThan:
-                Timestamp.fromDate(DateTime.now().subtract(Duration(days: 3))))
+            isGreaterThan: Timestamp.fromDate(
+                DateTime.now().subtract(const Duration(days: 3))))
         .get();
     List<QueryDocumentSnapshot> documents = snapshot.docs;
     List<Map<String, dynamic>> journalDataList = documents.map((doc) {
@@ -222,9 +230,9 @@ class _MentorPageState extends State<MentorPage> {
     //Preparing Habitica Data
     String habits = '';
     if (habiticaUserId != null && habiticaApiKey != null) {
-      final habitica_data =
+      final habiticaData =
           HabiticaData(habiticaUserId.toString(), habiticaApiKey.toString());
-      habits = await habitica_data.execute();
+      habits = await habiticaData.execute();
     }
 
     // Prepare the data to send in the request
@@ -232,7 +240,7 @@ class _MentorPageState extends State<MentorPage> {
       'habits': habits,
       'goal': interest,
       'journal': journalDataList.toString(),
-      'usage': phone_usage_data,
+      'usage': phoneUsageData,
       'usergoal': userGoal.toString(),
       'selfperception': selfPerception.toString(),
     };
@@ -240,24 +248,24 @@ class _MentorPageState extends State<MentorPage> {
         serverurl ?? 'https://prasannanrobots.pythonanywhere.com/mentor';
 
     try {
-      var __response = await http.post(
+      var response = await http.post(
         Uri.parse(serverurl.toString()),
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode(data),
       );
 
-      if (__response.statusCode == 200) {
-        await _storage.write(key: 'completion', value: __response.body);
-        __postprocessdata(__response.body);
+      if (response.statusCode == 200) {
+        await _storage.write(key: 'completion', value: response.body);
+        __postprocessdata(response.body);
       }
     } catch (error) {
-      if (this.mounted) {
+      if (mounted) {
         setState(() {
-          result = 'An error occured ${error}';
+          result = 'An error occured $error';
         });
       }
     } finally {
-      if (this.mounted) {
+      if (mounted) {
         setState(() {
           isLoading = false;
         });
@@ -268,7 +276,7 @@ class _MentorPageState extends State<MentorPage> {
   @override
   void initState() {
     super.initState();
-    _loadCompletionFromSharedPreferences();
+    _loadstuffFromSharedPreferences();
   }
 
   @override
@@ -301,7 +309,7 @@ class _MentorPageState extends State<MentorPage> {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => AppSelectionPage()),
+                                builder: (context) => const AppSelectionPage()),
                           );
                         },
                         onTap: () {
@@ -312,7 +320,7 @@ class _MentorPageState extends State<MentorPage> {
                                     AppsPage(apps: apps_data)),
                           );
                         },
-                        title: Text("Apps",
+                        title: const Text("Apps",
                             style: TextStyle(
                                 color: Color.fromARGB(255, 50, 204, 102))),
                         subtitle: ListView.builder(
@@ -322,7 +330,8 @@ class _MentorPageState extends State<MentorPage> {
                             itemBuilder: (context, index) {
                               final Application app = selected_apps_data[index];
                               return ListTile(
-                                tileColor: Color.fromARGB(255, 19, 19, 19),
+                                tileColor:
+                                    const Color.fromARGB(255, 19, 19, 19),
                                 onTap: () async {
                                   bool isInstalled =
                                       await DeviceApps.isAppInstalled(
@@ -333,7 +342,7 @@ class _MentorPageState extends State<MentorPage> {
                                 },
                                 title: Text(
                                   app.appName,
-                                  style: TextStyle(
+                                  style: const TextStyle(
                                     fontWeight: FontWeight.bold,
                                     color: Color.fromARGB(255, 50, 204, 102),
                                   ),
@@ -354,7 +363,7 @@ class _MentorPageState extends State<MentorPage> {
                       }
 
                       if (snapshot.connectionState == ConnectionState.waiting) {
-                        return Center(
+                        return const Center(
                           child: CircularProgressIndicator(),
                         );
                       }
@@ -362,7 +371,7 @@ class _MentorPageState extends State<MentorPage> {
                       final journalDocs = snapshot.data?.docs;
 
                       if (journalDocs == null || journalDocs.isEmpty) {
-                        return Text('No journals available.');
+                        return const Text('No journals available.');
                       }
 
                       final lastJournalData =
@@ -412,12 +421,12 @@ class _MentorPageState extends State<MentorPage> {
                   ),
                   const SizedBox(height: 16.0),
                   if (isLoading)
-                    Column(children: [
+                    const Column(children: [
                       SizedBox(height: 16),
                       Center(
                         child: CircularProgressIndicator(),
                       ),
-                      const SizedBox(height: 10.0),
+                      SizedBox(height: 10.0),
                       Text(
                           "Note: It might take some time as the AI is in a relationship",
                           style: TextStyle(
@@ -438,7 +447,7 @@ class _MentorPageState extends State<MentorPage> {
                             child: ListTile(
                                 title: const Text(
                                   "Mentor: ",
-                                  style: const TextStyle(
+                                  style: TextStyle(
                                     color: Color.fromARGB(255, 50, 204, 102),
                                   ),
                                 ),
@@ -480,7 +489,7 @@ class _MentorPageState extends State<MentorPage> {
                       IconButton(
                         onPressed: isLoading ? null : _emulateRequest,
                         icon: const Icon(Icons.search),
-                        color: Color.fromARGB(255, 50, 204, 102),
+                        color: const Color.fromARGB(255, 50, 204, 102),
                       ),
                     ],
                   ),
@@ -535,22 +544,28 @@ class _MentorPageState extends State<MentorPage> {
               ),
             ],
             currentIndex: _selectedIndex,
-            selectedItemColor: Color.fromARGB(255, 50, 204, 102),
+            selectedItemColor: const Color.fromARGB(255, 50, 204, 102),
             unselectedItemColor: Colors.white,
             backgroundColor: Colors.black,
             onTap: (int index) {
               switch (index) {
                 case 0:
-                  Navigator.pushReplacement(context,
-                      MaterialPageRoute(builder: (context) => MentorPage()));
+                  Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const MentorPage()));
                   break;
                 case 1:
-                  Navigator.pushReplacement(context,
-                      MaterialPageRoute(builder: (context) => JournalPage()));
+                  Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const JournalPage()));
                   break;
                 case 2:
-                  Navigator.pushReplacement(context,
-                      MaterialPageRoute(builder: (context) => SettingsPage()));
+                  Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const SettingsPage()));
                   break;
               }
             },

@@ -3,7 +3,7 @@ import 'package:device_apps/device_apps.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AppSelectionPage extends StatefulWidget {
-  AppSelectionPage({super.key});
+  const AppSelectionPage({super.key});
 
   @override
   _AppSelectionPageState createState() => _AppSelectionPageState();
@@ -13,18 +13,19 @@ class _AppSelectionPageState extends State<AppSelectionPage> {
   List<Application> selectedApps = [];
   List<Application> installedApps = [];
   loadApps() async {
-    List<Application> loaded_apps = await DeviceApps.getInstalledApplications(
+    List<Application> loadedApps = await DeviceApps.getInstalledApplications(
       includeSystemApps: true,
       onlyAppsWithLaunchIntent: true,
     );
+    loadedApps.sort((a, b) => a.appName.compareTo(b.appName));
     setState(() {
-      installedApps = loaded_apps;
+      installedApps = loadedApps;
     });
 
     _loadSelectedApps();
   }
 
-  Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
+  final Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
 
   @override
   void initState() {
@@ -71,26 +72,32 @@ class _AppSelectionPageState extends State<AppSelectionPage> {
                 final Application app = installedApps[index];
                 return Column(
                   children: [
-                    CheckboxListTile(
-                      activeColor: Color.fromARGB(255, 50, 204, 102),
-                      tileColor: Color.fromARGB(255, 19, 19, 19),
-                      title: Text(
-                        app.appName,
-                        style:
-                            TextStyle(color: Color.fromARGB(255, 50, 204, 102)),
-                      ),
-                      value: selectedApps.contains(app),
-                      onChanged: (bool? value) {
-                        setState(() {
-                          if (value != null && value) {
-                            selectedApps.add(app);
-                          } else {
-                            selectedApps.remove(app);
-                          }
-                        });
-                      },
-                    ),
-                    SizedBox(height: 10),
+                    Theme(
+                        data: ThemeData(
+                          unselectedWidgetColor:
+                              Color.fromARGB(255, 50, 204, 102),
+                        ),
+                        child: CheckboxListTile(
+                          activeColor: const Color.fromARGB(255, 50, 204, 102),
+                          checkColor: const Color.fromARGB(255, 19, 19, 19),
+                          tileColor: const Color.fromARGB(255, 19, 19, 19),
+                          title: Text(
+                            app.appName,
+                            style: const TextStyle(
+                                color: Color.fromARGB(255, 50, 204, 102)),
+                          ),
+                          value: selectedApps.contains(app),
+                          onChanged: (bool? value) {
+                            setState(() {
+                              if (value != null && value) {
+                                selectedApps.add(app);
+                              } else {
+                                selectedApps.remove(app);
+                              }
+                            });
+                          },
+                        )),
+                    const SizedBox(height: 10),
                   ],
                 );
               },
@@ -99,7 +106,10 @@ class _AppSelectionPageState extends State<AppSelectionPage> {
         ],
       ),
       floatingActionButton: FloatingActionButton(
-        child: Icon(Icons.check),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+        backgroundColor: Color.fromARGB(255, 50, 204, 102),
+        foregroundColor: Color.fromARGB(255, 19, 19, 19),
+        child: const Icon(Icons.check),
         onPressed: () async {
           await _saveSelectedApps();
           Navigator.of(context).pop();
