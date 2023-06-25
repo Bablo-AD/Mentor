@@ -13,8 +13,10 @@ class HabiticaIntegrationPage extends StatefulWidget {
 class _HabiticaIntegrationPageState extends State<HabiticaIntegrationPage> {
   final _storage = const FlutterSecureStorage();
   final _formKey = GlobalKey<FormState>();
-  final TextEditingController _habiticaUserIdController = TextEditingController();
-  final TextEditingController _habiticaApiKeyController = TextEditingController();
+  final TextEditingController _habiticaUserIdController =
+      TextEditingController();
+  final TextEditingController _habiticaApiKeyController =
+      TextEditingController();
   void _saveSettings() async {
     if (_formKey.currentState!.validate()) {
       // Retrieve the input values
@@ -193,6 +195,15 @@ class _HabiticaIntegrationPageState extends State<HabiticaIntegrationPage> {
                     backgroundColor: const Color.fromARGB(255, 50, 204, 102),
                   ),
                   child: const Text('Save'),
+                ),
+                const SizedBox(height: 16.0),
+                const Text(
+                  "You can leave this by pressing the back key",
+                  style: TextStyle(
+                    color: Color.fromARGB(255, 50, 204, 102),
+                    fontSize: 16.0,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ],
             ),

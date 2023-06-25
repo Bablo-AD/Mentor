@@ -2,6 +2,7 @@ import 'package:Bablo/settings/settings_page.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'setup_roller.dart';
 
 class SessionManager {
   static const String loggedInKey = 'loggedIn';
@@ -32,11 +33,6 @@ class _EmailAuthState extends State<EmailAuth> {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     prefs.setString('userId', user);
     await SessionManager.saveLoginState(true);
-
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(builder: (context) => const SettingsPage()),
-    );
   }
 
   Future<void> _signIn() async {
@@ -48,7 +44,11 @@ class _EmailAuthState extends State<EmailAuth> {
       // User sign-in successful
       User? user = userCredential.user;
       if (user != null) {
-        pushNextPage(user.uid);
+        await pushNextPage(user.uid);
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const SettingsPage()),
+        );
       }
     } catch (e) {
       // Handle sign-in errors
@@ -83,7 +83,11 @@ class _EmailAuthState extends State<EmailAuth> {
       // User account creation successful
       User? user = userCredential.user;
       if (user != null) {
-        pushNextPage(user.uid);
+        await pushNextPage(user.uid);
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const SetupPage()),
+        );
       }
     } catch (e) {
       // Handle sign-up errors
