@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../settings/tellusmore_page.dart';
+import '../settings/knowingthestudent.dart';
 import '../settings/habitica_integration_page.dart';
 import '../settings/apps_selection_page.dart';
 import '../home/home_page.dart';

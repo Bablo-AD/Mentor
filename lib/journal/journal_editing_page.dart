@@ -2,6 +2,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
+import '../core/widget.dart';
+
 class JournalEditingPage extends StatefulWidget {
   const JournalEditingPage({
     Key? key,
@@ -81,13 +83,8 @@ class _JournalEditingPageState extends State<JournalEditingPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Mentor/Journal/Edit',
-            style: TextStyle(color: Color.fromARGB(255, 50, 204, 102))),
-        backgroundColor: Colors.black,
-      ),
-      backgroundColor: Colors.black,
+    return CoreScaffold(
+      title: "Mentor/Journal/Edit",
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(16.0),
@@ -98,9 +95,9 @@ class _JournalEditingPageState extends State<JournalEditingPage> {
               Row(
                 children: [
                   Expanded(
-                    child: Text(journalTitle,
-                        style: const TextStyle(
-                            color: Color.fromARGB(255, 50, 204, 102))),
+                    child: CoreText(
+                      text: journalTitle,
+                    ),
                   ),
                   IconButton(
                     onPressed: () {
@@ -128,11 +125,9 @@ class _JournalEditingPageState extends State<JournalEditingPage> {
                 },
               ),
               const SizedBox(height: 16.0),
-              ElevatedButton(
+              CoreElevatedButton(
                 onPressed: saveJournalEntry,
-                child: const Text(
-                  'Save Journal',
-                ),
+                label: "Save Journal",
               ),
             ],
           ),

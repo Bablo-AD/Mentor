@@ -1,4 +1,4 @@
-import 'package:Bablo/settings/tellusmore_page.dart';
+import 'package:Bablo/settings/knowingthestudent.dart';
 import 'package:flutter/material.dart';
 import 'home/home_page.dart';
 import 'settings/settings_page.dart';
@@ -8,6 +8,8 @@ import 'firebase_options.dart';
 import 'setup/authentication_page.dart';
 import 'settings/habitica_integration_page.dart';
 import 'settings/apps_selection_page.dart';
+import 'home/apps_page.dart';
+import 'core/loader.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -34,6 +36,7 @@ class MyApp extends StatelessWidget {
         '/settings': (context) => const SettingsPage(),
         '/journal': (context) => const JournalPage(),
         '/mentor': (context) => const MentorPage(),
+        '/apps': (context) => const AppsPage(),
         //Settings Subroute
         '/habiticaIntegrationPage': (context) =>
             const HabiticaIntegrationPage(),

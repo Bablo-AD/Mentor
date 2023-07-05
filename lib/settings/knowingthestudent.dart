@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+
+import '../core/loader.dart';
+import '../core/widget.dart';
 
 class Knowingthestudent extends StatefulWidget {
   const Knowingthestudent({Key? key}) : super(key: key);
@@ -9,8 +11,8 @@ class Knowingthestudent extends StatefulWidget {
 }
 
 class _KnowingthestudentState extends State<Knowingthestudent> {
+  Loader _loader = Loader();
   final _formKey = GlobalKey<FormState>();
-  final storage = const FlutterSecureStorage();
   final TextEditingController _userGoalController = TextEditingController();
   final TextEditingController _selfPerceptionController =
       TextEditingController();
@@ -24,8 +26,10 @@ class _KnowingthestudentState extends State<Knowingthestudent> {
   }
 
   void loadUserData() async {
-    String? loadedUserGoal = await storage.read(key: 'userGoal');
-    String? loadedSelfPerception = await storage.read(key: 'selfPerception');
+    Map<String, String?> user_stuff = await _loader.load_user_stuff();
+
+    String? loadedUserGoal = user_stuff['userGoal'];
+    String? loadedSelfPerception = user_stuff['selfPerception'];
 
     if (loadedUserGoal != null) {
       setState(() {
@@ -45,10 +49,8 @@ class _KnowingthestudentState extends State<Knowingthestudent> {
 
   void saveUserData() async {
     if (_formKey.currentState!.validate()) {
-      await storage.write(key: 'userGoal', value: _userGoalController.text);
-      await storage.write(
-          key: 'selfPerception', value: _selfPerceptionController.text);
-
+      _loader.save_user_stuff(
+          _userGoalController.text, _selfPerceptionController.text);
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Got it!')),
       );
@@ -75,10 +77,7 @@ class _KnowingthestudentState extends State<Knowingthestudent> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                const Text(
-                  "What is your goal or your purpose?",
-                  style: TextStyle(color: Color.fromARGB(255, 50, 204, 102)),
-                ),
+                const CoreText(text: 'What is your goal or purpose?'),
                 const SizedBox(height: 10),
                 TextFormField(
                   controller: _userGoalController,
@@ -106,9 +105,8 @@ class _KnowingthestudentState extends State<Knowingthestudent> {
                   },
                 ),
                 const SizedBox(height: 16),
-                const Text(
-                  "What do you think about yourself?",
-                  style: TextStyle(color: Color.fromARGB(255, 50, 204, 102)),
+                const CoreText(
+                  text: "What do you think about yourself?",
                 ),
                 const SizedBox(height: 10),
                 TextFormField(
@@ -137,16 +135,7 @@ class _KnowingthestudentState extends State<Knowingthestudent> {
                   },
                 ),
                 const SizedBox(height: 16),
-                ElevatedButton(
-                  onPressed: saveUserData,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color.fromARGB(255, 50, 204, 102),
-                  ),
-                  child: const Text(
-                    'Save',
-                    style: TextStyle(color: Color.fromARGB(255, 19, 19, 19)),
-                  ),
-                ),
+                CoreElevatedButton(label: 'Save', onPressed: saveUserData)
               ],
             ),
           ),

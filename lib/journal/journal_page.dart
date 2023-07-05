@@ -1,9 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import '../home/home_page.dart';
-import '../settings/settings_page.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+
 import 'journal_editing_page.dart';
+import '../core/widget.dart';
 
 class JournalPage extends StatefulWidget {
   const JournalPage({super.key});
@@ -17,15 +17,8 @@ class _JournalPageState extends State<JournalPage> {
   String? userId = FirebaseAuth.instance.currentUser?.uid;
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text(
-          'Mentor/Journals',
-          style: TextStyle(color: Color.fromARGB(255, 50, 204, 102)),
-        ),
-        backgroundColor: Colors.black,
-      ),
-      backgroundColor: Colors.black,
+    return CoreScaffold(
+      title: "Mentor/Journal",
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(16.0),
@@ -33,26 +26,6 @@ class _JournalPageState extends State<JournalPage> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              ElevatedButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => JournalEditingPage(
-                        journalTitle: '',
-                        journalContent: '',
-                        documentId: null,
-                        userId: userId
-                            .toString(), // Pass null as document ID for a new journal
-                      ),
-                    ),
-                  );
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color.fromARGB(255, 50, 204, 102),
-                ),
-                child: const Text('New Journal'),
-              ),
               const SizedBox(height: 16.0),
               StreamBuilder<QuerySnapshot>(
                 stream: FirebaseFirestore.instance
@@ -88,15 +61,11 @@ class _JournalPageState extends State<JournalPage> {
                       return Card(
                         color: const Color.fromARGB(255, 19, 19, 19),
                         child: ListTile(
-                          title: Text(
-                            title.toDate().toString(),
-                            style: const TextStyle(
-                                color: Color.fromARGB(255, 50, 204, 102)),
+                          title: CoreText(
+                            text: title.toDate().toString(),
                           ),
-                          subtitle: Text(
-                            content,
-                            style: const TextStyle(
-                                color: Color.fromARGB(255, 50, 204, 102)),
+                          subtitle: CoreText(
+                            text: content,
                           ),
                           onTap: () {
                             Navigator.push(
@@ -120,43 +89,26 @@ class _JournalPageState extends State<JournalPage> {
           ),
         ),
       ),
-      bottomNavigationBar: BottomNavigationBar(
-        items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Home',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.book),
-            label: 'Journal',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.settings),
-            label: 'Settings',
-          ),
-        ],
-        currentIndex: _selectedIndex,
-        selectedItemColor: const Color.fromARGB(255, 50, 204, 102),
-        unselectedItemColor: Colors.white,
-        backgroundColor: Colors.black,
-        onTap: (int index) {
-          switch (index) {
-            case 0:
-              Navigator.pushReplacement(context,
-                  MaterialPageRoute(builder: (context) => const MentorPage()));
-              break;
-            case 1:
-              Navigator.pushReplacement(context,
-                  MaterialPageRoute(builder: (context) => const JournalPage()));
-              break;
-            case 2:
-              Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => const SettingsPage()));
-              break;
-          }
+      floatingActionButton: FloatingActionButton(
+        foregroundColor: const Color.fromARGB(255, 19, 19, 19),
+        backgroundColor: const Color.fromARGB(255, 50, 204, 102),
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => JournalEditingPage(
+                journalTitle: '',
+                journalContent: '',
+                documentId: null,
+                userId: userId
+                    .toString(), // Pass null as document ID for a new journal
+              ),
+            ),
+          );
         },
+      ),
+      bottomNavigationBar: CoreBottomNavigationBar(
+        selectedIndex: _selectedIndex,
       ),
     );
   }

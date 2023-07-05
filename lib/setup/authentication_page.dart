@@ -1,22 +1,9 @@
-import 'package:Bablo/settings/settings_page.dart';
-import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import '../core/widget.dart';
+import '../core/loader.dart';
 import 'setup_roller.dart';
 
-class SessionManager {
-  static const String loggedInKey = 'loggedIn';
-
-  static Future<void> saveLoginState(bool isLoggedIn) async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.setBool(loggedInKey, isLoggedIn);
-  }
-
-  static Future<bool> getLoginState() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    return prefs.getBool(loggedInKey) ?? false;
-  }
-}
+import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class EmailAuth extends StatefulWidget {
   const EmailAuth({super.key});
@@ -29,11 +16,6 @@ class _EmailAuthState extends State<EmailAuth> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final FirebaseAuth _auth = FirebaseAuth.instance;
-  pushNextPage(user) async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    prefs.setString('userId', user);
-    await SessionManager.saveLoginState(true);
-  }
 
   Future<void> _signIn() async {
     try {
@@ -44,11 +26,8 @@ class _EmailAuthState extends State<EmailAuth> {
       // User sign-in successful
       User? user = userCredential.user;
       if (user != null) {
-        await pushNextPage(user.uid);
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => const SettingsPage()),
-        );
+        await SessionManager.saveLoginState(true);
+        Navigator.pushReplacementNamed(context, '/settings');
       }
     } catch (e) {
       // Handle sign-in errors
@@ -83,7 +62,7 @@ class _EmailAuthState extends State<EmailAuth> {
       // User account creation successful
       User? user = userCredential.user;
       if (user != null) {
-        await pushNextPage(user.uid);
+        await SessionManager.saveLoginState(true);
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (context) => const SetupPage()),
@@ -114,15 +93,8 @@ class _EmailAuthState extends State<EmailAuth> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text(
-          'Mentor/Authentication',
-          style: TextStyle(color: Color.fromARGB(255, 50, 204, 102)),
-        ),
-        backgroundColor: Colors.black,
-      ),
-      backgroundColor: Colors.black,
+    return CoreScaffold(
+      title: 'Mentor/Authentication',
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(16.0),
@@ -130,41 +102,24 @@ class _EmailAuthState extends State<EmailAuth> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              TextField(
+              CoreTextField(
                 controller: _emailController,
-                style:
-                    const TextStyle(color: Color.fromARGB(255, 50, 204, 102)),
-                decoration: const InputDecoration(
-                  filled: true,
-                  fillColor: Color.fromARGB(255, 19, 19, 19),
-                  labelText: 'Email',
-                  labelStyle:
-                      TextStyle(color: Color.fromARGB(255, 50, 204, 102)),
-                ),
+                label: "Email",
               ),
               const SizedBox(height: 8.0),
-              TextField(
+              CoreTextField(
                 controller: _passwordController,
-                style:
-                    const TextStyle(color: Color.fromARGB(255, 50, 204, 102)),
-                decoration: const InputDecoration(
-                  filled: true,
-                  fillColor: Color.fromARGB(255, 19, 19, 19),
-                  labelText: 'Password',
-                  labelStyle:
-                      TextStyle(color: Color.fromARGB(255, 50, 204, 102)),
-                ),
-                obscureText: true,
+                label: "Password",
               ),
               const SizedBox(height: 16.0),
-              ElevatedButton(
+              CoreElevatedButton(
                 onPressed: _signIn,
-                child: const Text('Sign In'),
+                label: "Sign In",
               ),
               const SizedBox(height: 8.0),
-              ElevatedButton(
+              CoreElevatedButton(
                 onPressed: _signUp,
-                child: const Text('Sign Up'),
+                label: "Sign Up",
               ),
             ],
           ),

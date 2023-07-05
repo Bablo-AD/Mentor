@@ -1,3 +1,4 @@
+import 'package:Bablo/core/widget.dart';
 import 'package:flutter/material.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -6,7 +7,8 @@ class VideoPage extends StatelessWidget {
   final String videoId;
   final String description;
 
-  const VideoPage({super.key, required this.videoId, required this.description});
+  const VideoPage(
+      {super.key, required this.videoId, required this.description});
 
   @override
   Widget build(BuildContext context) {
@@ -17,45 +19,34 @@ class VideoPage extends StatelessWidget {
       ),
     );
 
-    return Scaffold(
-        appBar: AppBar(
-          title: const Text(
-            'Mentor',
-            style: TextStyle(color: Colors.green),
-          ),
-          backgroundColor: Colors.black,
-        ),
-        backgroundColor: Colors.black,
-        body: SingleChildScrollView(
-          child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    IconButton(
-                      icon: const Icon(Icons.open_in_browser,
-                          color: Color.fromARGB(255, 50, 204, 102)),
-                      onPressed: () {
-                        _launchURL(videoId);
-                      },
-                    ),
-                    const SizedBox(
-                      height: 2,
-                    ),
-                    YoutubePlayer(
-                      controller: youtubePlayerController,
-                      showVideoProgressIndicator: true,
-                      progressIndicatorColor: const Color.fromARGB(255, 50, 204, 102),
-                    ),
-                    const SizedBox(height: 16.0),
-                    Text(
-                      description,
-                      style:
-                          const TextStyle(color: Color.fromARGB(255, 50, 204, 102)),
-                    ),
-                  ])),
-        ));
+    return CoreScaffold(
+      title: 'Mentor/Video',
+      body: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                IconButton(
+                  icon: const Icon(Icons.open_in_browser,
+                      color: Color.fromARGB(255, 50, 204, 102)),
+                  onPressed: () {
+                    _launchURL(videoId);
+                  },
+                ),
+                const SizedBox(
+                  height: 2,
+                ),
+                YoutubePlayer(
+                  controller: youtubePlayerController,
+                  showVideoProgressIndicator: true,
+                  progressIndicatorColor:
+                      const Color.fromARGB(255, 50, 204, 102),
+                ),
+                const SizedBox(height: 16.0),
+                CoreText(text: description),
+              ])),
+    );
   }
 }
 
