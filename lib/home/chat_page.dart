@@ -4,34 +4,40 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
+import '../core/loader.dart';
+
 class ChatPage extends StatefulWidget {
-  const ChatPage({Key? key, required this.messages}) : super(key: key);
-  final List<Messages> messages;
+  final String response;
+
+  const ChatPage({Key? key, required this.response}) : super(key: key);
+
   @override
   _ChatPageState createState() => _ChatPageState();
 }
 
 class _ChatPageState extends State<ChatPage> {
+  List<Messages> messages = Data.messages_data;
   final ScrollController _scrollController = ScrollController();
   TextEditingController textEditingController = TextEditingController();
   final _storage = const FlutterSecureStorage();
+  Loader _loader = Loader();
   String serverurl = '';
   void _sendMessage(String message) async {
     setState(() {
-      widget.messages.add(Messages(
+      messages.add(Messages(
         role: 'user',
         content: message,
       ));
     });
 
-    final List<Map<String, String>> messagesData = widget.messages
+    final List<Map<String, String>> messagesData = messages
         .map((message) => {
               'role': message.role,
               'content': message.content,
             })
         .toList();
     String? serverurl = await _storage.read(key: 'server_url');
-    String url = '${serverurl!}/messages';
+    String url = '${serverurl!}/mentor/messages';
     final response = await http.post(
       Uri.parse(url),
       headers: {'Content-Type': 'application/json'},
@@ -42,14 +48,15 @@ class _ChatPageState extends State<ChatPage> {
       final completion = jsonDecode(response.body)['completion'].toString();
 
       setState(() {
-        widget.messages.add(Messages(
+        messages.add(Messages(
           role: 'user',
           content: message,
         ));
-        widget.messages.add(Messages(
+        messages.add(Messages(
           role: 'assistant',
           content: completion,
         ));
+        _loader.saveMessages(messages);
       });
     } else {
       // Handle error case
@@ -80,6 +87,14 @@ class _ChatPageState extends State<ChatPage> {
   @override
   void initState() {
     super.initState();
+    _loader.loadMessages();
+    setState() {
+      Data.messages_data
+          .add(Messages(role: "assistant", content: widget.response));
+      _loader.saveMessages(Data.messages_data);
+      messages = Data.messages_data;
+    }
+
     // Scroll to the last message when the page is loaded
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
@@ -100,9 +115,9 @@ class _ChatPageState extends State<ChatPage> {
           Expanded(
             child: ListView.builder(
               controller: _scrollController,
-              itemCount: widget.messages.length,
+              itemCount: messages.length,
               itemBuilder: (context, index) {
-                final message = widget.messages[index];
+                final message = messages[index];
 
                 return ListTile(
                   title: Text(

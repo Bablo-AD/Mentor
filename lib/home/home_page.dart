@@ -9,11 +9,9 @@ import '../settings/apps_selection_page.dart';
 import '../settings/auto_request.dart';
 import 'package:flutter/material.dart';
 
-import 'dart:convert';
 import 'package:flutter/services.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:device_apps/device_apps.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class MentorPage extends StatefulWidget {
   const MentorPage({super.key});
@@ -102,7 +100,6 @@ class _MentorPageState extends State<MentorPage> {
     setState(() {
       isLoading = false;
       result = Data.completion_message;
-      messages_data = Data.messages_data;
       videos = Data.videoList;
     });
   }
@@ -250,8 +247,7 @@ class _MentorPageState extends State<MentorPage> {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) =>
-                                  ChatPage(messages: messages_data)),
+                              builder: (context) => ChatPage(response: result)),
                         );
                       },
                       child: Card(

@@ -2,6 +2,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:device_apps/device_apps.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'dart:convert';
 
 import 'data.dart';
 
@@ -22,6 +23,47 @@ class SessionManager {
 class Loader {
   final _securestorage = const FlutterSecureStorage();
   final Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
+
+  Future<String?> loadScheduledTime() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+final scheduledTime = prefs.getString('scheduledTime');
+    return scheduledTime;
+    }
+  }
+
+  void saveMessages(List<Messages> messages) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+
+    // Convert messages list to JSON string
+    List<String> jsonList =
+        messages.map((message) => jsonEncode(message.toJson())).toList();
+    Data.messages_data = messages;
+    // Save the JSON string list to SharedPreferences
+    await prefs.setStringList('messages', jsonList);
+  }
+
+  Future<List<Messages>> loadMessages() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+
+    // Retrieve the JSON string list from SharedPreferences
+    List<String>? jsonList = prefs.getStringList('messages');
+
+    // Convert JSON string list to Messages list
+    List<Messages> messages = [];
+    if (jsonList != null) {
+      for (String jsonString in jsonList) {
+        Map<String, dynamic> jsonMap = jsonDecode(jsonString);
+        Messages message = Messages(
+          role: jsonMap['role'],
+          content: jsonMap['content'],
+        );
+        messages.add(message);
+      }
+      Data.messages_data = messages;
+    }
+
+    return messages;
+  }
 
   Future<List<Application>> loadselectedApps() async {
     final SharedPreferences _storage = await _prefs;
