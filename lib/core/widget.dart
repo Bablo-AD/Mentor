@@ -77,14 +77,14 @@ class CoreTextField extends StatelessWidget {
       onChanged: onChanged,
       controller: controller,
       decoration: InputDecoration(
-        labelStyle: TextStyle(color: Color.fromARGB(255, 50, 204, 102)),
+        labelStyle: const TextStyle(color: Color.fromARGB(255, 50, 204, 102)),
         labelText: label,
-        prefixIcon: Icon(
+        prefixIcon: const Icon(
           Icons.search,
           color: Color.fromARGB(255, 50, 204, 102),
         ),
         filled: true,
-        fillColor: Color.fromARGB(255, 19, 19, 19),
+        fillColor: const Color.fromARGB(255, 19, 19, 19),
       ),
     );
   }

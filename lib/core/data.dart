@@ -4,7 +4,7 @@ import 'package:device_apps/device_apps.dart';
 class Data {
   static String? userId = FirebaseAuth.instance.currentUser?.uid;
   static String response = "";
-
+  static String interest = "";
   static List<Messages> messages_data = [];
   static String completion_message = "";
   static List<Video> videoList = [];

@@ -24,11 +24,16 @@ class Loader {
   final _securestorage = const FlutterSecureStorage();
   final Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
 
+  void saveScheduleTime(String selectedTime) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+
+    await prefs.setString('scheduledTime', selectedTime);
+  }
+
   Future<String?> loadScheduledTime() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-final scheduledTime = prefs.getString('scheduledTime');
+    final scheduledTime = prefs.getString('scheduledTime');
     return scheduledTime;
-    }
   }
 
   void saveMessages(List<Messages> messages) async {
@@ -66,8 +71,8 @@ final scheduledTime = prefs.getString('scheduledTime');
   }
 
   Future<List<Application>> loadselectedApps() async {
-    final SharedPreferences _storage = await _prefs;
-    List<String>? selectedApps = _storage.getStringList('selectedApps');
+    final SharedPreferences storage = await _prefs;
+    List<String>? selectedApps = storage.getStringList('selectedApps');
     if (selectedApps != null) {
       Data.selectedApps = Data.loadedApps
           .where((app) => selectedApps.contains(app.appName))
@@ -84,18 +89,18 @@ final scheduledTime = prefs.getString('scheduledTime');
   }
 
   static Future<List<Application>> loadApps() async {
-    List<Application> loaded_apps = await DeviceApps.getInstalledApplications(
+    List<Application> loadedApps = await DeviceApps.getInstalledApplications(
       includeSystemApps: true,
       onlyAppsWithLaunchIntent: true,
     );
-    loaded_apps.sort((a, b) => a.appName.compareTo(b.appName));
-    Data.loadedApps = loaded_apps;
-    return loaded_apps;
+    loadedApps.sort((a, b) => a.appName.compareTo(b.appName));
+    Data.loadedApps = loadedApps;
+    return loadedApps;
   }
 
   Future<String?> loadcompletion() async {
-    final SharedPreferences _storage = await _prefs;
-    String? completion = _storage.getString('completion');
+    final SharedPreferences storage = await _prefs;
+    String? completion = storage.getString('completion');
     if (completion != null) {
       Data.completion_message = completion;
     }
@@ -104,8 +109,8 @@ final scheduledTime = prefs.getString('scheduledTime');
 
   void savecompletion(String completion) async {
     completion = completion;
-    final SharedPreferences _storage = await _prefs;
-    _storage.setString('completion', completion);
+    final SharedPreferences storage = await _prefs;
+    storage.setString('completion', completion);
   }
 
   static Future<List<QueryDocumentSnapshot>> loadjournal() async {
@@ -121,16 +126,16 @@ final scheduledTime = prefs.getString('scheduledTime');
   }
 
   Future<String> loadserverurl() async {
-    final SharedPreferences _storage = await _prefs;
-    String server_url = await _storage.getString('server_url') ??
+    final SharedPreferences storage = await _prefs;
+    String serverUrl = storage.getString('server_url') ??
         'https://prasannanrobots.pythonanywhere.com/mentor';
-    return server_url;
+    return serverUrl;
   }
 
-  void saveserverurl(String server_url) async {
-    final SharedPreferences _storage = await _prefs;
+  void saveserverurl(String serverUrl) async {
+    final SharedPreferences storage = await _prefs;
     // Encrypt and save the data locally
-    await _storage.setString('server_url', server_url);
+    await storage.setString('server_url', serverUrl);
   }
 
   Future<Map<String, String?>> loadHabiticaDetails() async {
@@ -154,9 +159,9 @@ final scheduledTime = prefs.getString('scheduledTime');
   }
 
   Future<Map<String, String?>> load_user_stuff() async {
-    final SharedPreferences _storage = await _prefs;
-    String? loadedUserGoal = await _storage.getString('userGoal');
-    String? loadedSelfPerception = await _storage.getString('selfPerception');
+    final SharedPreferences storage = await _prefs;
+    String? loadedUserGoal = storage.getString('userGoal');
+    String? loadedSelfPerception = storage.getString('selfPerception');
 
     Map<String, String?> userStuff = {
       "userGoal": loadedUserGoal,
@@ -166,8 +171,8 @@ final scheduledTime = prefs.getString('scheduledTime');
   }
 
   void save_user_stuff(String userGoal, String selfPerception) async {
-    final SharedPreferences _storage = await _prefs;
-    await _storage.setString('userGoal', userGoal);
-    await _storage.setString('selfPerception', selfPerception);
+    final SharedPreferences storage = await _prefs;
+    await storage.setString('userGoal', userGoal);
+    await storage.setString('selfPerception', selfPerception);
   }
 }

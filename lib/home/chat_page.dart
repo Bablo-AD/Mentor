@@ -20,7 +20,7 @@ class _ChatPageState extends State<ChatPage> {
   final ScrollController _scrollController = ScrollController();
   TextEditingController textEditingController = TextEditingController();
   final _storage = const FlutterSecureStorage();
-  Loader _loader = Loader();
+  final Loader _loader = Loader();
   String serverurl = '';
   void _sendMessage(String message) async {
     setState(() {

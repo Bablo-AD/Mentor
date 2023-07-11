@@ -34,7 +34,7 @@ class DataProcessor {
     //Preparing phone usage data
     if (Platform.isAndroid) {
       PhoneUsage phoneUsage = PhoneUsage();
-      phoneUsageData = await phoneUsage.getUsage(context).toString();
+      phoneUsageData = phoneUsage.getUsage(context).toString();
     }
 
     //Preparing journal Data
@@ -42,15 +42,15 @@ class DataProcessor {
         await getJournalData(Data.userId.toString());
 
     //Preparing usergoal,self perception
-    Map<String, String?> user_stuff = await _loader.load_user_stuff();
+    Map<String, String?> userStuff = await _loader.load_user_stuff();
     // Prepare the data to send in the request
     Map<String, String> data = {
       'habits': habits,
       'goal': interest,
       'journal': journalDataList.toString(),
       'usage': phoneUsageData,
-      'usergoal': user_stuff['userGoal'].toString(),
-      'selfperception': user_stuff['selfPerception'].toString(),
+      'usergoal': userStuff['userGoal'].toString(),
+      'selfperception': userStuff['selfPerception'].toString(),
     };
 
     // Convert the data to JSON
@@ -59,10 +59,10 @@ class DataProcessor {
   }
 
   Future<String> _meet_with_server(String jsonData) async {
-    String server_url = await _loader.loadserverurl();
+    String serverUrl = await _loader.loadserverurl();
 
     var response = await http.post(
-      Uri.parse(server_url.toString()),
+      Uri.parse(serverUrl.toString()),
       headers: {'Content-Type': 'application/json'},
       body: jsonData,
     );
@@ -90,7 +90,7 @@ class DataProcessor {
         .toList();
   }
 
-  execute(String interest) async {
+  execute([String interest = ""]) async {
     String jsonData = await _preparing_data(interest);
     String response = await _meet_with_server(jsonData);
     post_process_data(response);

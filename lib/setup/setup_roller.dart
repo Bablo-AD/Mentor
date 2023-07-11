@@ -9,7 +9,7 @@ class SetupPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    WidgetsBinding.instance?.addPostFrameCallback((_) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
       navigateToNextPage(context);
     });
     return WillPopScope(
@@ -42,7 +42,7 @@ class SetupPage extends StatelessWidget {
           backgroundColor: Colors.black,
         ),
         backgroundColor: Colors.black,
-        body: Center(
+        body: const Center(
           child: CircularProgressIndicator(),
         ),
       ),

@@ -14,7 +14,7 @@ class HabiticaIntegrationPage extends StatefulWidget {
 
 class _HabiticaIntegrationPageState extends State<HabiticaIntegrationPage> {
   final _formKey = GlobalKey<FormState>();
-  Loader _loader = Loader();
+  final Loader _loader = Loader();
 
   final TextEditingController _habiticaUserIdController =
       TextEditingController();

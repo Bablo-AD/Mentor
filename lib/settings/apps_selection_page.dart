@@ -15,7 +15,7 @@ class AppSelectionPage extends StatefulWidget {
 class _AppSelectionPageState extends State<AppSelectionPage> {
   List<Application> selectedApps = Data.selectedApps;
   List<Application> installedApps = Data.loadedApps;
-  Loader _loader = Loader();
+  final Loader _loader = Loader();
 
   void _loadstuff() async {
     await Loader.loadApps();
@@ -48,7 +48,7 @@ class _AppSelectionPageState extends State<AppSelectionPage> {
                     Theme(
                         data: ThemeData(
                           unselectedWidgetColor:
-                              Color.fromARGB(255, 50, 204, 102),
+                              const Color.fromARGB(255, 50, 204, 102),
                         ),
                         child: CheckboxListTile(
                           activeColor: const Color.fromARGB(255, 50, 204, 102),
@@ -78,8 +78,8 @@ class _AppSelectionPageState extends State<AppSelectionPage> {
       ),
       floatingActionButton: FloatingActionButton(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-        backgroundColor: Color.fromARGB(255, 50, 204, 102),
-        foregroundColor: Color.fromARGB(255, 19, 19, 19),
+        backgroundColor: const Color.fromARGB(255, 50, 204, 102),
+        foregroundColor: const Color.fromARGB(255, 19, 19, 19),
         child: const Icon(Icons.check),
         onPressed: () async {
           await _loader.saveSelectedApps();

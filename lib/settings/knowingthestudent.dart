@@ -11,7 +11,7 @@ class Knowingthestudent extends StatefulWidget {
 }
 
 class _KnowingthestudentState extends State<Knowingthestudent> {
-  Loader _loader = Loader();
+  final Loader _loader = Loader();
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _userGoalController = TextEditingController();
   final TextEditingController _selfPerceptionController =
@@ -26,10 +26,10 @@ class _KnowingthestudentState extends State<Knowingthestudent> {
   }
 
   void loadUserData() async {
-    Map<String, String?> user_stuff = await _loader.load_user_stuff();
+    Map<String, String?> userStuff = await _loader.load_user_stuff();
 
-    String? loadedUserGoal = user_stuff['userGoal'];
-    String? loadedSelfPerception = user_stuff['selfPerception'];
+    String? loadedUserGoal = userStuff['userGoal'];
+    String? loadedSelfPerception = userStuff['selfPerception'];
 
     if (loadedUserGoal != null) {
       setState(() {

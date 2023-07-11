@@ -6,10 +6,8 @@ import '../journal/journal_editing_page.dart';
 import 'video_page.dart';
 import 'chat_page.dart';
 import '../settings/apps_selection_page.dart';
-import '../settings/auto_request.dart';
 import 'package:flutter/material.dart';
 
-import 'package:flutter/services.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:device_apps/device_apps.dart';
 
@@ -87,9 +85,9 @@ class _MentorPageState extends State<MentorPage> {
       videos.clear(); // Clear previous videos
       Data.videoList.clear();
     });
-    DataProcessor data_getter = DataProcessor(context);
+    DataProcessor dataGetter = DataProcessor(context);
     try {
-      data_getter.execute(interest);
+      dataGetter.execute(interest);
     } catch (e) {
       setState(() {
         isLoading = false;
@@ -104,7 +102,7 @@ class _MentorPageState extends State<MentorPage> {
     });
   }
 
-  Loader _loader = Loader();
+  final Loader _loader = Loader();
   List<Application> selected_apps_data = Data.selectedApps;
 
   void loading_apps() async {
