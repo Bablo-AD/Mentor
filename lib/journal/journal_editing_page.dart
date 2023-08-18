@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 import '../core/widget.dart';
+import '../core/data.dart';
 
 class JournalEditingPage extends StatefulWidget {
   const JournalEditingPage({
@@ -142,7 +143,12 @@ class FirebaseService {
 
   Future<void> createJournal(String content) async {
     String? userId = FirebaseAuth.instance.currentUser?.uid;
-    await _firestore.collection('journals').add({
+
+    await _firestore
+        .collection('users')
+        .doc(Data.userId)
+        .collection("journal")
+        .add({
       'userId': userId,
       'title': DateTime.now(),
       'content': content,
@@ -150,11 +156,21 @@ class FirebaseService {
   }
 
   Future<void> deleteJournal(String documentId) async {
-    await _firestore.collection('journals').doc(documentId).delete();
+    await _firestore
+        .collection('users')
+        .doc(Data.userId)
+        .collection("journal")
+        .doc(documentId)
+        .delete();
   }
 
   Future<void> updateJournal(String documentId, String content) async {
-    await _firestore.collection('journals').doc(documentId).update({
+    await _firestore
+        .collection('users')
+        .doc(Data.userId)
+        .collection("journal")
+        .doc(documentId)
+        .update({
       'content': content,
     });
   }

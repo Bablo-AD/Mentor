@@ -2,7 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../core/make_request.dart';
+import '../home/make_request.dart';
 import '../core/loader.dart';
 
 class AutoRequest extends StatefulWidget {

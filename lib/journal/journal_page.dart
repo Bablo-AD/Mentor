@@ -4,6 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 
 import 'journal_editing_page.dart';
 import '../core/widget.dart';
+import '../core/data.dart';
 
 class JournalPage extends StatefulWidget {
   const JournalPage({super.key});
@@ -29,8 +30,9 @@ class _JournalPageState extends State<JournalPage> {
               const SizedBox(height: 16.0),
               StreamBuilder<QuerySnapshot>(
                 stream: FirebaseFirestore.instance
-                    .collection('journals')
-                    .where('userId', isEqualTo: userId)
+                    .collection('users')
+                    .doc(Data.userId)
+                    .collection("journal")
                     .orderBy('title', descending: true)
                     .snapshots(),
                 builder: (context, snapshot) {

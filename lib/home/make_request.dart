@@ -8,8 +8,8 @@ import 'package:usage_stats/usage_stats.dart';
 import 'dart:convert';
 import 'dart:io';
 
-import 'loader.dart';
-import 'data.dart';
+import '../core/loader.dart';
+import '../core/data.dart';
 
 class DataProcessor {
   final _loader = Loader();
@@ -38,19 +38,31 @@ class DataProcessor {
     }
 
     //Preparing journal Data
-    List<Map<String, dynamic>> journalDataList =
-        await getJournalData(Data.userId.toString());
+    String journalDataList =
+        await getJournalData(Data.userId.toString()).toString();
 
     //Preparing usergoal,self perception
     Map<String, String?> userStuff = await _loader.load_user_stuff();
+    String usergoal = userStuff['userGoal'].toString();
+    String selfperception = userStuff['selfPerception'].toString();
     // Prepare the data to send in the request
+    String meta_data = """habits= $habits,
+      goal= $interest,
+      journal= $journalDataList,
+      usage= $phoneUsageData,
+      usergoal= $usergoal,
+      selfperception= $selfperception""";
+
+    FirebaseFirestore firestore = FirebaseFirestore.instance;
+    DocumentSnapshot userDoc =
+        await firestore.collection('users').doc(userId).get();
+    Map<String, dynamic> userData = userDoc.data() as Map<String, dynamic>;
+
     Map<String, String> data = {
-      'habits': habits,
-      'goal': interest,
-      'journal': journalDataList.toString(),
-      'usage': phoneUsageData,
-      'usergoal': userStuff['userGoal'].toString(),
-      'selfperception': userStuff['selfPerception'].toString(),
+      "messages": meta_data,
+      "user_id": Data.userId.toString(),
+      "apikey": userData['apikey'],
+      "update_history": "True"
     };
 
     // Convert the data to JSON

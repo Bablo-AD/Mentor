@@ -1,4 +1,4 @@
-import '../core/make_request.dart';
+import '../home/make_request.dart';
 import 'package:flutter/material.dart';
 
 import '../core/loader.dart';

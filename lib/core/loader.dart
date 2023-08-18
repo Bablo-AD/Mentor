@@ -115,8 +115,9 @@ class Loader {
 
   static Future<List<QueryDocumentSnapshot>> loadjournal() async {
     final QuerySnapshot snapshot = await FirebaseFirestore.instance
-        .collection('journals')
-        .where('userId', isEqualTo: Data.userId)
+        .collection('users')
+        .doc(Data.userId)
+        .collection("journal")
         .where('title',
             isGreaterThan: Timestamp.fromDate(
                 DateTime.now().subtract(const Duration(days: 3))))
@@ -128,7 +129,7 @@ class Loader {
   Future<String> loadserverurl() async {
     final SharedPreferences storage = await _prefs;
     String serverUrl = storage.getString('server_url') ??
-        'https://prasannanrobots.pythonanywhere.com/mentor';
+        'https://prasannanrobots.pythonanywhere.com/mentor/chat';
     return serverUrl;
   }
 

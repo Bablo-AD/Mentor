@@ -1,9 +1,13 @@
 import '../core/widget.dart';
 import '../core/loader.dart';
+import '../core/data.dart';
 import 'setup_roller.dart';
 
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'dart:math';
+import 'dart:convert';
 
 class EmailAuth extends StatefulWidget {
   const EmailAuth({super.key});
@@ -52,6 +56,22 @@ class _EmailAuthState extends State<EmailAuth> {
     }
   }
 
+  void initialize_user() async {
+    FirebaseFirestore firestore = FirebaseFirestore.instance;
+    String apiKey = generateApiKey();
+    await firestore
+        .collection('users')
+        .doc(Data.userId.toString())
+        .set({"apikey": apiKey, "messages": "[{}]"});
+  }
+
+  String generateApiKey() {
+    final random = Random.secure();
+    final values = List<int>.generate(32, (i) => random.nextInt(256));
+    final apiKey = base64Url.encode(values);
+    return apiKey;
+  }
+
   Future<void> _signUp() async {
     try {
       UserCredential userCredential =
@@ -62,6 +82,7 @@ class _EmailAuthState extends State<EmailAuth> {
       // User account creation successful
       User? user = userCredential.user;
       if (user != null) {
+        initialize_user();
         await SessionManager.saveLoginState(true);
         Navigator.pushReplacement(
           context,

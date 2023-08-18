@@ -19,7 +19,7 @@ class _AppSelectionPageState extends State<AppSelectionPage> {
 
   void _loadstuff() async {
     await Loader.loadApps();
-    await _loader.loadselectedApps;
+    _loader.loadselectedApps;
     setState() {
       selectedApps = Data.selectedApps;
       installedApps = Data.loadedApps;

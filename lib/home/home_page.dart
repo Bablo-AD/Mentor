@@ -1,7 +1,7 @@
 import '../core/data.dart';
 import '../core/widget.dart';
 import '../core/loader.dart';
-import '../core/make_request.dart';
+import 'make_request.dart';
 import '../journal/journal_editing_page.dart';
 import 'video_page.dart';
 import 'chat_page.dart';
@@ -167,8 +167,9 @@ class _MentorPageState extends State<MentorPage> {
                 const SizedBox(height: 16.0),
                 StreamBuilder<QuerySnapshot>(
                   stream: FirebaseFirestore.instance
-                      .collection('journals')
-                      .where('userId', isEqualTo: Data.userId)
+                      .collection('users')
+                      .doc(Data.userId)
+                      .collection("journal")
                       .orderBy('title', descending: true)
                       .snapshots(),
                   builder: (context, snapshot) {
