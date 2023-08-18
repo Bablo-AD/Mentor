@@ -1,15 +1,12 @@
 import '../core/data.dart';
 import '../core/widget.dart';
-import '../core/loader.dart';
 import 'make_request.dart';
 import '../journal/journal_editing_page.dart';
 import 'video_page.dart';
 import 'chat_page.dart';
-import '../settings/apps_selection_page.dart';
 import 'package:flutter/material.dart';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:device_apps/device_apps.dart';
 
 class MentorPage extends StatefulWidget {
   const MentorPage({super.key});
@@ -27,56 +24,6 @@ class _MentorPageState extends State<MentorPage> {
   bool isLoading = false;
   List<Messages> messages_data = [];
   List<Video> videos = [];
-  //
-  // String serverurl = '';
-  // final Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
-  // late ScheduleManager scheduleManager;
-
-  // // Preparing the screen
-
-  // Future<void> loadstuffFromSharedPreferences() async {
-  //   if (loadedApps.isEmpty) {
-  //     loadedApps = await loadApps();
-  //   }
-
-  //   apps_data = loadedApps;
-
-  //   final SharedPreferences prefs = await _prefs;
-  //   late TimeOfDay defaultTime;
-  //   final scheduledTime = prefs.getString('scheduledTime');
-  //   defaultTime = scheduledTime != null
-  //       ? TimeOfDay.fromDateTime(DateTime.parse(scheduledTime))
-  //       : TimeOfDay.now();
-
-  //   scheduleManager = ScheduleManager(callback: _emulateRequest);
-  //   scheduleManager.scheduleEmulateRequest(defaultTime);
-
-  //   List<String>? selectedAppNames = prefs.getStringList('selectedApps');
-  //   if (selectedAppNames != null) {
-  //     setState(() {
-  //       selected_apps_data = apps_data
-  //           .where((app) => selectedAppNames.contains(app.appName))
-  //           .toList();
-  //     });
-  //   }
-
-  //   final storedData = await _storage.read(key: 'completion');
-  //   String? serverurl = await _storage.read(key: 'server_url');
-  //   serverurl = serverurl;
-
-  //   setState(() {
-  //     result = storedData ?? '';
-  //     if (result.isEmpty || result == '') {
-  //       _emulateRequest();
-  //     } else {
-  //       try {
-  //         __postprocessdata(storedData);
-  //       } catch (error) {
-  //         _emulateRequest();
-  //       }
-  //     }
-  //   });
-  // }
 
   //Gets user's usage data
   void _Makerequest(String interest) async {
@@ -102,20 +49,9 @@ class _MentorPageState extends State<MentorPage> {
     });
   }
 
-  final Loader _loader = Loader();
-  List<Application> selected_apps_data = Data.selectedApps;
-
-  void loading_apps() async {
-    await _loader.loadselectedApps();
-    setState(() {
-      selected_apps_data = Data.selectedApps;
-    });
-  }
-
   @override
   void initState() {
     super.initState();
-    loading_apps();
   }
 
   @override
@@ -130,41 +66,6 @@ class _MentorPageState extends State<MentorPage> {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Card(
-                    color: const Color.fromARGB(255, 19, 19, 19),
-                    child: ListTile(
-                      onLongPress: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => const AppSelectionPage()),
-                        );
-                      },
-                      onTap: () {
-                        Navigator.pushNamed(context, '/apps');
-                      },
-                      title: const CoreText(text: "Apps"),
-                      subtitle: ListView.builder(
-                          physics: const NeverScrollableScrollPhysics(),
-                          shrinkWrap: true,
-                          itemCount: selected_apps_data.length,
-                          itemBuilder: (context, index) {
-                            final Application app = selected_apps_data[index];
-                            return ListTile(
-                              tileColor: const Color.fromARGB(255, 19, 19, 19),
-                              onTap: () async {
-                                bool isInstalled =
-                                    await DeviceApps.isAppInstalled(
-                                        app.packageName);
-                                if (isInstalled) {
-                                  DeviceApps.openApp(app.packageName);
-                                }
-                              },
-                              title: CoreText(text: app.appName),
-                            );
-                          }),
-                    )),
-                const SizedBox(height: 16.0),
                 StreamBuilder<QuerySnapshot>(
                   stream: FirebaseFirestore.instance
                       .collection('users')

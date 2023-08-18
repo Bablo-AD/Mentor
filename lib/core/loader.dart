@@ -1,6 +1,5 @@
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:device_apps/device_apps.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'dart:convert';
 
@@ -68,34 +67,6 @@ class Loader {
     }
 
     return messages;
-  }
-
-  Future<List<Application>> loadselectedApps() async {
-    final SharedPreferences storage = await _prefs;
-    List<String>? selectedApps = storage.getStringList('selectedApps');
-    if (selectedApps != null) {
-      Data.selectedApps = Data.loadedApps
-          .where((app) => selectedApps.contains(app.appName))
-          .toList();
-    }
-    return Data.selectedApps;
-  }
-
-  Future<void> saveSelectedApps() async {
-    final SharedPreferences prefs = await _prefs;
-    List<String> selectedAppNames =
-        Data.selectedApps.map((app) => app.appName).toList();
-    await prefs.setStringList('selectedApps', selectedAppNames);
-  }
-
-  static Future<List<Application>> loadApps() async {
-    List<Application> loadedApps = await DeviceApps.getInstalledApplications(
-      includeSystemApps: true,
-      onlyAppsWithLaunchIntent: true,
-    );
-    loadedApps.sort((a, b) => a.appName.compareTo(b.appName));
-    Data.loadedApps = loadedApps;
-    return loadedApps;
   }
 
   Future<String?> loadcompletion() async {

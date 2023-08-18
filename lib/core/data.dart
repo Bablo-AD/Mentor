@@ -1,5 +1,4 @@
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:device_apps/device_apps.dart';
 
 class Data {
   static String? userId = FirebaseAuth.instance.currentUser?.uid;
@@ -8,9 +7,6 @@ class Data {
   static List<Messages> messages_data = [];
   static String completion_message = "";
   static List<Video> videoList = [];
-
-  static List<Application> loadedApps = [];
-  static List<Application> selectedApps = [];
 }
 
 class Video {
