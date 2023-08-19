@@ -1,5 +1,4 @@
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'dart:convert';
 
@@ -20,7 +19,6 @@ class SessionManager {
 }
 
 class Loader {
-  final _securestorage = const FlutterSecureStorage();
   final Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
 
   void saveScheduleTime(String selectedTime) async {
@@ -111,8 +109,9 @@ class Loader {
   }
 
   Future<Map<String, String?>> loadHabiticaDetails() async {
-    String? habiticaUserId = await _securestorage.read(key: 'habitica_user_id');
-    String? habiticaApiKey = await _securestorage.read(key: 'habitica_api_key');
+    final SharedPreferences storage = await _prefs;
+    String? habiticaUserId = storage.getString('habitica_user_id');
+    String? habiticaApiKey = storage.getString('habitica_api_key');
     return {
       'userId': habiticaUserId,
       'apiKey': habiticaApiKey,
@@ -120,14 +119,9 @@ class Loader {
   }
 
   void saveHabiticaDetails(String habiticaUserId, String habiticaApiKey) async {
-    await _securestorage.write(
-      key: 'habitica_user_id',
-      value: habiticaUserId,
-    );
-    await _securestorage.write(
-      key: 'habitica_api_key',
-      value: habiticaApiKey,
-    );
+    final SharedPreferences storage = await _prefs;
+    await storage.setString('habitica_user_id', habiticaUserId);
+    await storage.setString('habitica_api_key', habiticaApiKey);
   }
 
   Future<Map<String, String?>> load_user_stuff() async {

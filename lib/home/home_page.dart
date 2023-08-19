@@ -6,6 +6,7 @@ import 'chat_page.dart';
 import 'package:flutter/material.dart';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:intl/intl.dart';
 
 class MentorPage extends StatefulWidget {
   const MentorPage({super.key});
@@ -91,8 +92,10 @@ class _MentorPageState extends State<MentorPage> {
 
                     final lastJournalData =
                         journalDocs[0].data() as Map<String, dynamic>;
-                    final lastJournalTitle =
-                        lastJournalData['title'].toDate().toString();
+                    final timestamp = lastJournalData['title'] as Timestamp;
+                    var format = new DateFormat('H:m d-M-y');
+
+                    final lastJournalTitle = format.format(timestamp.toDate());
                     final lastJournalContent =
                         lastJournalData['content'] as String;
 
@@ -101,7 +104,7 @@ class _MentorPageState extends State<MentorPage> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Card(
-                          color: const Color.fromARGB(255, 19, 19, 19),
+                          color: Theme.of(context).colorScheme.surfaceVariant,
                           child: ListTile(
                             title: Text(
                               lastJournalTitle,
@@ -150,73 +153,20 @@ class _MentorPageState extends State<MentorPage> {
                         );
                       },
                       child: Card(
-                        color: const Color.fromARGB(255, 19, 19, 19),
                         child: ListTile(
-                          title: Row(
-                            children: [
-                              IconButton(
-                                onPressed: () {
-                                  _Makerequest(interest);
-                                },
-                                icon: const Icon(Icons.refresh,
-                                    color: Color.fromARGB(255, 50, 204, 102)),
-                              ),
-                              const Text(
-                                "Mentor: ",
-                                style: TextStyle(
-                                  color: Color.fromARGB(255, 50, 204, 102),
-                                ),
-                              ),
-                            ],
+                          trailing: IconButton(
+                              onPressed: () {
+                                _Makerequest(interest);
+                              },
+                              icon: const Icon(Icons.refresh)),
+                          title: const Text(
+                            "Mentor",
                           ),
                           subtitle: Text(
                             result,
-                            style: const TextStyle(
-                              color: Color.fromARGB(255, 50, 204, 102),
-                            ),
                           ),
                         ),
                       )),
-                const SizedBox(height: 16.0),
-                Row(
-                  children: [
-                    Expanded(
-                      child: TextField(
-                        autofillHints: const <String>[
-                          'I want to exercise daily',
-                          'I want to read daily'
-                        ],
-                        controller: interestController,
-                        decoration: const InputDecoration(
-                          hintText: 'Enter Your Goal',
-                          border: InputBorder.none,
-                        ),
-                        style: const TextStyle(
-                          fontSize: 16.0,
-                          color: Color.fromARGB(255, 50, 204, 102),
-                        ),
-                        onSubmitted: (value) {
-                          setState(() {
-                            interest = value;
-                          });
-                          _Makerequest(
-                              interest); // Call your submission method here
-                        },
-                        onChanged: (value) {
-                          setState(() {
-                            interest = value;
-                          });
-                        },
-                      ),
-                    ),
-                    IconButton(
-                      onPressed:
-                          isLoading ? null : () => _Makerequest(interest),
-                      icon: const Icon(Icons.search),
-                      color: const Color.fromARGB(255, 50, 204, 102),
-                    ),
-                  ],
-                ),
                 const SizedBox(height: 16.0),
                 ListView.builder(
                   physics: const NeverScrollableScrollPhysics(),

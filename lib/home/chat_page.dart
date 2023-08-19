@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import '../core/data.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 import '../core/loader.dart';
 
@@ -19,7 +18,6 @@ class _ChatPageState extends State<ChatPage> {
   List<Messages> messages = Data.messages_data;
   final ScrollController _scrollController = ScrollController();
   TextEditingController textEditingController = TextEditingController();
-  final _storage = const FlutterSecureStorage();
   final Loader _loader = Loader();
   String serverurl = '';
   void _sendMessage(String message) async {
@@ -36,10 +34,10 @@ class _ChatPageState extends State<ChatPage> {
               'content': message.content,
             })
         .toList();
-    String? serverurl = await _storage.read(key: 'server_url');
-    String url = '${serverurl!}/mentor/messages';
+    String? serverurl = await _loader.loadserverurl();
+
     final response = await http.post(
-      Uri.parse(url),
+      Uri.parse(serverurl.toString()),
       headers: {'Content-Type': 'application/json'},
       body: jsonEncode({'messages': messagesData}),
     );
@@ -105,11 +103,9 @@ class _ChatPageState extends State<ChatPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Mentor/Chat',
-            style: TextStyle(color: Color.fromARGB(255, 50, 204, 102))),
-        backgroundColor: Colors.black,
-      ),
-      backgroundColor: Colors.black,
+          title: const Text(
+        'Mentor/Chat',
+      )),
       body: Column(
         children: [
           Expanded(
@@ -122,9 +118,6 @@ class _ChatPageState extends State<ChatPage> {
                 return ListTile(
                   title: Text(
                     message.content,
-                    style: const TextStyle(
-                      color: Color.fromARGB(255, 50, 204, 102),
-                    ),
                   ),
                   tileColor: message.role == 'user'
                       ? Colors.black
@@ -142,14 +135,10 @@ class _ChatPageState extends State<ChatPage> {
                     controller: textEditingController,
                     style: const TextStyle(
                       fontSize: 16.0,
-                      color: Color.fromARGB(255, 50, 204, 102),
                     ),
                     decoration: const InputDecoration(
                       filled: true,
-                      fillColor: Color.fromARGB(255, 19, 19, 19),
-                      hintStyle: TextStyle(
-                        color: Color.fromARGB(255, 50, 204, 102),
-                      ),
+                      hintStyle: TextStyle(),
                       hintText: 'Type a message...',
                     ),
                   ),
@@ -157,7 +146,6 @@ class _ChatPageState extends State<ChatPage> {
                 IconButton(
                   icon: const Icon(
                     Icons.send,
-                    color: Color.fromARGB(255, 50, 204, 102),
                   ),
                   onPressed: () {
                     final message = textEditingController.text.trim();

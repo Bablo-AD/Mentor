@@ -53,64 +53,80 @@ class _SettingsPageState extends State<SettingsPage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  TextFormField(
-                    controller: _serverurlController,
-                    style: const TextStyle(
-                        color: Color.fromARGB(255, 50, 204, 102)),
-                    decoration: const InputDecoration(
-                      labelText: 'ServerUrl',
-                      labelStyle:
-                          TextStyle(color: Color.fromARGB(255, 50, 204, 102)),
-                      enabledBorder: UnderlineInputBorder(
-                        borderSide: BorderSide(
-                            color: Color.fromARGB(255, 50, 204, 102)),
-                      ),
-                      focusedBorder: UnderlineInputBorder(
-                        borderSide: BorderSide(
-                            color: Color.fromARGB(255, 50, 204, 102)),
-                      ),
-                    ),
-                    validator: (value) {
-                      if (value!.isEmpty) {
-                        return 'Please enter a valid Url';
-                      }
-                      return null;
-                    },
-                  ),
-                  const SizedBox(height: 16.0),
-                  ElevatedButton(onPressed: _saveSettings, child: Text("Save")),
-                  const SizedBox(height: 16.0),
                   ElevatedButton(
+                      child: Text("Edit ServerUrl"),
                       onPressed: () {
-                        Navigator.pushNamed(context, '/appSelectionPage');
-                      },
-                      child: Text("Edit YOur Home Screen Apps")),
-                  const SizedBox(height: 16.0),
+                        showDialog(
+                            barrierDismissible: true,
+                            barrierLabel: MaterialLocalizations.of(context)
+                                .modalBarrierDismissLabel,
+                            context: context,
+                            builder: (BuildContext context) {
+                              return Dialog.fullscreen(
+                                  child: Padding(
+                                      padding: const EdgeInsets.all(16.0),
+                                      child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.stretch,
+                                          children: [
+                                            TextFormField(
+                                              controller: _serverurlController,
+                                              style: const TextStyle(),
+                                              decoration: const InputDecoration(
+                                                labelText: 'ServerUrl',
+                                                enabledBorder:
+                                                    UnderlineInputBorder(
+                                                  borderSide: BorderSide(),
+                                                ),
+                                                focusedBorder:
+                                                    UnderlineInputBorder(
+                                                  borderSide: BorderSide(),
+                                                ),
+                                              ),
+                                              validator: (value) {
+                                                if (value!.isEmpty) {
+                                                  return 'Please enter a valid Url';
+                                                }
+                                                return null;
+                                              },
+                                            ),
+                                            const SizedBox(height: 16.0),
+                                            Text(
+                                                "Only do this when you know what you are doing"),
+                                            OutlinedButton(
+                                                child: Text("Back"),
+                                                onPressed: () {
+                                                  Navigator.pop(context);
+                                                }),
+                                            const SizedBox(height: 4.0),
+                                            FilledButton(
+                                                onPressed: () {
+                                                  _saveSettings();
+                                                  Navigator.pop(context);
+                                                },
+                                                child: Text("Save")),
+                                          ])));
+                            });
+                      }),
+                  const SizedBox(height: 4.0),
                   ElevatedButton(
                       onPressed: () {
                         Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const AutoRequest(),
-                          ),
-                        );
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => AutoRequest()));
                       },
-                      child: Text("AutoMentor")),
-                  const SizedBox(height: 16.0),
+                      child: Text("Select when you write journal")),
+                  const SizedBox(height: 24.0),
+                  Text("You", style: TextStyle(fontSize: 18)),
+                  const SizedBox(height: 4.0),
                   ElevatedButton(
                       onPressed: () {
                         Navigator.pushNamed(context, '/knowingthestudent');
                       },
-                      child: Text("Edit your goal and purpose")),
-                  const SizedBox(height: 16.0),
-                  ElevatedButton(
-                      onPressed: () {
-                        Navigator.pushNamed(
-                            context, '/habiticaIntegrationPage');
-                      },
-                      child: Text("Connect with Habitica")),
-                  const SizedBox(height: 16.0),
-                  ElevatedButton(
+                      child: Text("Edit your purpose")),
+                  const SizedBox(height: 4),
+                  OutlinedButton(
                     onPressed: () async {
                       await FirebaseAuth.instance.signOut();
                       await SessionManager.saveLoginState(false);
@@ -126,6 +142,15 @@ class _SettingsPageState extends State<SettingsPage> {
                     },
                     child: Text('Sign Out'),
                   ),
+                  const SizedBox(height: 24.0),
+                  Text("Integrations", style: TextStyle(fontSize: 18)),
+                  const SizedBox(height: 4.0),
+                  ElevatedButton(
+                      onPressed: () {
+                        Navigator.pushNamed(
+                            context, '/habiticaIntegrationPage');
+                      },
+                      child: Text("Connect with Habitica")),
                 ],
               ),
             ),

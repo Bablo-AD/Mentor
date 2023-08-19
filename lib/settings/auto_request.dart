@@ -48,11 +48,8 @@ class _AutoRequestState extends State<AutoRequest> {
         appBar: AppBar(
           title: const Text(
             'Mentor/Settings/Auto_Request',
-            style: TextStyle(color: Color.fromARGB(255, 50, 204, 102)),
           ),
-          backgroundColor: Colors.black,
         ),
-        backgroundColor: Colors.black,
         body: SingleChildScrollView(
             child: Padding(
           padding: const EdgeInsets.all(16.0),
