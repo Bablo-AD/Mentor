@@ -46,13 +46,14 @@ class DataProcessor {
     String usergoal = userStuff['userGoal'].toString();
     String selfperception = userStuff['selfPerception'].toString();
     // Prepare the data to send in the request
-    String meta_data = """habits= $habits,
+    String meta_data = """
+    habits= $habits,
       goal= $interest,
       journal= $journalDataList,
       usage= $phoneUsageData,
-      usergoal= $usergoal,
-      selfperception= $selfperception""";
-
+      mygoal= $usergoal,
+      myperception= $selfperception """;
+    print(meta_data);
     FirebaseFirestore firestore = FirebaseFirestore.instance;
     DocumentSnapshot userDoc =
         await firestore.collection('users').doc(userId).get();
@@ -60,7 +61,7 @@ class DataProcessor {
 
     Map<String, String> data = {
       "messages": meta_data,
-      "user_id": Data.userId.toString(),
+      "user_id": userId.toString(),
       "apikey": userData['apikey'],
       "update_history": "True"
     };
@@ -219,7 +220,7 @@ class HabiticaData {
     return filteredData;
   }
 
-  Future<String> execute({String? target_date, int num_days = 5}) async {
+  Future<String> execute({String? target_date, int num_days = 1}) async {
     String result = '';
     target_date ??= DateFormat('yyyy-MM-dd').format(DateTime.now());
     await getUserData();
@@ -240,7 +241,7 @@ class HabiticaData {
 class PhoneUsage {
   Future<String> getUsage(BuildContext context) async {
     DateTime endDate = DateTime.now();
-    DateTime startDate = endDate.subtract(const Duration(days: 3));
+    DateTime startDate = endDate.subtract(const Duration(days: 1));
     String outputString = "";
 
     // check if permission is granted

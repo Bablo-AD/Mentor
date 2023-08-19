@@ -181,7 +181,7 @@ class _SettingsPageState extends State<SettingsPage> {
               label: 'Home',
             ),
             NavigationDestination(
-              icon: Icon(Icons.notes),
+              icon: Icon(Icons.book),
               label: 'Journal',
             ),
             NavigationDestination(

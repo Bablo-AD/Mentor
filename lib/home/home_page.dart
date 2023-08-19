@@ -34,7 +34,7 @@ class _MentorPageState extends State<MentorPage> {
     });
     DataProcessor dataGetter = DataProcessor(context);
     try {
-      dataGetter.execute(interest);
+      dataGetter.execute();
     } catch (e) {
       setState(() {
         isLoading = false;
@@ -227,7 +227,7 @@ class _MentorPageState extends State<MentorPage> {
               label: 'Home',
             ),
             NavigationDestination(
-              icon: Icon(Icons.notes),
+              icon: Icon(Icons.book),
               label: 'Journal',
             ),
             NavigationDestination(

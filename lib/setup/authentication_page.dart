@@ -58,10 +58,21 @@ class _EmailAuthState extends State<EmailAuth> {
   void initialize_user() async {
     FirebaseFirestore firestore = FirebaseFirestore.instance;
     String apiKey = generateApiKey();
+    Map<String, dynamic> data = {
+      "head": [
+        {
+          "role": "system",
+          "content":
+              "Now you are the user's partner who criticizes the user and helps him grow. Here I provide you the details of the user"
+        }
+      ],
+      "body": [],
+    };
+    String messages = jsonEncode(data);
     await firestore
         .collection('users')
         .doc(Data.userId.toString())
-        .set({"apikey": apiKey, "messages": "[{}]"});
+        .set({"apikey": apiKey, "messages": messages});
   }
 
   String generateApiKey() {

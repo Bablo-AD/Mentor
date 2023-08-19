@@ -89,7 +89,7 @@ class Loader {
         .collection("journal")
         .where('title',
             isGreaterThan: Timestamp.fromDate(
-                DateTime.now().subtract(const Duration(days: 3))))
+                DateTime.now().subtract(const Duration(days: 1))))
         .get();
     List<QueryDocumentSnapshot> documents = snapshot.docs;
     return documents;
