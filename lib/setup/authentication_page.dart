@@ -1,4 +1,3 @@
-import '../core/widget.dart';
 import '../core/loader.dart';
 import '../core/data.dart';
 import 'setup_roller.dart';
@@ -114,8 +113,8 @@ class _EmailAuthState extends State<EmailAuth> {
 
   @override
   Widget build(BuildContext context) {
-    return CoreScaffold(
-      title: 'Mentor/Authentication',
+    return Scaffold(
+      appBar: AppBar(title: Text('Mentor/Authentication')),
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(16.0),
@@ -123,24 +122,25 @@ class _EmailAuthState extends State<EmailAuth> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              CoreTextField(
-                controller: _emailController,
-                label: "Email",
-              ),
+              TextField(
+                  controller: _emailController,
+                  decoration: InputDecoration(labelText: "Email")),
               const SizedBox(height: 8.0),
-              CoreTextField(
-                controller: _passwordController,
-                label: "Password",
-              ),
+              TextField(
+                  obscureText: true,
+                  controller: _passwordController,
+                  decoration: InputDecoration(labelText: "Password")),
               const SizedBox(height: 16.0),
-              CoreElevatedButton(
+              ElevatedButton(
                 onPressed: _signIn,
-                label: "Sign In",
+                child: Text("Sign In"),
               ),
-              const SizedBox(height: 8.0),
-              CoreElevatedButton(
+              const SizedBox(height: 8),
+              Center(child: Text("New to the jungle? SignUp")),
+              const SizedBox(height: 4),
+              FilledButton(
                 onPressed: _signUp,
-                label: "Sign Up",
+                child: Text("Sign Up"),
               ),
             ],
           ),

@@ -1,4 +1,3 @@
-import 'package:Bablo/core/widget.dart';
 import 'package:flutter/material.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -19,8 +18,8 @@ class VideoPage extends StatelessWidget {
       ),
     );
 
-    return CoreScaffold(
-      title: 'Mentor/Video',
+    return Scaffold(
+      appBar: AppBar(title: Text('Mentor/Video')),
       body: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Column(
@@ -44,7 +43,7 @@ class VideoPage extends StatelessWidget {
                       const Color.fromARGB(255, 50, 204, 102),
                 ),
                 const SizedBox(height: 16.0),
-                CoreText(text: description),
+                Text(description),
               ])),
     );
   }

@@ -2,7 +2,6 @@ import '../home/make_request.dart';
 import 'package:flutter/material.dart';
 
 import '../core/loader.dart';
-import '../core/widget.dart';
 
 class HabiticaIntegrationPage extends StatefulWidget {
   const HabiticaIntegrationPage({Key? key}) : super(key: key);
@@ -67,8 +66,8 @@ class _HabiticaIntegrationPageState extends State<HabiticaIntegrationPage> {
 
   @override
   Widget build(BuildContext context) {
-    return CoreScaffold(
-        title: "Mentor/Settings/Habitica",
+    return Scaffold(
+        appBar: AppBar(title: Text("Mentor/Settings/Habitica")),
         body: SingleChildScrollView(
             child: Padding(
           padding: const EdgeInsets.all(16.0),
@@ -77,47 +76,32 @@ class _HabiticaIntegrationPageState extends State<HabiticaIntegrationPage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                const CoreText(text: 'What is Habitica?'),
+                const Text('What is Habitica?'),
                 const SizedBox(height: 8.0),
-                const CoreText(
-                  text:
-                      'Habitica is a habit-tracking app that helps you improve your productivity and turn your tasks and goals into a game. To connect with Habitica, you need to provide your Habitica User ID and API Key.',
+                const Text(
+                  'Habitica is a habit-tracking app that helps you improve your productivity and turn your tasks and goals into a game. To connect with Habitica, you need to provide your Habitica User ID and API Key.',
                 ),
                 const SizedBox(height: 16.0),
-                const CoreText(
-                  text: "To find your API Token",
+                const Text(
+                  "To find your API Token",
                   style: TextStyle(
-                    color: Color.fromARGB(255, 50, 204, 102),
                     fontSize: 16.0,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
                 const SizedBox(height: 8.0),
-                const CoreText(
-                  text: '1. For the website: User Icon > Settings > API.',
+                const Text(
+                  '1. For the website: User Icon > Settings > API.',
                 ),
                 const SizedBox(height: 8.0),
-                const CoreText(
-                  text:
-                      '2. For iOS/Android App: Menu > API > API Token (tap on it to copy it to your clipboard).',
+                const Text(
+                  '2. For iOS/Android App: Menu > API > API Token (tap on it to copy it to your clipboard).',
                 ),
                 const SizedBox(height: 16.0),
                 TextFormField(
                   controller: _habiticaUserIdController,
-                  style:
-                      const TextStyle(color: Color.fromARGB(255, 50, 204, 102)),
                   decoration: const InputDecoration(
                     labelText: 'Habitica User ID',
-                    labelStyle:
-                        TextStyle(color: Color.fromARGB(255, 50, 204, 102)),
-                    enabledBorder: UnderlineInputBorder(
-                      borderSide:
-                          BorderSide(color: Color.fromARGB(255, 50, 204, 102)),
-                    ),
-                    focusedBorder: UnderlineInputBorder(
-                      borderSide:
-                          BorderSide(color: Color.fromARGB(255, 50, 204, 102)),
-                    ),
                   ),
                   validator: (value) {
                     if (value!.isEmpty) {
@@ -129,20 +113,8 @@ class _HabiticaIntegrationPageState extends State<HabiticaIntegrationPage> {
                 const SizedBox(height: 16.0),
                 TextFormField(
                   controller: _habiticaApiKeyController,
-                  style:
-                      const TextStyle(color: Color.fromARGB(255, 50, 204, 102)),
                   decoration: const InputDecoration(
                     labelText: 'Habitica API Key',
-                    labelStyle:
-                        TextStyle(color: Color.fromARGB(255, 50, 204, 102)),
-                    enabledBorder: UnderlineInputBorder(
-                      borderSide:
-                          BorderSide(color: Color.fromARGB(255, 50, 204, 102)),
-                    ),
-                    focusedBorder: UnderlineInputBorder(
-                      borderSide:
-                          BorderSide(color: Color.fromARGB(255, 50, 204, 102)),
-                    ),
                   ),
                   validator: (value) {
                     if (value!.isEmpty) {
@@ -152,10 +124,11 @@ class _HabiticaIntegrationPageState extends State<HabiticaIntegrationPage> {
                   },
                 ),
                 const SizedBox(height: 16.0),
-                CoreElevatedButton(label: "Save", onPressed: _saveSettings),
+                FilledButton.tonal(
+                    child: Text("Save"), onPressed: _saveSettings),
                 const SizedBox(height: 16.0),
-                const CoreText(
-                  text: "You can leave this by pressing the back key",
+                const Text(
+                  "You can leave this by pressing the back key",
                 ),
               ],
             ),

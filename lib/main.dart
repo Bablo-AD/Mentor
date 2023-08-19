@@ -1,4 +1,4 @@
-import 'package:Bablo/settings/knowingthestudent.dart';
+import 'settings/knowingthestudent.dart';
 import 'package:flutter/material.dart';
 import 'home/home_page.dart';
 import 'settings/settings_page.dart';
@@ -9,6 +9,7 @@ import 'setup/authentication_page.dart';
 import 'settings/habitica_integration_page.dart';
 
 import 'core/loader.dart';
+import 'color_schemes.g.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -28,7 +29,9 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Mentor',
-      theme: ThemeData(primarySwatch: Colors.green, fontFamily: 'Monospace'),
+      theme: ThemeData(useMaterial3: true, colorScheme: lightColorScheme),
+      darkTheme: ThemeData(useMaterial3: true, colorScheme: darkColorScheme),
+      themeMode: ThemeMode.system,
       home: isLoggedIn ? const MentorPage() : const EmailAuth(),
       routes: {
         //main pages

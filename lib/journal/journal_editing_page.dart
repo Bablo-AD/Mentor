@@ -1,8 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-
-import '../core/widget.dart';
+import 'package:intl/intl.dart';
 import '../core/data.dart';
 
 class JournalEditingPage extends StatefulWidget {
@@ -32,7 +31,8 @@ class _JournalEditingPageState extends State<JournalEditingPage> {
   void initState() {
     super.initState();
     if (widget.journalTitle.isEmpty) {
-      journalTitle = DateTime.now().toString();
+      var format = new DateFormat('H:m d-M-y');
+      journalTitle = format.format(DateTime.now()).toString();
     } else {
       journalTitle = widget.journalTitle;
     }
@@ -68,7 +68,8 @@ class _JournalEditingPageState extends State<JournalEditingPage> {
     }
   }
 
-  void _deleteJournal(String? documentId) async {
+  void deleteJournal() async {
+    String? documentId = widget.documentId;
     if (documentId != null) {
       await FirebaseService().deleteJournal(documentId);
       ScaffoldMessenger.of(context).showSnackBar(
@@ -84,8 +85,8 @@ class _JournalEditingPageState extends State<JournalEditingPage> {
 
   @override
   Widget build(BuildContext context) {
-    return CoreScaffold(
-      title: "Mentor/Journal/Edit",
+    return Scaffold(
+      appBar: AppBar(title: Text("Mentor/Journal/Edit")),
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(16.0),
@@ -93,32 +94,15 @@ class _JournalEditingPageState extends State<JournalEditingPage> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Row(
-                children: [
-                  Expanded(
-                    child: CoreText(
-                      text: journalTitle,
-                    ),
-                  ),
-                  IconButton(
-                    onPressed: () {
-                      _deleteJournal(widget.documentId);
-                    },
-                    icon: const Icon(Icons.delete),
-                    color: Colors.red,
-                  ),
-                ],
-              ),
+              Text(journalTitle),
               const SizedBox(height: 16.0),
               TextField(
                 controller: _contentController,
+                minLines: 10,
                 maxLines: null,
                 keyboardType: TextInputType.multiline,
-                style:
-                    const TextStyle(color: Color.fromARGB(255, 50, 204, 102)),
                 decoration: const InputDecoration(
                   filled: true,
-                  fillColor: Color.fromARGB(255, 19, 19, 19),
                   border: OutlineInputBorder(),
                 ),
                 onChanged: (value) {
@@ -126,9 +110,14 @@ class _JournalEditingPageState extends State<JournalEditingPage> {
                 },
               ),
               const SizedBox(height: 16.0),
-              CoreElevatedButton(
+              FilledButton(
                 onPressed: saveJournalEntry,
-                label: "Save Journal",
+                child: Text("Save Journal"),
+              ),
+              const SizedBox(height: 8.0),
+              OutlinedButton(
+                onPressed: deleteJournal,
+                child: Text("Delete Journal"),
               ),
             ],
           ),

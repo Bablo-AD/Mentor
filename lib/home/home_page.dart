@@ -1,5 +1,4 @@
 import '../core/data.dart';
-import '../core/widget.dart';
 import 'make_request.dart';
 import '../journal/journal_editing_page.dart';
 import 'video_page.dart';
@@ -16,7 +15,7 @@ class MentorPage extends StatefulWidget {
 }
 
 class _MentorPageState extends State<MentorPage> {
-  final int _selectedIndex = 0;
+  int _selectedIndex = 0;
   final interestController = TextEditingController();
 
   String interest = '';
@@ -56,8 +55,8 @@ class _MentorPageState extends State<MentorPage> {
 
   @override
   Widget build(BuildContext context) {
-    return CoreScaffold(
-        title: 'Mentor',
+    return Scaffold(
+        appBar: AppBar(title: Text('Mentor')),
         body: SingleChildScrollView(
           // Wrap the body with SingleChildScrollView
           child: Padding(
@@ -87,7 +86,7 @@ class _MentorPageState extends State<MentorPage> {
                     final journalDocs = snapshot.data?.docs;
 
                     if (journalDocs == null || journalDocs.isEmpty) {
-                      return const CoreText(text: 'No journals available.');
+                      return const Text('No journals available.');
                     }
 
                     final lastJournalData =
@@ -104,11 +103,11 @@ class _MentorPageState extends State<MentorPage> {
                         Card(
                           color: const Color.fromARGB(255, 19, 19, 19),
                           child: ListTile(
-                            title: CoreText(
-                              text: lastJournalTitle,
+                            title: Text(
+                              lastJournalTitle,
                             ),
-                            subtitle: CoreText(
-                              text: lastJournalContent,
+                            subtitle: Text(
+                              lastJournalContent,
                             ),
                             onTap: () {
                               Navigator.push(
@@ -137,8 +136,8 @@ class _MentorPageState extends State<MentorPage> {
                       child: CircularProgressIndicator(),
                     ),
                     SizedBox(height: 10.0),
-                    CoreText(
-                      text: "YOLO",
+                    Text(
+                      "YOLO",
                     )
                   ])
                 else
@@ -253,7 +252,39 @@ class _MentorPageState extends State<MentorPage> {
             ),
           ),
         ),
-        bottomNavigationBar:
-            CoreBottomNavigationBar(selectedIndex: _selectedIndex));
+        bottomNavigationBar: NavigationBar(
+          selectedIndex: _selectedIndex,
+          onDestinationSelected: (int index) {
+            setState(() {
+              _selectedIndex = index;
+              switch (index) {
+                case 0:
+                  Navigator.pushReplacementNamed(context, '/mentor');
+                  break;
+                case 1:
+                  Navigator.pushReplacementNamed(context, '/journal');
+                  break;
+                case 2:
+                  Navigator.pushReplacementNamed(context, '/settings');
+                  break;
+              }
+            });
+          },
+          destinations: const <Widget>[
+            NavigationDestination(
+              selectedIcon: Icon(Icons.home),
+              icon: Icon(Icons.home_outlined),
+              label: 'Home',
+            ),
+            NavigationDestination(
+              icon: Icon(Icons.notes),
+              label: 'Journal',
+            ),
+            NavigationDestination(
+              icon: Icon(Icons.settings),
+              label: 'Settings',
+            ),
+          ],
+        ));
   }
 }

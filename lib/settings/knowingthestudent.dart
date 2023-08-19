@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 import '../core/loader.dart';
-import '../core/widget.dart';
 
 class Knowingthestudent extends StatefulWidget {
   const Knowingthestudent({Key? key}) : super(key: key);
@@ -63,12 +62,9 @@ class _KnowingthestudentState extends State<Knowingthestudent> {
     return Scaffold(
         appBar: AppBar(
           title: const Text(
-            'Mentor/FirstMeet',
-            style: TextStyle(color: Color.fromARGB(255, 50, 204, 102)),
+            'Tell me about yourself',
           ),
-          backgroundColor: Colors.black,
         ),
-        backgroundColor: Colors.black,
         body: SingleChildScrollView(
             child: Padding(
           padding: const EdgeInsets.all(16.0),
@@ -77,26 +73,21 @@ class _KnowingthestudentState extends State<Knowingthestudent> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                const CoreText(text: 'What is your goal or purpose?'),
+                const Text('What is your goal or purpose?'),
                 const SizedBox(height: 10),
                 TextFormField(
                   controller: _userGoalController,
                   validator: (value) {
                     if (value == null || value.isEmpty) {
-                      return 'To Guide you to it';
+                      return 'What are you trying to achieve';
                     }
                     return null; // Return null if the value is valid
                   },
-                  style:
-                      const TextStyle(color: Color.fromARGB(255, 50, 204, 102)),
                   maxLines: null,
                   keyboardType: TextInputType.multiline,
                   decoration: const InputDecoration(
                     filled: true,
-                    fillColor: Color.fromARGB(255, 19, 19, 19),
                     labelText: 'Your Goal',
-                    labelStyle:
-                        TextStyle(color: Color.fromARGB(255, 50, 204, 102)),
                   ),
                   onChanged: (value) {
                     setState(() {
@@ -105,8 +96,8 @@ class _KnowingthestudentState extends State<Knowingthestudent> {
                   },
                 ),
                 const SizedBox(height: 16),
-                const CoreText(
-                  text: "What do you think about yourself?",
+                const Text(
+                  "What are you upto? Tell me how should i call you",
                 ),
                 const SizedBox(height: 10),
                 TextFormField(
@@ -117,16 +108,11 @@ class _KnowingthestudentState extends State<Knowingthestudent> {
                     }
                     return null; // Return null if the value is valid
                   },
-                  style:
-                      const TextStyle(color: Color.fromARGB(255, 50, 204, 102)),
                   maxLines: null,
                   keyboardType: TextInputType.multiline,
                   decoration: const InputDecoration(
                     filled: true,
-                    fillColor: Color.fromARGB(255, 19, 19, 19),
                     labelText: 'Self-Perception',
-                    labelStyle:
-                        TextStyle(color: Color.fromARGB(255, 50, 204, 102)),
                   ),
                   onChanged: (value) {
                     setState(() {
@@ -135,7 +121,7 @@ class _KnowingthestudentState extends State<Knowingthestudent> {
                   },
                 ),
                 const SizedBox(height: 16),
-                CoreElevatedButton(label: 'Save', onPressed: saveUserData)
+                FilledButton(child: Text('Save'), onPressed: saveUserData)
               ],
             ),
           ),
