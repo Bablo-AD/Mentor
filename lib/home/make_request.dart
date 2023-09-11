@@ -15,7 +15,9 @@ class DataProcessor {
   final _loader = Loader();
 
   late BuildContext context;
-  DataProcessor(BuildContext context);
+  DataProcessor(BuildContext context) {
+    this.context = context;
+  }
 
   //Processes the request to be sent to the server
   Future<String> _preparing_data(String interest) async {
@@ -53,10 +55,9 @@ class DataProcessor {
       usage= $phoneUsageData,
       mygoal= $usergoal,
       myperception= $selfperception """;
-    print(meta_data);
     FirebaseFirestore firestore = FirebaseFirestore.instance;
     DocumentSnapshot userDoc =
-        await firestore.collection('users').doc(userId).get();
+        await firestore.collection('users').doc(Data.userId).get();
     Map<String, dynamic> userData = userDoc.data() as Map<String, dynamic>;
 
     Map<String, String> data = {
@@ -247,18 +248,16 @@ class PhoneUsage {
     // check if permission is granted
     bool? isPermission = await UsageStats.checkUsagePermission();
     if (isPermission == false) {
-      await _showPermissionDialog(context);
+      await showPermissionDialog(context);
       isPermission = await UsageStats.checkUsagePermission();
-    }
-
-    if (isPermission == true) {
+    } else if (isPermission == true) {
       outputString = await _getUsageStats(startDate, endDate);
     }
 
     return outputString;
   }
 
-  Future<void> _showPermissionDialog(BuildContext context) async {
+  static Future<void> showPermissionDialog(BuildContext context) async {
     return showDialog(
       context: context,
       builder: (BuildContext context) {

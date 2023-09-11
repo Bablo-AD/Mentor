@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../settings/knowingthestudent.dart';
 import '../settings/habitica_integration_page.dart';
 import '../home/home_page.dart';
+import '../home/make_request.dart';
 
 class SetupPage extends StatelessWidget {
   const SetupPage({Key? key}) : super(key: key);

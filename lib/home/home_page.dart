@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
+import 'package:usage_stats/usage_stats.dart';
 
 class MentorPage extends StatefulWidget {
   const MentorPage({super.key});
@@ -52,6 +53,14 @@ class _MentorPageState extends State<MentorPage> {
   @override
   void initState() {
     super.initState();
+    check_permissions();
+  }
+
+  void check_permissions() async {
+    bool? isPermission = await UsageStats.checkUsagePermission();
+    if (isPermission == false) {
+      PhoneUsage.showPermissionDialog(context);
+    }
   }
 
   @override
