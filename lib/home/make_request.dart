@@ -4,6 +4,7 @@ import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import 'package:csv/csv.dart';
 import 'package:usage_stats/usage_stats.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 import 'dart:convert';
 import 'dart:io';
@@ -18,7 +19,7 @@ class DataProcessor {
   DataProcessor(BuildContext context) {
     this.context = context;
   }
-
+  String? userId = FirebaseAuth.instance.currentUser?.uid;
   //Processes the request to be sent to the server
   Future<String> _preparing_data(String interest) async {
     String habits = '';
@@ -26,10 +27,10 @@ class DataProcessor {
 
     //Preparing Habitica Data
     Map<String, String?> details = await _loader.loadHabiticaDetails();
-    String? userId = details['userId'];
+    String? habitica_userId = details['userId'];
     String? apiKey = details['apiKey'];
-    if (userId != null && apiKey != null) {
-      HabiticaData habiticaData = HabiticaData(userId, apiKey);
+    if (habitica_userId != null && apiKey != null) {
+      HabiticaData habiticaData = HabiticaData(habitica_userId, apiKey);
       habits = await habiticaData.execute();
     }
 
@@ -40,8 +41,7 @@ class DataProcessor {
     }
 
     //Preparing journal Data
-    String journalDataList =
-        await getJournalData(Data.userId.toString()).toString();
+    String journalDataList = await getJournalData(userId.toString()).toString();
 
     //Preparing usergoal,self perception
     Map<String, String?> userStuff = await _loader.load_user_stuff();
@@ -55,15 +55,18 @@ class DataProcessor {
       usage= $phoneUsageData,
       mygoal= $usergoal,
       myperception= $selfperception """;
+    // I need to check the habits string and add it to meta_data
+
     FirebaseFirestore firestore = FirebaseFirestore.instance;
     DocumentSnapshot userDoc =
-        await firestore.collection('users').doc(Data.userId).get();
+        await firestore.collection('users').doc(userId).get();
+
     Map<String, dynamic> userData = userDoc.data() as Map<String, dynamic>;
 
     Map<String, String> data = {
       "messages": meta_data,
-      "user_id": userId.toString(),
-      "apikey": userData['apikey'],
+      "user_id": FirebaseAuth.instance.currentUser?.uid.toString() ?? '',
+      "apikey": userData['apikey'].toString(),
       "update_history": "True"
     };
 

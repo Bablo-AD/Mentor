@@ -96,7 +96,8 @@ class _MentorPageState extends State<MentorPage> {
                     final journalDocs = snapshot.data?.docs;
 
                     if (journalDocs == null || journalDocs.isEmpty) {
-                      return const Text('No journals available.');
+                      return const Text(
+                          'Not wrote a journal yet? Go to journal page');
                     }
 
                     final lastJournalData =

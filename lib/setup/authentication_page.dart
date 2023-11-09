@@ -40,7 +40,7 @@ class _EmailAuthState extends State<EmailAuth> {
         builder: (BuildContext context) {
           return AlertDialog(
             title: const Text('Sign-in Failed'),
-            content: const Text('Invalid email or password.'),
+            content: const Text('Invalid email or password. Try Signing up'),
             actions: <Widget>[
               TextButton(
                 child: const Text('OK'),
