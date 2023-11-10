@@ -97,8 +97,8 @@ class Loader {
 
   Future<String> loadserverurl() async {
     final SharedPreferences storage = await _prefs;
-    //String serverUrl = storage.getString('server_url') ??
-    String serverUrl = 'https://prasannanrobots.pythonanywhere.com/mentor/chat';
+    String serverUrl = storage.getString('server_url') ??
+        'https://prasannanrobots.pythonanywhere.com/mentor/chat';
     return serverUrl;
   }
 

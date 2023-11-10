@@ -37,26 +37,44 @@ class DataProcessor {
     //Preparing phone usage data
     if (Platform.isAndroid) {
       PhoneUsage phoneUsage = PhoneUsage();
-      phoneUsageData = phoneUsage.getUsage(context).toString();
+      phoneUsageData = await phoneUsage.getUsage(context);
     }
 
     //Preparing journal Data
-    String journalDataList = await getJournalData(userId.toString()).toString();
+    String journalDataList = await getJournalData(userId.toString())
+        .then((journalDataList) => jsonEncode(journalDataList));
 
     //Preparing usergoal,self perception
     Map<String, String?> userStuff = await _loader.load_user_stuff();
     String usergoal = userStuff['userGoal'].toString();
     String selfperception = userStuff['selfPerception'].toString();
     // Prepare the data to send in the request
-    String meta_data = """
-    habits= $habits,
-      goal= $interest,
-      journal= $journalDataList,
-      usage= $phoneUsageData,
-      mygoal= $usergoal,
-      myperception= $selfperception """;
-    // I need to check the habits string and add it to meta_data
+    habits = (habits != "" && habits.isNotEmpty) ? "habits= $habits," : "";
+    String goal =
+        (interest != null && interest.isNotEmpty) ? "goal= $interest," : "";
+    String journal = (journalDataList != "[]" && journalDataList.isNotEmpty)
+        ? "journal= $journalDataList,"
+        : "";
+    String usage = (phoneUsageData != "\n" && phoneUsageData.isNotEmpty)
+        ? "usage= $phoneUsageData,"
+        : "";
+    String mygoal = (userStuff['userGoal'] != null &&
+            userStuff['userGoal']?.isNotEmpty == true)
+        ? "mygoal= $usergoal,"
+        : "";
+    String myperception = (userStuff['selfPerception'] != null &&
+            userStuff['selfPerception']?.isNotEmpty == true)
+        ? "myperception= $selfperception"
+        : "";
 
+    // Prepare the data to send in the request
+    String meta_data = """
+    $habits
+    $goal
+    $journal
+    $usage
+    $mygoal
+    $myperception """;
     FirebaseFirestore firestore = FirebaseFirestore.instance;
     DocumentSnapshot userDoc =
         await firestore.collection('users').doc(userId).get();
@@ -64,12 +82,11 @@ class DataProcessor {
     Map<String, dynamic> userData = userDoc.data() as Map<String, dynamic>;
 
     Map<String, String> data = {
-      "messages": meta_data,
       "user_id": FirebaseAuth.instance.currentUser?.uid.toString() ?? '',
       "apikey": userData['apikey'].toString(),
+      "messages": meta_data,
       "update_history": "True"
     };
-
     // Convert the data to JSON
     String jsonData = jsonEncode(data);
     return jsonData;
@@ -93,8 +110,11 @@ class DataProcessor {
 
   post_process_data(String response) async {
     var completionMemory = jsonDecode(response);
-    Map<String, dynamic> responseData = completionMemory['videos'];
-    Data.completion_message = completionMemory['completion'].toString();
+    Map<String, dynamic> responseData = {};
+    if (completionMemory['videos'] != null) {
+      responseData = Map<String, dynamic>.from(completionMemory['videos']);
+    }
+    Data.completion_message = completionMemory['response'].toString();
     Data.messages_data
         .add(Messages(role: 'assistant', content: Data.completion_message));
     Data.videoList = (responseData)

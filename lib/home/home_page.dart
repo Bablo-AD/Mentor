@@ -35,7 +35,7 @@ class _MentorPageState extends State<MentorPage> {
     });
     DataProcessor dataGetter = DataProcessor(context);
     try {
-      dataGetter.execute();
+      await dataGetter.execute();
     } catch (e) {
       setState(() {
         isLoading = false;
@@ -164,13 +164,19 @@ class _MentorPageState extends State<MentorPage> {
                       },
                       child: Card(
                         child: ListTile(
-                          trailing: IconButton(
-                              onPressed: () {
-                                _Makerequest(interest);
-                              },
-                              icon: const Icon(Icons.refresh)),
-                          title: const Text(
-                            "Mentor",
+                          title: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              const Text("Mentor"),
+                              IconButton(
+                                  onPressed: () {
+                                    setState(() {
+                                      isLoading = true;
+                                      _Makerequest(interest);
+                                    });
+                                  },
+                                  icon: const Icon(Icons.refresh)),
+                            ],
                           ),
                           subtitle: Text(
                             result,
