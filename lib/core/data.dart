@@ -1,6 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'loader.dart';
 
 class Data {
+  Loader load = Loader();
   static String? userId = FirebaseAuth.instance.currentUser?.uid;
   static String response = "";
   static String interest = "";

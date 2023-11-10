@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import '../core/data.dart';
-import 'package:http/http.dart' as http;
+import 'make_request.dart';
 import 'dart:convert';
-
+import 'package:http/http.dart' as http;
 import '../core/loader.dart';
 
 class ChatPage extends StatefulWidget {
@@ -20,6 +20,7 @@ class _ChatPageState extends State<ChatPage> {
   TextEditingController textEditingController = TextEditingController();
   final Loader _loader = Loader();
   String serverurl = '';
+
   void _sendMessage(String message) async {
     setState(() {
       messages.add(Messages(
@@ -27,23 +28,17 @@ class _ChatPageState extends State<ChatPage> {
         content: message,
       ));
     });
-
+    DataProcessor sender = DataProcessor(context);
     final List<Map<String, String>> messagesData = messages
         .map((message) => {
               'role': message.role,
               'content': message.content,
             })
         .toList();
-    String? serverurl = await _loader.loadserverurl();
-
-    final response = await http.post(
-      Uri.parse(serverurl.toString()),
-      headers: {'Content-Type': 'application/json'},
-      body: jsonEncode({'messages': messagesData}),
-    );
-
+    http.Response response =
+        await sender.meet_with_server(messagesData.toString());
     if (response.statusCode == 200) {
-      final completion = jsonDecode(response.body)['completion'].toString();
+      final completion = jsonDecode(response.body)['response'].toString();
 
       setState(() {
         messages.add(Messages(
@@ -63,7 +58,7 @@ class _ChatPageState extends State<ChatPage> {
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
-            title: const Text('An error occurred'),
+            title: const Text('An error occurred try again later'),
             content: Text(response.statusCode.toString()),
             actions: <Widget>[
               TextButton(
@@ -115,19 +110,28 @@ class _ChatPageState extends State<ChatPage> {
               itemBuilder: (context, index) {
                 final message = messages[index];
 
-                return ListTile(
-                  title: Text(
-                    message.content,
-                  ),
-                  tileColor: message.role == 'user'
-                      ? Colors.black
-                      : const Color.fromARGB(255, 19, 19, 19),
-                );
+                return Container(
+                    alignment: message.role == 'user'
+                        ? Alignment.centerRight
+                        : Alignment.centerLeft,
+                    child: Container(
+                      margin: const EdgeInsets.all(15.0),
+                      padding: const EdgeInsets.all(15.0),
+                      child: Text(
+                        message.content,
+                      ),
+                      decoration: BoxDecoration(
+                        color: message.role == 'user'
+                            ? Theme.of(context).primaryColorLight
+                            : Theme.of(context).primaryColor,
+                        borderRadius: BorderRadius.circular(8.0),
+                      ),
+                    ));
               },
             ),
           ),
           Container(
-            padding: const EdgeInsets.all(8.0),
+            padding: const EdgeInsets.symmetric(horizontal: 8.0),
             child: Row(
               children: [
                 Expanded(

@@ -77,7 +77,6 @@ class Loader {
   }
 
   void savecompletion(String completion) async {
-    completion = completion;
     final SharedPreferences storage = await _prefs;
     storage.setString('completion', completion);
   }

@@ -75,6 +75,12 @@ class DataProcessor {
     $usage
     $mygoal
     $myperception """;
+
+    return meta_data;
+  }
+
+  Future<http.Response> meet_with_server(String message_data,
+      {String update_history = "True"}) async {
     FirebaseFirestore firestore = FirebaseFirestore.instance;
     DocumentSnapshot userDoc =
         await firestore.collection('users').doc(userId).get();
@@ -84,15 +90,11 @@ class DataProcessor {
     Map<String, String> data = {
       "user_id": FirebaseAuth.instance.currentUser?.uid.toString() ?? '',
       "apikey": userData['apikey'].toString(),
-      "messages": meta_data,
-      "update_history": "True"
+      "messages": message_data,
+      "update_history": update_history
     };
     // Convert the data to JSON
     String jsonData = jsonEncode(data);
-    return jsonData;
-  }
-
-  Future<String> _meet_with_server(String jsonData) async {
     String serverUrl = await _loader.loadserverurl();
 
     var response = await http.post(
@@ -100,12 +102,7 @@ class DataProcessor {
       headers: {'Content-Type': 'application/json'},
       body: jsonData,
     );
-
-    if (response.statusCode == 200) {
-      return response.body;
-    } else {
-      throw 'Status code ${response.statusCode}';
-    }
+    return response;
   }
 
   post_process_data(String response) async {
@@ -115,6 +112,8 @@ class DataProcessor {
       responseData = Map<String, dynamic>.from(completionMemory['videos']);
     }
     Data.completion_message = completionMemory['response'].toString();
+    Loader _loader = Loader();
+    _loader.savecompletion(Data.completion_message);
     Data.messages_data
         .add(Messages(role: 'assistant', content: Data.completion_message));
     Data.videoList = (responseData)
@@ -128,29 +127,33 @@ class DataProcessor {
   }
 
   execute([String interest = ""]) async {
-    String jsonData = await _preparing_data(interest);
-    String response = await _meet_with_server(jsonData);
-    post_process_data(response);
+    String messageData = await _preparing_data(interest);
+    http.Response response = await meet_with_server(messageData);
+    if (response.statusCode == 200) {
+      post_process_data(response.body);
+    } else {
+      Data.completion_message = 'Error: ${response.statusCode}';
+    }
   }
-}
 
-Future<List<Map<String, dynamic>>> getJournalData(String userId) async {
-  List<QueryDocumentSnapshot> documents = await Loader.loadjournal();
-  List<Map<String, dynamic>> journalDataList = documents.map((doc) {
-    // Extract the date from the Timestamp
-    DateTime date = (doc['title'] as Timestamp).toDate();
-    String formattedDate = DateFormat('yyyy-MM-dd').format(date);
+  Future<List<Map<String, dynamic>>> getJournalData(String userId) async {
+    List<QueryDocumentSnapshot> documents = await Loader.loadjournal();
+    List<Map<String, dynamic>> journalDataList = documents.map((doc) {
+      // Extract the date from the Timestamp
+      DateTime date = (doc['title'] as Timestamp).toDate();
+      String formattedDate = DateFormat('yyyy-MM-dd').format(date);
 
-    // Create a new map without the userId field
-    Map<String, dynamic> newData = Map.from(doc.data() as Map<dynamic, dynamic>)
-      ..remove('userId');
+      // Create a new map without the userId field
+      Map<String, dynamic> newData =
+          Map.from(doc.data() as Map<dynamic, dynamic>)..remove('userId');
 
-    // Set the 'title' field to the formatted date
-    newData['title'] = formattedDate;
+      // Set the 'title' field to the formatted date
+      newData['title'] = formattedDate;
 
-    return newData;
-  }).toList();
-  return journalDataList;
+      return newData;
+    }).toList();
+    return journalDataList;
+  }
 }
 
 class HabiticaData {

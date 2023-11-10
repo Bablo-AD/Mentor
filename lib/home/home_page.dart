@@ -4,7 +4,7 @@ import '../journal/journal_editing_page.dart';
 import 'video_page.dart';
 import 'chat_page.dart';
 import 'package:flutter/material.dart';
-
+import '../core/loader.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
 import 'package:usage_stats/usage_stats.dart';
@@ -25,7 +25,7 @@ class _MentorPageState extends State<MentorPage> {
   bool isLoading = false;
   List<Messages> messages_data = [];
   List<Video> videos = [];
-
+  Loader loader = Loader();
   //Gets user's usage data
   void _Makerequest(String interest) async {
     setState(() {
@@ -53,10 +53,17 @@ class _MentorPageState extends State<MentorPage> {
   @override
   void initState() {
     super.initState();
+
     check_permissions();
+
+    setState(() {
+      result = Data.completion_message;
+    });
   }
 
   void check_permissions() async {
+    Data.completion_message = await loader.loadcompletion() ?? "";
+
     bool? isPermission = await UsageStats.checkUsagePermission();
     if (isPermission == false) {
       PhoneUsage.showPermissionDialog(context);
