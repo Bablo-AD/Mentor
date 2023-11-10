@@ -45,26 +45,27 @@ class Loader {
   }
 
   Future<List<Messages>> loadMessages() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
+    final DocumentSnapshot documentSnapshot = await FirebaseFirestore.instance
+        .collection('users')
+        .doc(Data.userId)
+        .get();
 
-    // Retrieve the JSON string list from SharedPreferences
-    List<String>? jsonList = prefs.getStringList('messages');
-
-    // Convert JSON string list to Messages list
-    List<Messages> messages = [];
-    if (jsonList != null) {
-      for (String jsonString in jsonList) {
-        Map<String, dynamic> jsonMap = jsonDecode(jsonString);
-        Messages message = Messages(
-          role: jsonMap['role'],
-          content: jsonMap['content'],
-        );
-        messages.add(message);
-      }
-      Data.messages_data = messages;
+    if (documentSnapshot['messages'] != null) {
+      Map<String, dynamic> messageData =
+          jsonDecode(documentSnapshot['messages']);
+      List<dynamic> body = messageData['body'];
+      return body
+          .map((message) {
+            return Messages(
+              role: message['role'],
+              content: message['content'],
+            );
+          })
+          .toList()
+          .cast<Messages>();
+    } else {
+      return [];
     }
-
-    return messages;
   }
 
   Future<String?> loadcompletion() async {

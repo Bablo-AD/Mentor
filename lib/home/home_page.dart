@@ -56,14 +56,15 @@ class _MentorPageState extends State<MentorPage> {
 
     check_permissions();
 
-    setState(() {
-      result = Data.completion_message;
+    loader.loadcompletion().then((completionMessage) {
+      setState(() {
+        Data.completion_message = completionMessage ?? "";
+        result = Data.completion_message;
+      });
     });
   }
 
   void check_permissions() async {
-    Data.completion_message = await loader.loadcompletion() ?? "";
-
     bool? isPermission = await UsageStats.checkUsagePermission();
     if (isPermission == false) {
       PhoneUsage.showPermissionDialog(context);

@@ -4,6 +4,7 @@ import 'make_request.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import '../core/loader.dart';
+//import 'package:cloud_firestore/cloud_firestore.dart';
 
 class ChatPage extends StatefulWidget {
   final String response;
@@ -20,9 +21,10 @@ class _ChatPageState extends State<ChatPage> {
   TextEditingController textEditingController = TextEditingController();
   final Loader _loader = Loader();
   String serverurl = '';
-
+  bool loading = false;
   void _sendMessage(String message) async {
     setState(() {
+      loading = true;
       messages.add(Messages(
         role: 'user',
         content: message,
@@ -41,19 +43,18 @@ class _ChatPageState extends State<ChatPage> {
       final completion = jsonDecode(response.body)['response'].toString();
 
       setState(() {
-        messages.add(Messages(
-          role: 'user',
-          content: message,
-        ));
+        loading = false;
         messages.add(Messages(
           role: 'assistant',
           content: completion,
         ));
-        _loader.saveMessages(messages);
       });
     } else {
       // Handle error case
       print('Error: ${response.statusCode}');
+      setState(() {
+        loading = false;
+      });
       showDialog(
         context: context,
         builder: (BuildContext context) {
@@ -80,14 +81,12 @@ class _ChatPageState extends State<ChatPage> {
   @override
   void initState() {
     super.initState();
-    _loader.loadMessages();
-    setState() {
-      Data.messages_data
-          .add(Messages(role: "assistant", content: widget.response));
-      _loader.saveMessages(Data.messages_data);
-      messages = Data.messages_data;
-    }
-
+    _loader.loadMessages().then((message) {
+      setState(() {
+        Data.messages_data = message;
+        messages = message;
+      });
+    });
     // Scroll to the last message when the page is loaded
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
@@ -122,8 +121,8 @@ class _ChatPageState extends State<ChatPage> {
                       ),
                       decoration: BoxDecoration(
                         color: message.role == 'user'
-                            ? Theme.of(context).primaryColorLight
-                            : Theme.of(context).primaryColor,
+                            ? Theme.of(context).secondaryHeaderColor
+                            : Theme.of(context).secondaryHeaderColor,
                         borderRadius: BorderRadius.circular(8.0),
                       ),
                     ));
@@ -147,17 +146,24 @@ class _ChatPageState extends State<ChatPage> {
                     ),
                   ),
                 ),
-                IconButton(
-                  icon: const Icon(
-                    Icons.send,
+                if (loading == true)
+                  Container(
+                    width: 12.0,
+                    height: 12.0,
+                    child: CircularProgressIndicator(),
+                  )
+                else
+                  IconButton(
+                    icon: const Icon(
+                      Icons.send,
+                    ),
+                    onPressed: () {
+                      final message = textEditingController.text.trim();
+                      if (message.isNotEmpty) {
+                        _sendMessage(message);
+                      }
+                    },
                   ),
-                  onPressed: () {
-                    final message = textEditingController.text.trim();
-                    if (message.isNotEmpty) {
-                      _sendMessage(message);
-                    }
-                  },
-                ),
               ],
             ),
           ),
