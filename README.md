@@ -1,28 +1,39 @@
-# Bablo Personalised AI Social Media Assistant App
+# Mentor AI Productivity Partner
 ### "Distraction is like a parasite to the mind. If you don’t kill distraction, distraction will kill your dreams." -Some Giga Chad
 
 ## Why are we doing this?
-Social media are working on increasing the amount of time spent on their sites. **We are leveraging AI to feed us social media posts that make you grow as a human being** and to optimize the amount of time spent in this universe instead of wasting time by making you go in downward dopamine spiral. Let's make the world a better place and improve our productivity
+We have very little time on this planet and we have lots of ideas to create and people to speak. We should not waste our precious time on scrolling reels which gives us dopamine a fake illusion of happiness. This project is aimed to create a world where we can grow enjoy and experience this life
 
 ## Downloads
-[Windows](https://github.com/prasannan-robots/Bablo/releases/download/v1-alpha/windows-v1.alpha.release.zip)
 
-[Android](https://github.com/prasannan-robots/Bablo/releases/download/v1-alpha/app-arm64-v8a-release.apk)
+[Android](https://github.com/prasannan-robots/Bablo/releases/download/v2.0.0/app-arm64-v8a-release.apk)
+
 ## How this works?
-Our code is open source and we use chatGPT to select media post based on the person's goal, their past life and their journal
+We get data from users and send them through ai model currently we use gpt3.5 to process the information and give you suggestions and criticism to make you grow. Do check the code
 
 ### Working Flow
 
 - Users can write about themselves and their beliefs in the journal section.
 - Users can enter their interests.
-- The app fetches recommended YouTube videos based on the user's interests and journal.
+- Mentor analyzes your work and gives suggestions and recommendations to imporve your life
+- Mentor fetches recommended YouTube videos based on the user's interests and journal.
 - Recommended videos are displayed with titles and an embedded YouTube player.
 - The app uses OpenAI's GPT-3.5 Turbo language model for AI interactions.
 
-This is an open-source Flutter application for building an AI social media assistant. The app understands user goals, beliefs, and interests to offer personalized social media posts. The code provided includes both the Flutter front-end and Flask server back-end.
-# Some Screenshots
-![Personalised Journal](https://github.com/prasannan-robots/Bablo/assets/64462247/61d4e42c-b6b1-4cec-ba73-6bde5c426ccf)
-![Bablo for Windows](https://github.com/prasannan-robots/Bablo/assets/64462247/542e11e4-4923-4e53-b252-dfafb9ae8be9)
+This is an open-source Flutter applicatio.n The app understands user goals, beliefs, and interests to offer personalized social media posts. The code provided includes both the Flutter front-end and Flask server back-end.
+
+# Screenshots
+### Home
+
+![Home Page](image.png)
+
+### Daily journals
+
+![Journal Page](image-1.png)
+
+### Ask quesitons and connect
+
+![Chat Page](image-2.png)
 
 
 ## Features
@@ -33,7 +44,7 @@ This is an open-source Flutter application for building an AI social media assis
 - Recommended videos are displayed with titles and an embedded YouTube player.
 - The app uses OpenAI's GPT-3.5 Turbo language model for AI interactions.
 
-## Prerequisites
+## Prerequisites for devs
 
 To run this application, you need the following:
 
@@ -56,6 +67,7 @@ git clone <repository_url>
 ```shell
 flutter pub get
 ```
+### Check [mentor-server](https://github.com/bablo-AD/Mentor-server) for python code
 
 3. Configure the YouTube Data API key and OpenAI API key:
    - Replace the `DEVELOPER_KEY` variable in the `recommendation_system.py` file with your YouTube Data API key.
