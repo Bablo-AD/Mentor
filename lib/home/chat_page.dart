@@ -148,9 +148,15 @@ class _ChatPageState extends State<ChatPage> {
                 ),
                 if (loading == true)
                   Container(
-                    width: 12.0,
-                    height: 12.0,
-                    child: CircularProgressIndicator(),
+                    width: 24.0, // Adjust these values to suit your needs
+                    height: 24.0,
+                    child: Center(
+                      child: Padding(
+                        padding: const EdgeInsets.all(
+                            20.0), // Adjust this value to suit your needs
+                        child: CircularProgressIndicator(),
+                      ),
+                    ),
                   )
                 else
                   IconButton(

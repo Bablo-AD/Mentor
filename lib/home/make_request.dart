@@ -75,7 +75,6 @@ class DataProcessor {
     $usage
     $mygoal
     $myperception """;
-
     return meta_data;
   }
 

@@ -5,6 +5,7 @@ import '../core/loader.dart';
 import '../setup/authentication_page.dart';
 
 import 'auto_request.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class SettingsPage extends StatefulWidget {
   const SettingsPage({Key? key}) : super(key: key);
@@ -130,6 +131,9 @@ class _SettingsPageState extends State<SettingsPage> {
                     onPressed: () async {
                       await FirebaseAuth.instance.signOut();
                       await SessionManager.saveLoginState(false);
+                      SharedPreferences preferences =
+                          await SharedPreferences.getInstance();
+                      await preferences.clear();
                       setState(() {
                         Navigator.pushReplacement(
                           context,

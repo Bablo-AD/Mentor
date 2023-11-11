@@ -92,8 +92,10 @@ class _EmailAuthState extends State<EmailAuth> {
       // User account creation successful
       User? user = userCredential.user;
       if (user != null) {
+        Data.userId = user.uid;
         initialize_user();
         await SessionManager.saveLoginState(true);
+
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (context) => const SetupPage()),
