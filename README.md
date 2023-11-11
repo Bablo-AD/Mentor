@@ -29,11 +29,11 @@ This is an open-source Flutter applicatio.n The app understands user goals, beli
 
 ### Daily journals
 
-![Journal Page](https://github.com/Bablo-AD/Mentor/assets/64462247/16d15f5c-6b13-44bc-a3f7-e98b603b59fb)
+![Journal Page](https://github.com/Bablo-AD/Mentor/assets/64462247/d6cb95b0-0751-4549-8124-b9d6f8e070cc)
 
 ### Ask quesitons and connect
 
-![Chat Page](https://github.com/Bablo-AD/Mentor/assets/64462247/16d15f5c-6b13-44bc-a3f7-e98b603b59fb)
+![Chat Page](https://github.com/Bablo-AD/Mentor/assets/64462247/7fa8250f-be94-4c19-85f4-0b22d90ea67c)
 
 
 ## Features
