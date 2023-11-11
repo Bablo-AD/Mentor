@@ -25,15 +25,15 @@ This is an open-source Flutter applicatio.n The app understands user goals, beli
 # Screenshots
 ### Home
 
-![Home Page](image.png)
+![Home Page](https://github.com/Bablo-AD/Mentor/assets/64462247/16d15f5c-6b13-44bc-a3f7-e98b603b59fb)
 
 ### Daily journals
 
-![Journal Page](image-1.png)
+![Journal Page](https://github.com/Bablo-AD/Mentor/assets/64462247/16d15f5c-6b13-44bc-a3f7-e98b603b59fb)
 
 ### Ask quesitons and connect
 
-![Chat Page](image-2.png)
+![Chat Page](https://github.com/Bablo-AD/Mentor/assets/64462247/16d15f5c-6b13-44bc-a3f7-e98b603b59fb)
 
 
 ## Features
