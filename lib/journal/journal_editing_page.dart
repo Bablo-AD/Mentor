@@ -1,6 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:intl/intl.dart';
+import '../core/data.dart';
 
 class JournalEditingPage extends StatefulWidget {
   const JournalEditingPage({
@@ -29,7 +31,8 @@ class _JournalEditingPageState extends State<JournalEditingPage> {
   void initState() {
     super.initState();
     if (widget.journalTitle.isEmpty) {
-      journalTitle = DateTime.now().toString();
+      var format = new DateFormat('H:m d-M-y');
+      journalTitle = format.format(DateTime.now()).toString();
     } else {
       journalTitle = widget.journalTitle;
     }
@@ -65,7 +68,8 @@ class _JournalEditingPageState extends State<JournalEditingPage> {
     }
   }
 
-  void _deleteJournal(String? documentId) async {
+  void deleteJournal() async {
+    String? documentId = widget.documentId;
     if (documentId != null) {
       await FirebaseService().deleteJournal(documentId);
       ScaffoldMessenger.of(context).showSnackBar(
@@ -82,12 +86,7 @@ class _JournalEditingPageState extends State<JournalEditingPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Mentor/Journal/Edit',
-            style: TextStyle(color: Color.fromARGB(255, 50, 204, 102))),
-        backgroundColor: Colors.black,
-      ),
-      backgroundColor: Colors.black,
+      appBar: AppBar(title: Text("Mentor/Journal/Edit")),
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(16.0),
@@ -95,32 +94,15 @@ class _JournalEditingPageState extends State<JournalEditingPage> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Row(
-                children: [
-                  Expanded(
-                    child: Text(journalTitle,
-                        style: const TextStyle(
-                            color: Color.fromARGB(255, 50, 204, 102))),
-                  ),
-                  IconButton(
-                    onPressed: () {
-                      _deleteJournal(widget.documentId);
-                    },
-                    icon: const Icon(Icons.delete),
-                    color: Colors.red,
-                  ),
-                ],
-              ),
+              Text(journalTitle),
               const SizedBox(height: 16.0),
               TextField(
                 controller: _contentController,
+                minLines: 10,
                 maxLines: null,
                 keyboardType: TextInputType.multiline,
-                style:
-                    const TextStyle(color: Color.fromARGB(255, 50, 204, 102)),
                 decoration: const InputDecoration(
                   filled: true,
-                  fillColor: Color.fromARGB(255, 19, 19, 19),
                   border: OutlineInputBorder(),
                 ),
                 onChanged: (value) {
@@ -128,11 +110,14 @@ class _JournalEditingPageState extends State<JournalEditingPage> {
                 },
               ),
               const SizedBox(height: 16.0),
-              ElevatedButton(
+              FilledButton(
                 onPressed: saveJournalEntry,
-                child: const Text(
-                  'Save Journal',
-                ),
+                child: Text("Save Journal"),
+              ),
+              const SizedBox(height: 8.0),
+              OutlinedButton(
+                onPressed: deleteJournal,
+                child: Text("Delete Journal"),
               ),
             ],
           ),
@@ -147,7 +132,12 @@ class FirebaseService {
 
   Future<void> createJournal(String content) async {
     String? userId = FirebaseAuth.instance.currentUser?.uid;
-    await _firestore.collection('journals').add({
+
+    await _firestore
+        .collection('users')
+        .doc(Data.userId)
+        .collection("journal")
+        .add({
       'userId': userId,
       'title': DateTime.now(),
       'content': content,
@@ -155,11 +145,21 @@ class FirebaseService {
   }
 
   Future<void> deleteJournal(String documentId) async {
-    await _firestore.collection('journals').doc(documentId).delete();
+    await _firestore
+        .collection('users')
+        .doc(Data.userId)
+        .collection("journal")
+        .doc(documentId)
+        .delete();
   }
 
   Future<void> updateJournal(String documentId, String content) async {
-    await _firestore.collection('journals').doc(documentId).update({
+    await _firestore
+        .collection('users')
+        .doc(Data.userId)
+        .collection("journal")
+        .doc(documentId)
+        .update({
       'content': content,
     });
   }

@@ -1,22 +1,12 @@
-import 'package:Bablo/settings/settings_page.dart';
-import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import '../core/loader.dart';
+import '../core/data.dart';
 import 'setup_roller.dart';
 
-class SessionManager {
-  static const String loggedInKey = 'loggedIn';
-
-  static Future<void> saveLoginState(bool isLoggedIn) async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.setBool(loggedInKey, isLoggedIn);
-  }
-
-  static Future<bool> getLoginState() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    return prefs.getBool(loggedInKey) ?? false;
-  }
-}
+import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'dart:math';
+import 'dart:convert';
 
 class EmailAuth extends StatefulWidget {
   const EmailAuth({super.key});
@@ -29,11 +19,6 @@ class _EmailAuthState extends State<EmailAuth> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final FirebaseAuth _auth = FirebaseAuth.instance;
-  pushNextPage(user) async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    prefs.setString('userId', user);
-    await SessionManager.saveLoginState(true);
-  }
 
   Future<void> _signIn() async {
     try {
@@ -44,11 +29,8 @@ class _EmailAuthState extends State<EmailAuth> {
       // User sign-in successful
       User? user = userCredential.user;
       if (user != null) {
-        await pushNextPage(user.uid);
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => const SettingsPage()),
-        );
+        await SessionManager.saveLoginState(true);
+        Navigator.pushReplacementNamed(context, '/settings');
       }
     } catch (e) {
       // Handle sign-in errors
@@ -58,7 +40,7 @@ class _EmailAuthState extends State<EmailAuth> {
         builder: (BuildContext context) {
           return AlertDialog(
             title: const Text('Sign-in Failed'),
-            content: const Text('Invalid email or password.'),
+            content: const Text('Invalid email or password. Try Signing up'),
             actions: <Widget>[
               TextButton(
                 child: const Text('OK'),
@@ -73,6 +55,33 @@ class _EmailAuthState extends State<EmailAuth> {
     }
   }
 
+  void initialize_user() async {
+    FirebaseFirestore firestore = FirebaseFirestore.instance;
+    String apiKey = generateApiKey();
+    Map<String, dynamic> data = {
+      "head": [
+        {
+          "role": "system",
+          "content":
+              "Now you are the user's partner who criticizes the user and helps him grow. Here I provide you the details of the user"
+        }
+      ],
+      "body": [],
+    };
+    String messages = jsonEncode(data);
+    await firestore
+        .collection('users')
+        .doc(Data.userId.toString())
+        .set({"apikey": apiKey, "messages": messages});
+  }
+
+  String generateApiKey() {
+    final random = Random.secure();
+    final values = List<int>.generate(32, (i) => random.nextInt(256));
+    final apiKey = base64Url.encode(values);
+    return apiKey;
+  }
+
   Future<void> _signUp() async {
     try {
       UserCredential userCredential =
@@ -83,7 +92,10 @@ class _EmailAuthState extends State<EmailAuth> {
       // User account creation successful
       User? user = userCredential.user;
       if (user != null) {
-        await pushNextPage(user.uid);
+        Data.userId = user.uid;
+        initialize_user();
+        await SessionManager.saveLoginState(true);
+
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (context) => const SetupPage()),
@@ -115,14 +127,7 @@ class _EmailAuthState extends State<EmailAuth> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text(
-          'Mentor/Authentication',
-          style: TextStyle(color: Color.fromARGB(255, 50, 204, 102)),
-        ),
-        backgroundColor: Colors.black,
-      ),
-      backgroundColor: Colors.black,
+      appBar: AppBar(title: Text('Mentor/Authentication')),
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(16.0),
@@ -131,40 +136,24 @@ class _EmailAuthState extends State<EmailAuth> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               TextField(
-                controller: _emailController,
-                style:
-                    const TextStyle(color: Color.fromARGB(255, 50, 204, 102)),
-                decoration: const InputDecoration(
-                  filled: true,
-                  fillColor: Color.fromARGB(255, 19, 19, 19),
-                  labelText: 'Email',
-                  labelStyle:
-                      TextStyle(color: Color.fromARGB(255, 50, 204, 102)),
-                ),
-              ),
+                  controller: _emailController,
+                  decoration: InputDecoration(labelText: "Email")),
               const SizedBox(height: 8.0),
               TextField(
-                controller: _passwordController,
-                style:
-                    const TextStyle(color: Color.fromARGB(255, 50, 204, 102)),
-                decoration: const InputDecoration(
-                  filled: true,
-                  fillColor: Color.fromARGB(255, 19, 19, 19),
-                  labelText: 'Password',
-                  labelStyle:
-                      TextStyle(color: Color.fromARGB(255, 50, 204, 102)),
-                ),
-                obscureText: true,
-              ),
+                  obscureText: true,
+                  controller: _passwordController,
+                  decoration: InputDecoration(labelText: "Password")),
               const SizedBox(height: 16.0),
               ElevatedButton(
                 onPressed: _signIn,
-                child: const Text('Sign In'),
+                child: Text("Sign In"),
               ),
-              const SizedBox(height: 8.0),
-              ElevatedButton(
+              const SizedBox(height: 8),
+              Center(child: Text("New to the jungle? SignUp")),
+              const SizedBox(height: 4),
+              FilledButton(
                 onPressed: _signUp,
-                child: const Text('Sign Up'),
+                child: Text("Sign Up"),
               ),
             ],
           ),

@@ -2,6 +2,9 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../home/make_request.dart';
+import '../core/loader.dart';
+
 class AutoRequest extends StatefulWidget {
   const AutoRequest({super.key});
 
@@ -11,6 +14,7 @@ class AutoRequest extends StatefulWidget {
 
 class _AutoRequestState extends State<AutoRequest> {
   late SharedPreferences sharedPreferences;
+  final Loader _loader = Loader();
   TimeOfDay default_time = TimeOfDay.now();
   @override
   void initState() {
@@ -19,10 +23,9 @@ class _AutoRequestState extends State<AutoRequest> {
   }
 
   void _loadScheduledTime() async {
-    sharedPreferences = await SharedPreferences.getInstance();
-    final scheduledTime = sharedPreferences.getString('scheduledTime');
+    String? scheduledTime = await _loader.loadScheduledTime();
     if (scheduledTime != null) {
-      if (this.mounted) {
+      if (mounted) {
         setState(() {
           final parsedTime =
               TimeOfDay.fromDateTime(DateTime.parse(scheduledTime));
@@ -36,7 +39,7 @@ class _AutoRequestState extends State<AutoRequest> {
     final dateTime = DateTime(DateTime.now().year, DateTime.now().month,
         DateTime.now().day, selectedTime.hour, selectedTime.minute);
     final formattedTime = dateTime.toIso8601String();
-    await sharedPreferences.setString('scheduledTime', formattedTime);
+    _loader.saveScheduleTime(formattedTime);
   }
 
   @override
@@ -45,11 +48,8 @@ class _AutoRequestState extends State<AutoRequest> {
         appBar: AppBar(
           title: const Text(
             'Mentor/Settings/Auto_Request',
-            style: TextStyle(color: Color.fromARGB(255, 50, 204, 102)),
           ),
-          backgroundColor: Colors.black,
         ),
-        backgroundColor: Colors.black,
         body: SingleChildScrollView(
             child: Padding(
           padding: const EdgeInsets.all(16.0),
@@ -60,13 +60,15 @@ class _AutoRequestState extends State<AutoRequest> {
                   showTimePicker(
                     context: context,
                     initialTime: default_time,
-                  ).then((selectedTime) {
+                  ).then((selectedTime) async {
                     if (selectedTime != null) {
                       _saveScheduledTime(selectedTime);
+                      DataProcessor processor = DataProcessor(context);
+                      ScheduleManager(callback: processor.execute);
                     }
                   });
                 },
-                child: Text('Set Scheduled Time',
+                child: const Text('Set Scheduled Time',
                     style: TextStyle(color: Color.fromARGB(255, 50, 204, 102))),
               ),
             ],
@@ -94,7 +96,6 @@ class ScheduleManager {
   }
 
   void _startTimer() {
-    final currentTime = TimeOfDay.now();
     final now = DateTime.now();
     final scheduledDateTime = DateTime(
       now.year,

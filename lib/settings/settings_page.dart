@@ -1,14 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:flutter/services.dart';
-import '../home/home_page.dart';
-import '../journal/journal_page.dart';
-import '../setup/authentication_page.dart';
-import 'habitica_integration_page.dart'; // New page for Habitica integration
 import 'package:firebase_auth/firebase_auth.dart';
-import 'tellusmore_page.dart';
-import 'apps_selection_page.dart';
+
+import '../core/loader.dart';
+import '../setup/authentication_page.dart';
+
 import 'auto_request.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class SettingsPage extends StatefulWidget {
   const SettingsPage({Key? key}) : super(key: key);
@@ -18,22 +15,16 @@ class SettingsPage extends StatefulWidget {
 }
 
 class _SettingsPageState extends State<SettingsPage> {
-  final int _selectedIndex = 2;
+  int _selectedIndex = 2;
   final _formKey = GlobalKey<FormState>();
-  final _storage = const FlutterSecureStorage();
+  final _loader = Loader();
 
   final TextEditingController _serverurlController = TextEditingController();
 
   void _saveSettings() async {
     if (_formKey.currentState!.validate()) {
       // Retrieve the input values
-      String serverurl = _serverurlController.text;
-
-      // Encrypt and save the data locally
-      await _storage.write(
-        key: 'server_url',
-        value: serverurl,
-      );
+      _loader.saveserverurl(_serverurlController.text);
 
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Got it!')),
@@ -48,29 +39,13 @@ class _SettingsPageState extends State<SettingsPage> {
   }
 
   void _loadSettings() async {
-    String? serverurl = await _storage.read(key: 'server_url');
-
-    _serverurlController.text =
-        serverurl ?? 'https://prasannanrobots.pythonanywhere.com/mentor';
+    _serverurlController.text = await _loader.loadserverurl();
   }
 
   @override
   Widget build(BuildContext context) {
-    return AnnotatedRegion<SystemUiOverlayStyle>(
-      value: SystemUiOverlayStyle.dark.copyWith(
-        statusBarColor: Colors.black,
-        systemNavigationBarColor: Colors.black,
-        systemNavigationBarIconBrightness: Brightness.light,
-      ),
-      child: Scaffold(
-        appBar: AppBar(
-          title: const Text(
-            'Mentor/Settings',
-            style: TextStyle(color: Color.fromARGB(255, 50, 204, 102)),
-          ),
-          backgroundColor: Colors.black,
-        ),
-        backgroundColor: Colors.black,
+    return Scaffold(
+        appBar: AppBar(title: Text("Mentor/Settings")),
         body: SingleChildScrollView(
           child: Padding(
             padding: const EdgeInsets.all(16.0),
@@ -79,113 +54,86 @@ class _SettingsPageState extends State<SettingsPage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  TextFormField(
-                    controller: _serverurlController,
-                    style: const TextStyle(
-                        color: Color.fromARGB(255, 50, 204, 102)),
-                    decoration: const InputDecoration(
-                      labelText: 'ServerUrl',
-                      labelStyle:
-                          TextStyle(color: Color.fromARGB(255, 50, 204, 102)),
-                      enabledBorder: UnderlineInputBorder(
-                        borderSide: BorderSide(
-                            color: Color.fromARGB(255, 50, 204, 102)),
-                      ),
-                      focusedBorder: UnderlineInputBorder(
-                        borderSide: BorderSide(
-                            color: Color.fromARGB(255, 50, 204, 102)),
-                      ),
-                    ),
-                    validator: (value) {
-                      if (value!.isEmpty) {
-                        return 'Please enter a valid Url';
-                      }
-                      return null;
-                    },
-                  ),
-                  const SizedBox(height: 16.0),
                   ElevatedButton(
-                    onPressed: _saveSettings,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color.fromARGB(255, 50, 204, 102),
-                    ),
-                    child: const Text('Save',
-                        style:
-                            TextStyle(color: Color.fromARGB(255, 19, 19, 19))),
-                  ),
-                  const SizedBox(height: 16.0),
+                      child: Text("Edit ServerUrl"),
+                      onPressed: () {
+                        showDialog(
+                            barrierDismissible: true,
+                            barrierLabel: MaterialLocalizations.of(context)
+                                .modalBarrierDismissLabel,
+                            context: context,
+                            builder: (BuildContext context) {
+                              return Dialog.fullscreen(
+                                  child: Padding(
+                                      padding: const EdgeInsets.all(16.0),
+                                      child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.stretch,
+                                          children: [
+                                            TextFormField(
+                                              controller: _serverurlController,
+                                              style: const TextStyle(),
+                                              decoration: const InputDecoration(
+                                                labelText: 'ServerUrl',
+                                                enabledBorder:
+                                                    UnderlineInputBorder(
+                                                  borderSide: BorderSide(),
+                                                ),
+                                                focusedBorder:
+                                                    UnderlineInputBorder(
+                                                  borderSide: BorderSide(),
+                                                ),
+                                              ),
+                                              validator: (value) {
+                                                if (value!.isEmpty) {
+                                                  return 'Please enter a valid Url';
+                                                }
+                                                return null;
+                                              },
+                                            ),
+                                            const SizedBox(height: 16.0),
+                                            Text(
+                                                "Only do this when you know what you are doing"),
+                                            OutlinedButton(
+                                                child: Text("Back"),
+                                                onPressed: () {
+                                                  Navigator.pop(context);
+                                                }),
+                                            const SizedBox(height: 4.0),
+                                            FilledButton(
+                                                onPressed: () {
+                                                  _saveSettings();
+                                                  Navigator.pop(context);
+                                                },
+                                                child: Text("Save")),
+                                          ])));
+                            });
+                      }),
+                  const SizedBox(height: 4.0),
                   ElevatedButton(
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const AppSelectionPage(),
-                        ),
-                      );
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color.fromARGB(255, 50, 204, 102),
-                    ),
-                    child: const Text('Edit your home screen apps',
-                        style:
-                            TextStyle(color: Color.fromARGB(255, 19, 19, 19))),
-                  ),
-                  const SizedBox(height: 16.0),
+                      onPressed: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => AutoRequest()));
+                      },
+                      child: Text("Select when you write journal")),
+                  const SizedBox(height: 24.0),
+                  Text("You", style: TextStyle(fontSize: 18)),
+                  const SizedBox(height: 4.0),
                   ElevatedButton(
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const AutoRequest(),
-                        ),
-                      );
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color.fromARGB(255, 50, 204, 102),
-                    ),
-                    child: const Text('Set Auto Mentor',
-                        style:
-                            TextStyle(color: Color.fromARGB(255, 19, 19, 19))),
-                  ),
-                  const SizedBox(height: 16.0),
-                  ElevatedButton(
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const Knowingthestudent(),
-                        ),
-                      );
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color.fromARGB(255, 50, 204, 102),
-                    ),
-                    child: const Text('Edit your goal and purpose',
-                        style:
-                            TextStyle(color: Color.fromARGB(255, 19, 19, 19))),
-                  ),
-                  const SizedBox(height: 16.0),
-                  ElevatedButton(
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const HabiticaIntegrationPage(),
-                        ),
-                      );
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color.fromARGB(255, 50, 204, 102),
-                    ),
-                    child: const Text('Connect with Habitica',
-                        style:
-                            TextStyle(color: Color.fromARGB(255, 19, 19, 19))),
-                  ),
-                  const SizedBox(height: 16.0),
-                  ElevatedButton(
+                      onPressed: () {
+                        Navigator.pushNamed(context, '/knowingthestudent');
+                      },
+                      child: Text("Edit your purpose")),
+                  const SizedBox(height: 4),
+                  OutlinedButton(
                     onPressed: () async {
                       await FirebaseAuth.instance.signOut();
                       await SessionManager.saveLoginState(false);
+                      SharedPreferences preferences =
+                          await SharedPreferences.getInstance();
+                      await preferences.clear();
                       setState(() {
                         Navigator.pushReplacement(
                           context,
@@ -196,67 +144,55 @@ class _SettingsPageState extends State<SettingsPage> {
                       });
                       // Additional code after successful sign-out
                     },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.red,
-                    ),
-                    child: const Text('Sign Out',
-                        style:
-                            TextStyle(color: Color.fromARGB(255, 19, 19, 19))),
+                    child: Text('Sign Out'),
                   ),
+                  const SizedBox(height: 24.0),
+                  Text("Integrations", style: TextStyle(fontSize: 18)),
+                  const SizedBox(height: 4.0),
+                  ElevatedButton(
+                      onPressed: () {
+                        Navigator.pushNamed(
+                            context, '/habiticaIntegrationPage');
+                      },
+                      child: Text("Connect with Habitica")),
                 ],
               ),
             ),
           ),
         ),
-        bottomNavigationBar: BottomNavigationBar(
-          items: const <BottomNavigationBarItem>[
-            BottomNavigationBarItem(
-              icon: Icon(Icons.home),
+        bottomNavigationBar: NavigationBar(
+          selectedIndex: _selectedIndex,
+          onDestinationSelected: (int index) {
+            setState(() {
+              _selectedIndex = index;
+              switch (index) {
+                case 0:
+                  Navigator.pushReplacementNamed(context, '/mentor');
+                  break;
+                case 1:
+                  Navigator.pushReplacementNamed(context, '/journal');
+                  break;
+                case 2:
+                  Navigator.pushReplacementNamed(context, '/settings');
+                  break;
+              }
+            });
+          },
+          destinations: const <Widget>[
+            NavigationDestination(
+              selectedIcon: Icon(Icons.home),
+              icon: Icon(Icons.home_outlined),
               label: 'Home',
             ),
-            BottomNavigationBarItem(
+            NavigationDestination(
               icon: Icon(Icons.book),
               label: 'Journal',
             ),
-            BottomNavigationBarItem(
+            NavigationDestination(
               icon: Icon(Icons.settings),
               label: 'Settings',
             ),
           ],
-          currentIndex: _selectedIndex,
-          selectedItemColor: const Color.fromARGB(255, 50, 204, 102),
-          unselectedItemColor: Colors.white,
-          backgroundColor: Colors.black,
-          onTap: (int index) {
-            switch (index) {
-              case 0:
-                Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const MentorPage(),
-                  ),
-                );
-                break;
-              case 1:
-                Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const JournalPage(),
-                  ),
-                );
-                break;
-              case 2:
-                Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const SettingsPage(),
-                  ),
-                );
-                break;
-            }
-          },
-        ),
-      ),
-    );
+        ));
   }
 }

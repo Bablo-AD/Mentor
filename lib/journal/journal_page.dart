@@ -1,9 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import '../home/home_page.dart';
-import '../settings/settings_page.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+
 import 'journal_editing_page.dart';
+import '../core/data.dart';
+import 'package:intl/intl.dart';
 
 class JournalPage extends StatefulWidget {
   const JournalPage({super.key});
@@ -13,151 +14,139 @@ class JournalPage extends StatefulWidget {
 }
 
 class _JournalPageState extends State<JournalPage> {
-  final int _selectedIndex = 1;
+  int _selectedIndex = 1;
   String? userId = FirebaseAuth.instance.currentUser?.uid;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text(
-          'Mentor/Journals',
-          style: TextStyle(color: Color.fromARGB(255, 50, 204, 102)),
+        appBar: AppBar(
+          title: Text(
+            "Mentor/Journal",
+          ),
         ),
-        backgroundColor: Colors.black,
-      ),
-      backgroundColor: Colors.black,
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              ElevatedButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => JournalEditingPage(
-                        journalTitle: '',
-                        journalContent: '',
-                        documentId: null,
-                        userId: userId
-                            .toString(), // Pass null as document ID for a new journal
-                      ),
-                    ),
-                  );
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color.fromARGB(255, 50, 204, 102),
-                ),
-                child: const Text('New Journal'),
-              ),
-              const SizedBox(height: 16.0),
-              StreamBuilder<QuerySnapshot>(
-                stream: FirebaseFirestore.instance
-                    .collection('journals')
-                    .where('userId', isEqualTo: userId)
-                    .orderBy('title', descending: true)
-                    .snapshots(),
-                builder: (context, snapshot) {
-                  if (snapshot.hasError) {
-                    return Text('Error: ${snapshot.error}');
-                  }
+        body: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const SizedBox(height: 16.0),
+                StreamBuilder<QuerySnapshot>(
+                  stream: FirebaseFirestore.instance
+                      .collection('users')
+                      .doc(Data.userId)
+                      .collection("journal")
+                      .orderBy('title', descending: true)
+                      .snapshots(),
+                  builder: (context, snapshot) {
+                    if (snapshot.hasError) {
+                      return Text('Error: ${snapshot.error}');
+                    }
 
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return const Center(
-                      child: CircularProgressIndicator(),
-                    );
-                  }
-
-                  final journalDocs = snapshot.data?.docs;
-
-                  return ListView.builder(
-                    scrollDirection: Axis.vertical,
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-                    itemCount: journalDocs?.length ?? 0,
-                    itemBuilder: (context, index) {
-                      final journalData =
-                          journalDocs?[index].data() as Map<String, dynamic>;
-                      final title = journalData['title'] as Timestamp;
-                      final content = journalData['content'] as String;
-                      final documentId = journalDocs?[index].id;
-
-                      return Card(
-                        color: const Color.fromARGB(255, 19, 19, 19),
-                        child: ListTile(
-                          title: Text(
-                            title.toDate().toString(),
-                            style: const TextStyle(
-                                color: Color.fromARGB(255, 50, 204, 102)),
-                          ),
-                          subtitle: Text(
-                            content,
-                            style: const TextStyle(
-                                color: Color.fromARGB(255, 50, 204, 102)),
-                          ),
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => JournalEditingPage(
-                                    journalTitle: title.toDate().toString(),
-                                    journalContent: content,
-                                    documentId: documentId,
-                                    userId: userId.toString()),
-                              ),
-                            );
-                          },
-                        ),
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return const Center(
+                        child: CircularProgressIndicator(),
                       );
-                    },
-                  );
-                },
-              ),
-            ],
+                    }
+
+                    final journalDocs = snapshot.data?.docs;
+
+                    return ListView.builder(
+                      scrollDirection: Axis.vertical,
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      itemCount: journalDocs?.length ?? 0,
+                      itemBuilder: (context, index) {
+                        final journalData =
+                            journalDocs?[index].data() as Map<String, dynamic>;
+                        final timestamp = journalData['title'] as Timestamp;
+                        var format = new DateFormat('H:m d-M-y');
+
+                        final title = format.format(timestamp.toDate());
+                        final content = journalData['content'] as String;
+                        final documentId = journalDocs?[index].id;
+
+                        return Card(
+                          color: Theme.of(context).colorScheme.surfaceVariant,
+                          child: ListTile(
+                            title: Text(
+                              title.toString(),
+                            ),
+                            subtitle: Text(content),
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => JournalEditingPage(
+                                      journalTitle: title.toString(),
+                                      journalContent: content,
+                                      documentId: documentId,
+                                      userId: userId.toString()),
+                                ),
+                              );
+                            },
+                          ),
+                        );
+                      },
+                    );
+                  },
+                ),
+              ],
+            ),
           ),
         ),
-      ),
-      bottomNavigationBar: BottomNavigationBar(
-        items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Home',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.book),
-            label: 'Journal',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.settings),
-            label: 'Settings',
-          ),
-        ],
-        currentIndex: _selectedIndex,
-        selectedItemColor: const Color.fromARGB(255, 50, 204, 102),
-        unselectedItemColor: Colors.white,
-        backgroundColor: Colors.black,
-        onTap: (int index) {
-          switch (index) {
-            case 0:
-              Navigator.pushReplacement(context,
-                  MaterialPageRoute(builder: (context) => const MentorPage()));
-              break;
-            case 1:
-              Navigator.pushReplacement(context,
-                  MaterialPageRoute(builder: (context) => const JournalPage()));
-              break;
-            case 2:
-              Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => const SettingsPage()));
-              break;
-          }
-        },
-      ),
-    );
+        floatingActionButton: FloatingActionButton.extended(
+          label: Text("New Day"),
+          icon: Icon(Icons.add),
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => JournalEditingPage(
+                  journalTitle: '',
+                  journalContent: '',
+                  documentId: null,
+                  userId: userId
+                      .toString(), // Pass null as document ID for a new journal
+                ),
+              ),
+            );
+          },
+        ),
+        bottomNavigationBar: NavigationBar(
+          selectedIndex: _selectedIndex,
+          onDestinationSelected: (int index) {
+            setState(() {
+              _selectedIndex = index;
+              switch (index) {
+                case 0:
+                  Navigator.pushReplacementNamed(context, '/mentor');
+                  break;
+                case 1:
+                  Navigator.pushReplacementNamed(context, '/journal');
+                  break;
+                case 2:
+                  Navigator.pushReplacementNamed(context, '/settings');
+                  break;
+              }
+            });
+          },
+          destinations: const <Widget>[
+            NavigationDestination(
+              selectedIcon: Icon(Icons.home),
+              icon: Icon(Icons.home_outlined),
+              label: 'Home',
+            ),
+            NavigationDestination(
+              icon: Icon(Icons.book),
+              label: 'Journal',
+            ),
+            NavigationDestination(
+              icon: Icon(Icons.settings),
+              label: 'Settings',
+            ),
+          ],
+        ));
   }
 }

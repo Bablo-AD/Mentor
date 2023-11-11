@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
-import '../settings/tellusmore_page.dart';
+import '../settings/knowingthestudent.dart';
 import '../settings/habitica_integration_page.dart';
-import '../settings/apps_selection_page.dart';
 import '../home/home_page.dart';
+import '../home/make_request.dart';
 
 class SetupPage extends StatelessWidget {
   const SetupPage({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    WidgetsBinding.instance?.addPostFrameCallback((_) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
       navigateToNextPage(context);
     });
     return WillPopScope(
@@ -42,7 +42,7 @@ class SetupPage extends StatelessWidget {
           backgroundColor: Colors.black,
         ),
         backgroundColor: Colors.black,
-        body: Center(
+        body: const Center(
           child: CircularProgressIndicator(),
         ),
       ),
@@ -58,29 +58,21 @@ class SetupPage extends StatelessWidget {
           builder: (context) => const Knowingthestudent(),
         ),
       ).then((_) {
-        // After Set Goal and Purpose page is closed, navigate to Setup Home Screen Apps page
+        // After Setup Home Screen Apps page is closed, navigate to Connect with Habitica page
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => const AppSelectionPage(),
+            builder: (context) => const HabiticaIntegrationPage(),
           ),
         ).then((_) {
-          // After Setup Home Screen Apps page is closed, navigate to Connect with Habitica page
-          Navigator.push(
+          // After Connect with Habitica page is closed, navigate to the new page
+          Navigator.pushReplacement(
             context,
             MaterialPageRoute(
-              builder: (context) => const HabiticaIntegrationPage(),
+              builder: (context) =>
+                  const MentorPage(), // Replace with the new page
             ),
-          ).then((_) {
-            // After Connect with Habitica page is closed, navigate to the new page
-            Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(
-                builder: (context) =>
-                    const MentorPage(), // Replace with the new page
-              ),
-            );
-          });
+          );
         });
       });
     });

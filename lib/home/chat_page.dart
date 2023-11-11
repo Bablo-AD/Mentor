@@ -1,52 +1,50 @@
 import 'package:flutter/material.dart';
-import 'data.dart';
-import 'package:http/http.dart' as http;
+import '../core/data.dart';
+import 'make_request.dart';
 import 'dart:convert';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:http/http.dart' as http;
+import '../core/loader.dart';
+//import 'package:cloud_firestore/cloud_firestore.dart';
 
 class ChatPage extends StatefulWidget {
-  const ChatPage({Key? key, required this.messages}) : super(key: key);
-  final List<Messages> messages;
+  final String response;
+
+  const ChatPage({Key? key, required this.response}) : super(key: key);
+
   @override
   _ChatPageState createState() => _ChatPageState();
 }
 
 class _ChatPageState extends State<ChatPage> {
+  List<Messages> messages = Data.messages_data;
   final ScrollController _scrollController = ScrollController();
   TextEditingController textEditingController = TextEditingController();
-  final _storage = const FlutterSecureStorage();
+  final Loader _loader = Loader();
   String serverurl = '';
+  bool loading = false;
   void _sendMessage(String message) async {
     setState(() {
-      widget.messages.add(Messages(
+      loading = true;
+      messages.add(Messages(
         role: 'user',
         content: message,
       ));
     });
-
-    final List<Map<String, String>> messagesData = widget.messages
+    DataProcessor sender = DataProcessor(context);
+    final List<Map<String, String>> messagesData = messages
         .map((message) => {
               'role': message.role,
               'content': message.content,
             })
         .toList();
-    String? serverurl = await _storage.read(key: 'server_url');
-    String url = '${serverurl!}/messages';
-    final response = await http.post(
-      Uri.parse(url),
-      headers: {'Content-Type': 'application/json'},
-      body: jsonEncode({'messages': messagesData}),
-    );
-
+    http.Response response =
+        await sender.meet_with_server(messagesData.toString());
     if (response.statusCode == 200) {
-      final completion = jsonDecode(response.body)['completion'].toString();
+      final completion = jsonDecode(response.body)['response'].toString();
 
       setState(() {
-        widget.messages.add(Messages(
-          role: 'user',
-          content: message,
-        ));
-        widget.messages.add(Messages(
+        loading = false;
+        messages.add(Messages(
           role: 'assistant',
           content: completion,
         ));
@@ -54,11 +52,14 @@ class _ChatPageState extends State<ChatPage> {
     } else {
       // Handle error case
       print('Error: ${response.statusCode}');
+      setState(() {
+        loading = false;
+      });
       showDialog(
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
-            title: const Text('An error occurred'),
+            title: const Text('An error occurred try again later'),
             content: Text(response.statusCode.toString()),
             actions: <Widget>[
               TextButton(
@@ -80,6 +81,12 @@ class _ChatPageState extends State<ChatPage> {
   @override
   void initState() {
     super.initState();
+    _loader.loadMessages().then((message) {
+      setState(() {
+        Data.messages_data = message;
+        messages = message;
+      });
+    });
     // Scroll to the last message when the page is loaded
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
@@ -90,36 +97,40 @@ class _ChatPageState extends State<ChatPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Mentor/Chat',
-            style: TextStyle(color: Color.fromARGB(255, 50, 204, 102))),
-        backgroundColor: Colors.black,
-      ),
-      backgroundColor: Colors.black,
+          title: const Text(
+        'Mentor/Chat',
+      )),
       body: Column(
         children: [
           Expanded(
             child: ListView.builder(
               controller: _scrollController,
-              itemCount: widget.messages.length,
+              itemCount: messages.length,
               itemBuilder: (context, index) {
-                final message = widget.messages[index];
+                final message = messages[index];
 
-                return ListTile(
-                  title: Text(
-                    message.content,
-                    style: const TextStyle(
-                      color: Color.fromARGB(255, 50, 204, 102),
-                    ),
-                  ),
-                  tileColor: message.role == 'user'
-                      ? Colors.black
-                      : const Color.fromARGB(255, 19, 19, 19),
-                );
+                return Container(
+                    alignment: message.role == 'user'
+                        ? Alignment.centerRight
+                        : Alignment.centerLeft,
+                    child: Container(
+                      margin: const EdgeInsets.all(15.0),
+                      padding: const EdgeInsets.all(15.0),
+                      child: Text(
+                        message.content,
+                      ),
+                      decoration: BoxDecoration(
+                        color: message.role == 'user'
+                            ? Theme.of(context).secondaryHeaderColor
+                            : Theme.of(context).secondaryHeaderColor,
+                        borderRadius: BorderRadius.circular(8.0),
+                      ),
+                    ));
               },
             ),
           ),
           Container(
-            padding: const EdgeInsets.all(8.0),
+            padding: const EdgeInsets.symmetric(horizontal: 8.0),
             child: Row(
               children: [
                 Expanded(
@@ -127,30 +138,38 @@ class _ChatPageState extends State<ChatPage> {
                     controller: textEditingController,
                     style: const TextStyle(
                       fontSize: 16.0,
-                      color: Color.fromARGB(255, 50, 204, 102),
                     ),
                     decoration: const InputDecoration(
                       filled: true,
-                      fillColor: Color.fromARGB(255, 19, 19, 19),
-                      hintStyle: TextStyle(
-                        color: Color.fromARGB(255, 50, 204, 102),
-                      ),
+                      hintStyle: TextStyle(),
                       hintText: 'Type a message...',
                     ),
                   ),
                 ),
-                IconButton(
-                  icon: const Icon(
-                    Icons.send,
-                    color: Color.fromARGB(255, 50, 204, 102),
+                if (loading == true)
+                  Container(
+                    width: 24.0, // Adjust these values to suit your needs
+                    height: 24.0,
+                    child: Center(
+                      child: Padding(
+                        padding: const EdgeInsets.all(
+                            20.0), // Adjust this value to suit your needs
+                        child: CircularProgressIndicator(),
+                      ),
+                    ),
+                  )
+                else
+                  IconButton(
+                    icon: const Icon(
+                      Icons.send,
+                    ),
+                    onPressed: () {
+                      final message = textEditingController.text.trim();
+                      if (message.isNotEmpty) {
+                        _sendMessage(message);
+                      }
+                    },
                   ),
-                  onPressed: () {
-                    final message = textEditingController.text.trim();
-                    if (message.isNotEmpty) {
-                      _sendMessage(message);
-                    }
-                  },
-                ),
               ],
             ),
           ),

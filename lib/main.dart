@@ -1,4 +1,4 @@
-import 'package:Bablo/settings/tellusmore_page.dart';
+import 'settings/knowingthestudent.dart';
 import 'package:flutter/material.dart';
 import 'home/home_page.dart';
 import 'settings/settings_page.dart';
@@ -7,7 +7,9 @@ import 'journal/journal_page.dart';
 import 'firebase_options.dart';
 import 'setup/authentication_page.dart';
 import 'settings/habitica_integration_page.dart';
-import 'settings/apps_selection_page.dart';
+
+import 'core/loader.dart';
+import 'color_schemes.g.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -27,17 +29,19 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Mentor',
-      theme: ThemeData(primarySwatch: Colors.green, fontFamily: 'Monospace'),
+      theme: ThemeData(useMaterial3: true, colorScheme: lightColorScheme),
+      darkTheme: ThemeData(useMaterial3: true, colorScheme: darkColorScheme),
+      themeMode: ThemeMode.system,
       home: isLoggedIn ? const MentorPage() : const EmailAuth(),
       routes: {
         //main pages
         '/settings': (context) => const SettingsPage(),
         '/journal': (context) => const JournalPage(),
         '/mentor': (context) => const MentorPage(),
+
         //Settings Subroute
         '/habiticaIntegrationPage': (context) =>
             const HabiticaIntegrationPage(),
-        '/appSelectionPage': (context) => const AppSelectionPage(),
         '/knowingthestudent': (context) => const Knowingthestudent()
       },
     );

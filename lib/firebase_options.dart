@@ -44,7 +44,7 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions web = FirebaseOptions(
-    apiKey: 'AIzaSyA1mydVpAfFJwWQcF1iD3MZYGOWx-UZoMk',
+    apiKey: 'AIzaSyD4S9VTdUK4cKPY_8mZTbpotlErVk9FZyY',
     appId: '1:1045034252917:web:68919d5f34c551857ed63c',
     messagingSenderId: '1045034252917',
     projectId: 'anti-distractor',
