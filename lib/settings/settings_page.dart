@@ -3,7 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 
 import '../core/loader.dart';
 import '../setup/authentication_page.dart';
-
+import 'package:url_launcher/url_launcher.dart';
 import 'auto_request.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -155,6 +155,15 @@ class _SettingsPageState extends State<SettingsPage> {
                             context, '/habiticaIntegrationPage');
                       },
                       child: Text("Connect with Habitica")),
+                  const SizedBox(height: 24.0),
+                  Text("Feedback & Errors", style: TextStyle(fontSize: 18)),
+                  const SizedBox(height: 4.0),
+                  TextButton(
+                      onPressed: () {
+                        launch(
+                            'https://forms.gle/gRyfXvFPdbyQGjp38'); // Replace with your Google Form URL
+                      },
+                      child: Text("Submit feedback or report errors")),
                 ],
               ),
             ),
