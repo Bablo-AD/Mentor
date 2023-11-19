@@ -27,23 +27,16 @@ class _KnowingthestudentState extends State<Knowingthestudent> {
   void loadUserData() async {
     Map<String, String?> userStuff = await _loader.load_user_stuff();
 
-    String? loadedUserGoal = userStuff['userGoal'];
-    String? loadedSelfPerception = userStuff['selfPerception'];
+    String loadedUserGoal = userStuff['userGoal'] ?? "";
+    String loadedSelfPerception = userStuff['selfPerception'] ?? "";
 
-    if (loadedUserGoal != null) {
-      setState(() {
-        userGoal = loadedUserGoal;
-        _userGoalController.text = userGoal; // Set the text in the controller
-      });
-    }
-
-    if (loadedSelfPerception != null) {
-      setState(() {
-        selfPerception = loadedSelfPerception;
-        _selfPerceptionController.text =
-            selfPerception; // Set the text in the controller
-      });
-    }
+    setState(() {
+      userGoal = loadedUserGoal;
+      _userGoalController.text = userGoal;
+      selfPerception = loadedSelfPerception;
+      _selfPerceptionController.text =
+          selfPerception; // Set the text in the controller
+    });
   }
 
   void saveUserData() async {
@@ -73,7 +66,7 @@ class _KnowingthestudentState extends State<Knowingthestudent> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                const Text('What is your goal or purpose?'),
+                const Text('What is your current goal or purpose?'),
                 const SizedBox(height: 10),
                 TextFormField(
                   controller: _userGoalController,
@@ -97,7 +90,7 @@ class _KnowingthestudentState extends State<Knowingthestudent> {
                 ),
                 const SizedBox(height: 16),
                 const Text(
-                  "What are you upto? Tell me how should i call you",
+                  "Tell me about your personality",
                 ),
                 const SizedBox(height: 10),
                 TextFormField(
@@ -109,6 +102,7 @@ class _KnowingthestudentState extends State<Knowingthestudent> {
                     return null; // Return null if the value is valid
                   },
                   maxLines: null,
+                  minLines: 3,
                   keyboardType: TextInputType.multiline,
                   decoration: const InputDecoration(
                     filled: true,

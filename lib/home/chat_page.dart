@@ -17,6 +17,7 @@ class ChatPage extends StatefulWidget {
 
 class _ChatPageState extends State<ChatPage> {
   List<Messages> messages = Data.messages_data;
+  List<Messages> new_messages = [];
   final ScrollController _scrollController = ScrollController();
   TextEditingController textEditingController = TextEditingController();
   final Loader _loader = Loader();
@@ -25,13 +26,14 @@ class _ChatPageState extends State<ChatPage> {
   void _sendMessage(String message) async {
     setState(() {
       loading = true;
-      messages.add(Messages(
+      new_messages.clear();
+      new_messages.add(Messages(
         role: 'user',
         content: message,
       ));
     });
     DataProcessor sender = DataProcessor(context);
-    final List<Map<String, String>> messagesData = messages
+    final List<Map<String, String>> messagesData = new_messages
         .map((message) => {
               'role': message.role,
               'content': message.content,
@@ -44,10 +46,11 @@ class _ChatPageState extends State<ChatPage> {
 
       setState(() {
         loading = false;
-        messages.add(Messages(
+        new_messages.add(Messages(
           role: 'assistant',
           content: completion,
         ));
+        messages = [...messages, ...new_messages];
       });
     } else {
       // Handle error case
@@ -109,21 +112,15 @@ class _ChatPageState extends State<ChatPage> {
               itemBuilder: (context, index) {
                 final message = messages[index];
 
-                return Container(
+                return Align(
                     alignment: message.role == 'user'
                         ? Alignment.centerRight
                         : Alignment.centerLeft,
-                    child: Container(
+                    child: Card(
                       margin: const EdgeInsets.all(15.0),
-                      padding: const EdgeInsets.all(15.0),
-                      child: Text(
-                        message.content,
-                      ),
-                      decoration: BoxDecoration(
-                        color: message.role == 'user'
-                            ? Theme.of(context).secondaryHeaderColor
-                            : Theme.of(context).secondaryHeaderColor,
-                        borderRadius: BorderRadius.circular(8.0),
+                      child: Padding(
+                        padding: const EdgeInsets.all(15.0),
+                        child: Text("${message.role}\n${message.content}"),
                       ),
                     ));
               },
@@ -148,12 +145,12 @@ class _ChatPageState extends State<ChatPage> {
                 ),
                 if (loading == true)
                   Container(
-                    width: 24.0, // Adjust these values to suit your needs
-                    height: 24.0,
+                    width: 50.0, // Adjust these values to suit your needs
+                    height: 50.0,
                     child: Center(
                       child: Padding(
                         padding: const EdgeInsets.all(
-                            20.0), // Adjust this value to suit your needs
+                            10.0), // Adjust this value to suit your needs
                         child: CircularProgressIndicator(),
                       ),
                     ),
