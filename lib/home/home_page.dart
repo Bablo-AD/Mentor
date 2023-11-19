@@ -159,6 +159,10 @@ class _MentorPageState extends State<MentorPage> {
                     SizedBox(height: 10.0),
                     Text(
                       "YOLO",
+                    ),
+                    SizedBox(height: 5.0),
+                    Text(
+                      "Please be patient",
                     )
                   ])
                 else
@@ -177,6 +181,7 @@ class _MentorPageState extends State<MentorPage> {
                             children: [
                               const Text("Mentor"),
                               IconButton(
+                                  tooltip: "Reload",
                                   onPressed: () {
                                     setState(() {
                                       isLoading = true;
@@ -187,7 +192,7 @@ class _MentorPageState extends State<MentorPage> {
                             ],
                           ),
                           subtitle: Text(
-                            result,
+                            "${result} \n Click to chat with mentor",
                           ),
                         ),
                       )),

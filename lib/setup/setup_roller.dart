@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import '../settings/knowingthestudent.dart';
-import '../settings/habitica_integration_page.dart';
 import '../home/home_page.dart';
-import '../home/make_request.dart';
 
 class SetupPage extends StatelessWidget {
   const SetupPage({Key? key}) : super(key: key);
@@ -24,10 +22,6 @@ class SetupPage extends StatelessWidget {
         } else if (ModalRoute.of(context)?.settings.name ==
             '/appSelectionPage') {
           Navigator.pop(context); // Pop to Set Goal and Purpose page
-          return false;
-        } else if (ModalRoute.of(context)?.settings.name ==
-            '/habiticaIntegrationPage') {
-          Navigator.pop(context); // Pop to Setup Home Screen Apps page
           return false;
         } else {
           return false; // Disable back button on the new page
@@ -58,22 +52,14 @@ class SetupPage extends StatelessWidget {
           builder: (context) => const Knowingthestudent(),
         ),
       ).then((_) {
-        // After Setup Home Screen Apps page is closed, navigate to Connect with Habitica page
-        Navigator.push(
+        // After Connect with Habitica page is closed, navigate to the new page
+        Navigator.pushReplacement(
           context,
           MaterialPageRoute(
-            builder: (context) => const HabiticaIntegrationPage(),
+            builder: (context) =>
+                const MentorPage(), // Replace with the new page
           ),
-        ).then((_) {
-          // After Connect with Habitica page is closed, navigate to the new page
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(
-              builder: (context) =>
-                  const MentorPage(), // Replace with the new page
-            ),
-          );
-        });
+        );
       });
     });
   }

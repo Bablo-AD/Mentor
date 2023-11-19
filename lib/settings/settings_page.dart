@@ -54,7 +54,69 @@ class _SettingsPageState extends State<SettingsPage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
+                  Text("About You", style: TextStyle(fontSize: 18)),
+                  const SizedBox(height: 4.0),
                   ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10)),
+                          padding: EdgeInsets.all(
+                              16) // Adjust this value to suit your needs
+                          ),
+                      onPressed: () {
+                        Navigator.pushNamed(context, '/knowingthestudent');
+                      },
+                      child: Text("Edit your purpose")),
+                  const SizedBox(height: 4),
+                  OutlinedButton(
+                    style: ElevatedButton.styleFrom(
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10)),
+                        padding: EdgeInsets.all(
+                            16) // Adjust this value to suit your needs
+                        ),
+                    onPressed: () async {
+                      await FirebaseAuth.instance.signOut();
+                      await SessionManager.saveLoginState(false);
+                      SharedPreferences preferences =
+                          await SharedPreferences.getInstance();
+                      await preferences.clear();
+                      setState(() {
+                        Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const EmailAuth(),
+                          ),
+                        );
+                      });
+                      // Additional code after successful sign-out
+                    },
+                    child: Text('Sign Out'),
+                  ),
+                  const SizedBox(height: 24.0),
+                  Text("Integrations", style: TextStyle(fontSize: 18)),
+                  const SizedBox(height: 4.0),
+                  ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(
+                                  10)), // Adjust this value to suit your needs
+                          padding: EdgeInsets.all(16)),
+                      onPressed: () {
+                        Navigator.pushNamed(
+                            context, '/habiticaIntegrationPage');
+                      },
+                      child: Text("Connect with Habitica")),
+                  const SizedBox(height: 24.0),
+                  Text("Advanced Settings", style: TextStyle(fontSize: 18)),
+                  const SizedBox(height: 4.0),
+                  ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10)),
+                          padding: EdgeInsets.all(
+                              16) // Adjust this value to suit your needs
+                          ),
                       child: Text("Edit ServerUrl"),
                       onPressed: () {
                         showDialog(
@@ -109,8 +171,14 @@ class _SettingsPageState extends State<SettingsPage> {
                                           ])));
                             });
                       }),
-                  const SizedBox(height: 4.0),
+                  const SizedBox(height: 10.0),
                   ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10)),
+                          padding: EdgeInsets.all(
+                              16) // Adjust this value to suit your needs
+                          ),
                       onPressed: () {
                         Navigator.push(
                             context,
@@ -118,43 +186,6 @@ class _SettingsPageState extends State<SettingsPage> {
                                 builder: (context) => AutoRequest()));
                       },
                       child: Text("Select when you write journal")),
-                  const SizedBox(height: 24.0),
-                  Text("You", style: TextStyle(fontSize: 18)),
-                  const SizedBox(height: 4.0),
-                  ElevatedButton(
-                      onPressed: () {
-                        Navigator.pushNamed(context, '/knowingthestudent');
-                      },
-                      child: Text("Edit your purpose")),
-                  const SizedBox(height: 4),
-                  OutlinedButton(
-                    onPressed: () async {
-                      await FirebaseAuth.instance.signOut();
-                      await SessionManager.saveLoginState(false);
-                      SharedPreferences preferences =
-                          await SharedPreferences.getInstance();
-                      await preferences.clear();
-                      setState(() {
-                        Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const EmailAuth(),
-                          ),
-                        );
-                      });
-                      // Additional code after successful sign-out
-                    },
-                    child: Text('Sign Out'),
-                  ),
-                  const SizedBox(height: 24.0),
-                  Text("Integrations", style: TextStyle(fontSize: 18)),
-                  const SizedBox(height: 4.0),
-                  ElevatedButton(
-                      onPressed: () {
-                        Navigator.pushNamed(
-                            context, '/habiticaIntegrationPage');
-                      },
-                      child: Text("Connect with Habitica")),
                   const SizedBox(height: 24.0),
                   Text("Feedback & Errors", style: TextStyle(fontSize: 18)),
                   const SizedBox(height: 4.0),

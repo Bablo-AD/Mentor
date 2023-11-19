@@ -63,7 +63,7 @@ class _EmailAuthState extends State<EmailAuth> {
         {
           "role": "system",
           "content":
-              "Now you are the user's partner who criticizes the user and helps him grow. Here I provide you the details of the user"
+              "Now you are the user's productivity partner who analyzes the user's pattern and helps him grow.Basically you are a life mentor. Here I provide you the details of the user"
         }
       ],
       "body": [],
@@ -149,7 +149,7 @@ class _EmailAuthState extends State<EmailAuth> {
                 child: Text("Sign In"),
               ),
               const SizedBox(height: 8),
-              Center(child: Text("New to the jungle? SignUp")),
+              Center(child: Text("New to the jungle?")),
               const SizedBox(height: 4),
               FilledButton(
                 onPressed: _signUp,
