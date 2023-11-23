@@ -46,6 +46,8 @@ dependencies:
   csv: ^5.0.2
   intl: ^0.18.1
   usage_stats: ^1.2.0
+  device_apps: ^2.2.0
+  flutter_quill: ^8.6.2
 
 
 dev_dependencies:

@@ -1,6 +1,6 @@
 import '../core/loader.dart';
 import '../core/data.dart';
-import 'setup_roller.dart';
+import 'signup_page.dart';
 
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -82,7 +82,7 @@ class _EmailAuthState extends State<EmailAuth> {
     return apiKey;
   }
 
-  Future<void> _signUp() async {
+  Future<void> signUp() async {
     try {
       UserCredential userCredential =
           await _auth.createUserWithEmailAndPassword(
@@ -98,7 +98,7 @@ class _EmailAuthState extends State<EmailAuth> {
 
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => const SetupPage()),
+          MaterialPageRoute(builder: (context) => SignUpPage()),
         );
       }
     } catch (e) {
@@ -131,31 +131,73 @@ class _EmailAuthState extends State<EmailAuth> {
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              TextField(
-                  controller: _emailController,
-                  decoration: InputDecoration(labelText: "Email")),
-              const SizedBox(height: 8.0),
-              TextField(
-                  obscureText: true,
-                  controller: _passwordController,
-                  decoration: InputDecoration(labelText: "Password")),
-              const SizedBox(height: 16.0),
-              ElevatedButton(
-                onPressed: _signIn,
-                child: Text("Sign In"),
+          child: Card(
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    'Making Earth a Productive Place',
+                    style: TextStyle(fontSize: 20),
+                  ),
+                  SizedBox(
+                    height: 30,
+                  ),
+                  TextField(
+                    controller: _emailController,
+                    decoration: InputDecoration(
+                      labelText: "Email",
+                      border: OutlineInputBorder(),
+                      contentPadding: EdgeInsets.symmetric(
+                          vertical: 12.0, horizontal: 16.0),
+                    ),
+                  ),
+                  const SizedBox(height: 24.0),
+                  TextField(
+                    obscureText: true,
+                    controller: _passwordController,
+                    decoration: InputDecoration(
+                      labelText: "Password",
+                      border: OutlineInputBorder(),
+                      contentPadding: EdgeInsets.symmetric(
+                          vertical: 12.0, horizontal: 16.0),
+                    ),
+                  ),
+                  const SizedBox(height: 24.0),
+                  OutlinedButton(
+                    onPressed: _signIn,
+                    style: ElevatedButton.styleFrom(
+                      padding: EdgeInsets.symmetric(
+                          vertical: 20.0, horizontal: 40.0),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10.0),
+                      ),
+                    ),
+                    child: Text("Sign In"),
+                  ),
+                  const SizedBox(height: 24),
+                  Center(child: Text("New to the jungle?")),
+                  const SizedBox(height: 8),
+                  FilledButton(
+                    style: ElevatedButton.styleFrom(
+                      padding: EdgeInsets.symmetric(
+                          vertical: 20.0, horizontal: 40.0),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10.0),
+                      ),
+                    ),
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => SignUpPage()),
+                      );
+                    },
+                    child: Text("Sign Up"),
+                  ),
+                ],
               ),
-              const SizedBox(height: 8),
-              Center(child: Text("New to the jungle?")),
-              const SizedBox(height: 4),
-              FilledButton(
-                onPressed: _signUp,
-                child: Text("Sign Up"),
-              ),
-            ],
+            ),
           ),
         ),
       ),

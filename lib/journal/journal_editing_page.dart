@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:intl/intl.dart';
 import '../core/data.dart';
+import 'package:flutter_quill/flutter_quill.dart';
+import 'dart:convert';
 
 class JournalEditingPage extends StatefulWidget {
   const JournalEditingPage({
@@ -17,49 +19,48 @@ class JournalEditingPage extends StatefulWidget {
   final String journalContent;
   final String? documentId;
   final String userId;
+
   @override
   _JournalEditingPageState createState() => _JournalEditingPageState();
 }
 
 class _JournalEditingPageState extends State<JournalEditingPage> {
-  final _firebaseService = FirebaseService();
   late String journalTitle;
-  late String journalContent;
-  late TextEditingController _contentController;
+  late QuillController _quillController;
 
   @override
   void initState() {
     super.initState();
+
     if (widget.journalTitle.isEmpty) {
-      var format = new DateFormat('H:m d-M-y');
+      var format = DateFormat('H:m d-M-y');
       journalTitle = format.format(DateTime.now()).toString();
     } else {
       journalTitle = widget.journalTitle;
     }
 
-    journalContent = widget.journalContent;
-    _contentController = TextEditingController(text: journalContent);
-  }
-
-  @override
-  void dispose() {
-    _contentController.dispose();
-    super.dispose();
+    _quillController = QuillController(
+      document: Document.fromJson(json.decode(widget.journalContent)),
+      selection: const TextSelection.collapsed(offset: 0),
+    );
   }
 
   void saveJournalEntry() async {
-    if (journalContent.isNotEmpty) {
+    String content = _quillController.document.toPlainText();
+
+    if (content.isNotEmpty) {
       if (widget.documentId != null) {
         // Existing journal, update it
-        await _firebaseService.updateJournal(
-            widget.documentId!, journalContent);
+        await FirebaseService().updateJournal(widget.documentId!, content);
       } else {
         // New journal, create it
-        await _firebaseService.createJournal(journalContent);
+        await FirebaseService().createJournal(content);
       }
+
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Saved!')),
       );
+
       if (mounted) {
         setState(() {
           Navigator.pop(context);
@@ -75,6 +76,7 @@ class _JournalEditingPageState extends State<JournalEditingPage> {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Journal deleted!')),
       );
+
       if (mounted) {
         setState(() {
           Navigator.pop(context);
@@ -87,40 +89,46 @@ class _JournalEditingPageState extends State<JournalEditingPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text("Mentor/Journal/Edit")),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(journalTitle),
-              const SizedBox(height: 16.0),
-              TextField(
-                controller: _contentController,
-                minLines: 10,
-                maxLines: null,
-                keyboardType: TextInputType.multiline,
-                decoration: const InputDecoration(
-                  filled: true,
-                  border: OutlineInputBorder(),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(journalTitle),
+            const SizedBox(height: 16.0),
+            Expanded(
+                child: QuillProvider(
+              configurations: QuillConfigurations(
+                controller: _quillController,
+                sharedConfigurations: const QuillSharedConfigurations(
+                  locale: Locale('de'),
                 ),
-                onChanged: (value) {
-                  journalContent = value;
-                },
               ),
-              const SizedBox(height: 16.0),
-              FilledButton(
-                onPressed: saveJournalEntry,
-                child: Text("Save Journal"),
+              child: Column(
+                children: [
+                  const QuillToolbar(),
+                  Expanded(
+                    child: QuillEditor.basic(
+                      configurations: const QuillEditorConfigurations(
+                        readOnly: false,
+                      ),
+                    ),
+                  )
+                ],
               ),
-              const SizedBox(height: 8.0),
-              OutlinedButton(
-                onPressed: deleteJournal,
-                child: Text("Delete Journal"),
-              ),
-            ],
-          ),
+            )),
+            const SizedBox(height: 16.0),
+            FilledButton(
+              onPressed: saveJournalEntry,
+              child: Text("Save Journal"),
+            ),
+            const SizedBox(height: 8.0),
+            OutlinedButton(
+              onPressed: deleteJournal,
+              child: Text("Delete Journal"),
+            ),
+          ],
         ),
       ),
     );
