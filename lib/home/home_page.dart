@@ -11,7 +11,6 @@ import 'package:usage_stats/usage_stats.dart';
 import 'package:device_apps/device_apps.dart';
 import 'apps_page.dart';
 import '../settings/apps_selection_page.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class MentorPage extends StatefulWidget {
   const MentorPage({super.key});
@@ -30,30 +29,10 @@ class _MentorPageState extends State<MentorPage> {
   List<Messages> messages_data = [];
   List<Video> videos = [];
   Loader loader = Loader();
-  List<Application> apps_data = [];
   List<Application> selected_apps_data = [];
   String serverurl = '';
-  final Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
 
   List<Application> loadedApps = [];
-
-  Future<void> _loadstuffFromSharedPreferences() async {
-    if (loadedApps.isEmpty) {
-      loadedApps = await loadApps();
-    }
-
-    apps_data = loadedApps;
-
-    final SharedPreferences prefs = await _prefs;
-    List<String>? selectedAppNames = prefs.getStringList('selectedApps');
-    if (selectedAppNames != null) {
-      setState(() {
-        selected_apps_data = apps_data
-            .where((app) => selectedAppNames.contains(app.appName))
-            .toList();
-      });
-    }
-  }
 
   //Gets user's usage data
   void _Makerequest(String interest) async {
@@ -82,13 +61,14 @@ class _MentorPageState extends State<MentorPage> {
   @override
   void initState() {
     super.initState();
-
+    loader.loadSelectedApps();
     check_permissions();
 
     loader.loadcompletion().then((completionMessage) {
       setState(() {
         Data.completion_message = completionMessage ?? "";
         result = Data.completion_message;
+        selected_apps_data = Data.selected_apps;
       });
     });
   }
@@ -125,13 +105,12 @@ class _MentorPageState extends State<MentorPage> {
                       onTap: () {
                         Navigator.push(
                           context,
-                          MaterialPageRoute(
-                              builder: (context) => AppsPage(apps: apps_data)),
+                          MaterialPageRoute(builder: (context) => AppsPage()),
                         );
                       },
-                      title: const Text("Apps",
-                          style: TextStyle(
-                              color: Color.fromARGB(255, 50, 204, 102))),
+                      title: const Text(
+                        "Apps",
+                      ),
                       subtitle: ListView.builder(
                           physics: const NeverScrollableScrollPhysics(),
                           shrinkWrap: true,
@@ -139,7 +118,6 @@ class _MentorPageState extends State<MentorPage> {
                           itemBuilder: (context, index) {
                             final Application app = selected_apps_data[index];
                             return ListTile(
-                              tileColor: const Color.fromARGB(255, 19, 19, 19),
                               onTap: () async {
                                 bool isInstalled =
                                     await DeviceApps.isAppInstalled(
@@ -152,7 +130,6 @@ class _MentorPageState extends State<MentorPage> {
                                 app.appName,
                                 style: const TextStyle(
                                   fontWeight: FontWeight.bold,
-                                  color: Color.fromARGB(255, 50, 204, 102),
                                 ),
                               ),
                             );

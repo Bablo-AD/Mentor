@@ -108,8 +108,20 @@ class _SettingsPageState extends State<SettingsPage> {
                       },
                       child: Text("Connect with Habitica")),
                   const SizedBox(height: 24.0),
-                  Text("Advanced Settings", style: TextStyle(fontSize: 18)),
-                  const SizedBox(height: 4.0),
+                  Text("General Settings", style: TextStyle(fontSize: 18)),
+                  const SizedBox(height: 4),
+                  ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10)),
+                          padding: EdgeInsets.all(
+                              16) // Adjust this value to suit your needs
+                          ),
+                      onPressed: () {
+                        Navigator.pushNamed(context, '/appsSelection');
+                      },
+                      child: Text("Edit your selected apps")),
+                  const SizedBox(height: 10.0),
                   ElevatedButton(
                       style: ElevatedButton.styleFrom(
                           shape: RoundedRectangleBorder(

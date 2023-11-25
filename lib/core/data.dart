@@ -1,9 +1,12 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'loader.dart';
+import 'package:device_apps/device_apps.dart';
 
 class Data {
   Loader load = Loader();
   static String? userId = FirebaseAuth.instance.currentUser?.uid;
+  static List<Application> apps = [];
+  static List<Application> selected_apps = [];
   static String response = "";
   static String interest = "";
   static List<Messages> messages_data = [];

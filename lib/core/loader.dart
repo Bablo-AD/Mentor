@@ -1,7 +1,7 @@
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'dart:convert';
-
+import 'package:device_apps/device_apps.dart';
 import 'data.dart';
 
 class SessionManager {
@@ -20,6 +20,35 @@ class SessionManager {
 
 class Loader {
   final Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
+
+  static Future<List<Application>> loadApps() async {
+    List<Application> loaded_apps = await DeviceApps.getInstalledApplications(
+      includeSystemApps: true,
+      onlyAppsWithLaunchIntent: true,
+    );
+    List<Application> sortedApps = List<Application>.from(loaded_apps);
+    sortedApps.sort((a, b) => a.appName.compareTo(b.appName));
+    Data.apps = sortedApps;
+    return sortedApps;
+  }
+
+  Future<List<Application>> loadSelectedApps() async {
+    final SharedPreferences prefs = await _prefs;
+    List<String>? selectedAppNames = prefs.getStringList('selectedApps') ?? [];
+    await Loader.loadApps();
+    List<Application> selectedApps = Data.apps
+        .where((app) => selectedAppNames.contains(app.appName))
+        .toList();
+    Data.selected_apps = selectedApps;
+    return selectedApps;
+  }
+
+  Future<void> saveSelectedApps() async {
+    final SharedPreferences prefs = await _prefs;
+    List<String> selectedAppNames =
+        Data.selected_apps.map((app) => app.appName).toList();
+    await prefs.setStringList('selectedApps', selectedAppNames);
+  }
 
   void saveScheduleTime(String selectedTime) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();

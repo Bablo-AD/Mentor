@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:device_apps/device_apps.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import '../core/data.dart';
+import '../core/loader.dart';
 
 class AppSelectionPage extends StatefulWidget {
   const AppSelectionPage({super.key});
@@ -10,46 +11,12 @@ class AppSelectionPage extends StatefulWidget {
 }
 
 class _AppSelectionPageState extends State<AppSelectionPage> {
-  List<Application> selectedApps = [];
-  List<Application> installedApps = [];
-  loadApps() async {
-    List<Application> loadedApps = await DeviceApps.getInstalledApplications(
-      includeSystemApps: true,
-      onlyAppsWithLaunchIntent: true,
-    );
-    loadedApps.sort((a, b) => a.appName.compareTo(b.appName));
-    setState(() {
-      installedApps = loadedApps;
-    });
-
-    _loadSelectedApps();
-  }
-
-  final Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
+  Loader _loader = Loader();
 
   @override
   void initState() {
     super.initState();
-    loadApps();
-  }
-
-  Future<void> _loadSelectedApps() async {
-    final SharedPreferences prefs = await _prefs;
-    List<String>? selectedAppNames = prefs.getStringList('selectedApps');
-    if (selectedAppNames != null) {
-      setState(() {
-        selectedApps = installedApps
-            .where((app) => selectedAppNames.contains(app.appName))
-            .toList();
-      });
-    }
-  }
-
-  Future<void> _saveSelectedApps() async {
-    final SharedPreferences prefs = await _prefs;
-    List<String> selectedAppNames =
-        selectedApps.map((app) => app.appName).toList();
-    await prefs.setStringList('selectedApps', selectedAppNames);
+    _loader.loadSelectedApps();
   }
 
   @override
@@ -58,45 +25,35 @@ class _AppSelectionPageState extends State<AppSelectionPage> {
       appBar: AppBar(
         title: const Text(
           'Mentor/Apps/Selection',
-          style: TextStyle(color: Color.fromARGB(255, 50, 204, 102)),
         ),
-        backgroundColor: Colors.black,
       ),
-      backgroundColor: Colors.black,
       body: Column(
         children: [
           Expanded(
             child: ListView.builder(
-              itemCount: installedApps.length,
+              itemCount: Data.apps.length,
               itemBuilder: (context, index) {
-                final Application app = installedApps[index];
+                final Application app = Data.apps[index];
                 return Column(
                   children: [
-                    Theme(
-                        data: ThemeData(
-                          unselectedWidgetColor:
-                              Color.fromARGB(255, 50, 204, 102),
-                        ),
-                        child: CheckboxListTile(
-                          activeColor: const Color.fromARGB(255, 50, 204, 102),
-                          checkColor: const Color.fromARGB(255, 19, 19, 19),
-                          tileColor: const Color.fromARGB(255, 19, 19, 19),
-                          title: Text(
-                            app.appName,
-                            style: const TextStyle(
-                                color: Color.fromARGB(255, 50, 204, 102)),
-                          ),
-                          value: selectedApps.contains(app),
-                          onChanged: (bool? value) {
-                            setState(() {
-                              if (value != null && value) {
-                                selectedApps.add(app);
-                              } else {
-                                selectedApps.remove(app);
-                              }
-                            });
-                          },
-                        )),
+                    CheckboxListTile(
+                      activeColor: const Color.fromARGB(255, 50, 204, 102),
+                      checkColor: const Color.fromARGB(255, 19, 19, 19),
+                      tileColor: const Color.fromARGB(255, 19, 19, 19),
+                      title: Text(
+                        app.appName,
+                      ),
+                      value: Data.selected_apps.contains(app),
+                      onChanged: (bool? value) {
+                        setState(() {
+                          if (value != null && value) {
+                            Data.selected_apps.add(app);
+                          } else {
+                            Data.selected_apps.remove(app);
+                          }
+                        });
+                      },
+                    ),
                     const SizedBox(height: 10),
                   ],
                 );
@@ -107,11 +64,9 @@ class _AppSelectionPageState extends State<AppSelectionPage> {
       ),
       floatingActionButton: FloatingActionButton(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-        backgroundColor: Color.fromARGB(255, 50, 204, 102),
-        foregroundColor: Color.fromARGB(255, 19, 19, 19),
         child: const Icon(Icons.check),
         onPressed: () async {
-          await _saveSelectedApps();
+          await _loader.saveSelectedApps();
           Navigator.of(context).pop();
         },
       ),
