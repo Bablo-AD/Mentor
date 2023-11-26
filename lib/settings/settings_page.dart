@@ -4,7 +4,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import '../core/loader.dart';
 import '../setup/authentication_page.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'auto_request.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class SettingsPage extends StatefulWidget {
@@ -183,21 +182,6 @@ class _SettingsPageState extends State<SettingsPage> {
                                           ])));
                             });
                       }),
-                  const SizedBox(height: 10.0),
-                  ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                          shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10)),
-                          padding: EdgeInsets.all(
-                              16) // Adjust this value to suit your needs
-                          ),
-                      onPressed: () {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => AutoRequest()));
-                      },
-                      child: Text("Select when you write journal")),
                   const SizedBox(height: 24.0),
                   Text("Feedback & Errors", style: TextStyle(fontSize: 18)),
                   const SizedBox(height: 4.0),
