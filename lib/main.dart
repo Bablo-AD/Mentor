@@ -7,7 +7,7 @@ import 'journal/journal_page.dart';
 import 'firebase_options.dart';
 import 'setup/authentication_page.dart';
 import 'settings/habitica_integration_page.dart';
-
+import 'settings/apps_selection_page.dart';
 import 'core/loader.dart';
 import 'color_schemes.g.dart';
 
@@ -40,6 +40,8 @@ class MyApp extends StatelessWidget {
         '/mentor': (context) => const MentorPage(),
 
         //Settings Subroute
+
+        '/appsSelection': (context) => const AppSelectionPage(),
         '/habiticaIntegrationPage': (context) =>
             const HabiticaIntegrationPage(),
         '/knowingthestudent': (context) => const Knowingthestudent()

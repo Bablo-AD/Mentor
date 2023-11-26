@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../settings/knowingthestudent.dart';
 import '../home/home_page.dart';
+import '../settings/apps_selection_page.dart';
 
 class SetupPage extends StatelessWidget {
   const SetupPage({Key? key}) : super(key: key);
@@ -52,6 +53,15 @@ class SetupPage extends StatelessWidget {
           builder: (context) => const Knowingthestudent(),
         ),
       ).then((_) {
+        // After Connect with Habitica page is closed, navigate to the new page
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) =>
+                const AppSelectionPage(), // Replace with the new page
+          ),
+        );
+      }).then((_) {
         // After Connect with Habitica page is closed, navigate to the new page
         Navigator.pushReplacement(
           context,

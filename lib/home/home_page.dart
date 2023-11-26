@@ -8,6 +8,9 @@ import '../core/loader.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
 import 'package:usage_stats/usage_stats.dart';
+import 'package:device_apps/device_apps.dart';
+import 'apps_page.dart';
+import '../settings/apps_selection_page.dart';
 
 class MentorPage extends StatefulWidget {
   const MentorPage({super.key});
@@ -26,6 +29,11 @@ class _MentorPageState extends State<MentorPage> {
   List<Messages> messages_data = [];
   List<Video> videos = [];
   Loader loader = Loader();
+  List<Application> selected_apps_data = Data.selected_apps;
+  String serverurl = '';
+
+  List<Application> loadedApps = [];
+
   //Gets user's usage data
   void _Makerequest(String interest) async {
     setState(() {
@@ -53,7 +61,9 @@ class _MentorPageState extends State<MentorPage> {
   @override
   void initState() {
     super.initState();
-
+    loader.loadSelectedApps().then((value) {
+      selected_apps_data = Data.selected_apps;
+    });
     check_permissions();
 
     loader.loadcompletion().then((completionMessage) {
@@ -83,6 +93,46 @@ class _MentorPageState extends State<MentorPage> {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
+                Card(
+                    child: ListTile(
+                  onLongPress: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const AppSelectionPage()),
+                    );
+                  },
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => AppsPage()),
+                    );
+                  },
+                  title: const Text("Apps"),
+                  subtitle: ListView.builder(
+                      physics: const NeverScrollableScrollPhysics(),
+                      shrinkWrap: true,
+                      itemCount: selected_apps_data.length,
+                      itemBuilder: (context, index) {
+                        final Application app = selected_apps_data[index];
+                        return ListTile(
+                          onTap: () async {
+                            bool isInstalled = await DeviceApps.isAppInstalled(
+                                app.packageName);
+                            if (isInstalled) {
+                              DeviceApps.openApp(app.packageName);
+                            }
+                          },
+                          title: Text(
+                            app.appName,
+                            style: const TextStyle(
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        );
+                      }),
+                )),
+                const SizedBox(height: 16.0),
                 StreamBuilder<QuerySnapshot>(
                   stream: FirebaseFirestore.instance
                       .collection('users')
