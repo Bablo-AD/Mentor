@@ -33,12 +33,15 @@ class Loader {
   }
 
   Future<List<Application>> loadSelectedApps() async {
-    final SharedPreferences prefs = await _prefs;
-    List<String>? selectedAppNames = prefs.getStringList('selectedApps') ?? [];
     await Loader.loadApps();
+    final SharedPreferences prefs = await _prefs;
+    List<String>? selectedAppNames =
+        await prefs.getStringList('selectedApps') ?? [];
+
     List<Application> selectedApps = Data.apps
         .where((app) => selectedAppNames.contains(app.appName))
         .toList();
+
     Data.selected_apps = selectedApps;
     return selectedApps;
   }

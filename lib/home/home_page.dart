@@ -29,7 +29,7 @@ class _MentorPageState extends State<MentorPage> {
   List<Messages> messages_data = [];
   List<Video> videos = [];
   Loader loader = Loader();
-  List<Application> selected_apps_data = [];
+  List<Application> selected_apps_data = Data.selected_apps;
   String serverurl = '';
 
   List<Application> loadedApps = [];
@@ -61,14 +61,15 @@ class _MentorPageState extends State<MentorPage> {
   @override
   void initState() {
     super.initState();
-    loader.loadSelectedApps();
+    loader.loadSelectedApps().then((value) {
+      selected_apps_data = Data.selected_apps;
+    });
     check_permissions();
 
     loader.loadcompletion().then((completionMessage) {
       setState(() {
         Data.completion_message = completionMessage ?? "";
         result = Data.completion_message;
-        selected_apps_data = Data.selected_apps;
       });
     });
   }
@@ -93,48 +94,44 @@ class _MentorPageState extends State<MentorPage> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Card(
-                    color: const Color.fromARGB(255, 19, 19, 19),
                     child: ListTile(
-                      onLongPress: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => const AppSelectionPage()),
+                  onLongPress: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const AppSelectionPage()),
+                    );
+                  },
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => AppsPage()),
+                    );
+                  },
+                  title: const Text("Apps"),
+                  subtitle: ListView.builder(
+                      physics: const NeverScrollableScrollPhysics(),
+                      shrinkWrap: true,
+                      itemCount: selected_apps_data.length,
+                      itemBuilder: (context, index) {
+                        final Application app = selected_apps_data[index];
+                        return ListTile(
+                          onTap: () async {
+                            bool isInstalled = await DeviceApps.isAppInstalled(
+                                app.packageName);
+                            if (isInstalled) {
+                              DeviceApps.openApp(app.packageName);
+                            }
+                          },
+                          title: Text(
+                            app.appName,
+                            style: const TextStyle(
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
                         );
-                      },
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) => AppsPage()),
-                        );
-                      },
-                      title: const Text(
-                        "Apps",
-                      ),
-                      subtitle: ListView.builder(
-                          physics: const NeverScrollableScrollPhysics(),
-                          shrinkWrap: true,
-                          itemCount: selected_apps_data.length,
-                          itemBuilder: (context, index) {
-                            final Application app = selected_apps_data[index];
-                            return ListTile(
-                              onTap: () async {
-                                bool isInstalled =
-                                    await DeviceApps.isAppInstalled(
-                                        app.packageName);
-                                if (isInstalled) {
-                                  DeviceApps.openApp(app.packageName);
-                                }
-                              },
-                              title: Text(
-                                app.appName,
-                                style: const TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            );
-                          }),
-                    )),
+                      }),
+                )),
                 const SizedBox(height: 16.0),
                 StreamBuilder<QuerySnapshot>(
                   stream: FirebaseFirestore.instance
