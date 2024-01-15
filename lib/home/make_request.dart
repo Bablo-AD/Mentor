@@ -15,10 +15,6 @@ import '../core/data.dart';
 class DataProcessor {
   final _loader = Loader();
 
-  late BuildContext context;
-  DataProcessor(BuildContext context) {
-    this.context = context;
-  }
   String? userId = FirebaseAuth.instance.currentUser?.uid;
   //Processes the request to be sent to the server
   Future<String> _preparing_data(String interest) async {
@@ -37,7 +33,7 @@ class DataProcessor {
     //Preparing phone usage data
     if (Platform.isAndroid) {
       PhoneUsage phoneUsage = PhoneUsage();
-      phoneUsageData = await phoneUsage.getUsage(context);
+      phoneUsageData = await phoneUsage.getUsage();
     }
 
     //Preparing journal Data
@@ -50,8 +46,7 @@ class DataProcessor {
     String selfperception = userStuff['selfPerception'].toString();
     // Prepare the data to send in the request
     habits = (habits != "" && habits.isNotEmpty) ? "habits= $habits," : "";
-    String goal =
-        (interest.isNotEmpty) ? "goal= $interest," : "";
+    String goal = (interest.isNotEmpty) ? "goal= $interest," : "";
     String journal = (journalDataList != "[]" && journalDataList.isNotEmpty)
         ? "journal= $journalDataList,"
         : "";
@@ -265,19 +260,12 @@ class HabiticaData {
 }
 
 class PhoneUsage {
-  Future<String> getUsage(BuildContext context) async {
+  Future<String> getUsage() async {
     DateTime endDate = DateTime.now();
     DateTime startDate = endDate.subtract(const Duration(days: 1));
     String outputString = "";
 
-    // check if permission is granted
-    bool? isPermission = await UsageStats.checkUsagePermission();
-    if (isPermission == false) {
-      await showPermissionDialog(context);
-      isPermission = await UsageStats.checkUsagePermission();
-    } else if (isPermission == true) {
-      outputString = await _getUsageStats(startDate, endDate);
-    }
+    outputString = await getUsageStats(startDate, endDate);
 
     return outputString;
   }
@@ -304,7 +292,7 @@ class PhoneUsage {
     );
   }
 
-  Future<String> _getUsageStats(DateTime startDate, DateTime endDate) async {
+  Future<String> getUsageStats(DateTime startDate, DateTime endDate) async {
     String outputString = "";
     List<UsageInfo> usageStats =
         await UsageStats.queryUsageStats(startDate, endDate);

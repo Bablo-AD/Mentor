@@ -11,6 +11,7 @@ import 'package:usage_stats/usage_stats.dart';
 import 'package:device_apps/device_apps.dart';
 import 'apps_page.dart';
 import '../settings/apps_selection_page.dart';
+import '../core/notifications.dart';
 
 class MentorPage extends StatefulWidget {
   const MentorPage({super.key});
@@ -32,6 +33,7 @@ class _MentorPageState extends State<MentorPage> {
   List<Application> selected_apps_data = Data.selected_apps;
   String serverurl = '';
 
+  LocalNotificationService notifier = LocalNotificationService();
   List<Application> loadedApps = [];
 
   //Gets user's usage data
@@ -41,7 +43,8 @@ class _MentorPageState extends State<MentorPage> {
       videos.clear(); // Clear previous videos
       Data.videoList.clear();
     });
-    DataProcessor dataGetter = DataProcessor(context);
+    check_permissions();
+    DataProcessor dataGetter = DataProcessor();
     try {
       await dataGetter.execute();
     } catch (e) {
@@ -55,15 +58,20 @@ class _MentorPageState extends State<MentorPage> {
       isLoading = false;
       result = Data.completion_message;
       videos = Data.videoList;
+      notifier.showNotificationAndroid('Mentor-Daily Report', result);
+    });
+  }
+
+  Stream<List<Application>> load_apps() async* {
+    yield* loader.loadSelectedApps().asStream().map((value) {
+      selected_apps_data = Data.selected_apps;
+      return selected_apps_data;
     });
   }
 
   @override
   void initState() {
     super.initState();
-    loader.loadSelectedApps().then((value) {
-      selected_apps_data = Data.selected_apps;
-    });
     check_permissions();
 
     loader.loadcompletion().then((completionMessage) {
@@ -94,44 +102,70 @@ class _MentorPageState extends State<MentorPage> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Card(
+                    color: Theme.of(context).colorScheme.surfaceVariant,
                     child: ListTile(
-                  onLongPress: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => const AppSelectionPage()),
-                    );
-                  },
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => const AppsPage()),
-                    );
-                  },
-                  title: const Text("Apps"),
-                  subtitle: ListView.builder(
-                      physics: const NeverScrollableScrollPhysics(),
-                      shrinkWrap: true,
-                      itemCount: selected_apps_data.length,
-                      itemBuilder: (context, index) {
-                        final Application app = selected_apps_data[index];
-                        return ListTile(
-                          onTap: () async {
-                            bool isInstalled = await DeviceApps.isAppInstalled(
-                                app.packageName);
-                            if (isInstalled) {
-                              DeviceApps.openApp(app.packageName);
+                        onLongPress: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => const AppSelectionPage()),
+                          );
+                        },
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => const AppsPage()),
+                          );
+                        },
+                        title: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              const Text(
+                                "Apps",
+                                style: TextStyle(fontSize: 25),
+                              ),
+                              Icon(
+                                Icons.expand,
+                              )
+                            ]),
+                        subtitle: StreamBuilder<List<Application>>(
+                          stream: Data.selected_apps.isEmpty
+                              ? load_apps()
+                              : Stream.value(Data.selected_apps),
+                          builder: (context, snapshot) {
+                            if (snapshot.connectionState ==
+                                ConnectionState.waiting) {
+                              return Center(
+                                child: CircularProgressIndicator(),
+                              ); // Loading animation
+                            } else if (snapshot.hasError) {
+                              return Text('Error: ${snapshot.error}');
+                            } else if (!snapshot.hasData) {
+                              return Text('No app is selected');
+                            } else {
+                              return ListView.builder(
+                                physics: const NeverScrollableScrollPhysics(),
+                                shrinkWrap: true,
+                                itemCount: snapshot.data?.length ?? 0,
+                                itemBuilder: (context, index) {
+                                  final Application app = snapshot.data![index];
+                                  return ListTile(
+                                    onTap: () async {
+                                      bool isInstalled =
+                                          await DeviceApps.isAppInstalled(
+                                              app.packageName);
+                                      if (isInstalled) {
+                                        DeviceApps.openApp(app.packageName);
+                                      }
+                                    },
+                                    title: Text('~ ${app.appName}'),
+                                  );
+                                },
+                              );
                             }
                           },
-                          title: Text(
-                            app.appName,
-                            style: const TextStyle(
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        );
-                      }),
-                )),
+                        ))),
                 const SizedBox(height: 16.0),
                 StreamBuilder<QuerySnapshot>(
                   stream: FirebaseFirestore.instance
@@ -172,10 +206,35 @@ class _MentorPageState extends State<MentorPage> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Card(
-                          color: Theme.of(context).colorScheme.surfaceVariant,
+                          color:
+                              Theme.of(context).colorScheme.tertiaryContainer,
                           child: ListTile(
-                            title: Text(
-                              lastJournalTitle,
+                            title: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  lastJournalTitle,
+                                  style: TextStyle(fontSize: 25),
+                                ),
+                                IconButton(
+                                    tooltip: "Add",
+                                    onPressed: () {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) =>
+                                              JournalEditingPage(
+                                            journalTitle: '',
+                                            journalContent: '',
+                                            documentId: null,
+                                            userId: Data.userId
+                                                .toString(), // Pass null as document ID for a new journal
+                                          ),
+                                        ),
+                                      );
+                                    },
+                                    icon: const Icon(Icons.add)),
+                              ],
                             ),
                             subtitle: Text(
                               lastJournalContent,
@@ -229,7 +288,10 @@ class _MentorPageState extends State<MentorPage> {
                           title: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              const Text("Mentor"),
+                              const Text(
+                                "Mentor",
+                                style: TextStyle(fontSize: 25),
+                              ),
                               IconButton(
                                   tooltip: "Reload",
                                   onPressed: () {

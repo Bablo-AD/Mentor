@@ -68,10 +68,12 @@ class _JournalPageState extends State<JournalPage> {
                         final documentId = journalDocs?[index].id;
 
                         return Card(
-                          color: Theme.of(context).colorScheme.surfaceVariant,
+                          color:
+                              Theme.of(context).colorScheme.tertiaryContainer,
                           child: ListTile(
                             title: Text(
                               title.toString(),
+                              style: TextStyle(fontSize: 25),
                             ),
                             subtitle: Text(content),
                             onTap: () {

@@ -32,7 +32,7 @@ class _ChatPageState extends State<ChatPage> {
         content: message,
       ));
     });
-    DataProcessor sender = DataProcessor(context);
+    DataProcessor sender = DataProcessor();
     final List<Map<String, String>> messagesData = new_messages
         .map((message) => {
               'role': message.role,

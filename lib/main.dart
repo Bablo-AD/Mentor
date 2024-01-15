@@ -2,6 +2,7 @@ import 'settings/knowingthestudent.dart';
 import 'package:flutter/material.dart';
 import 'home/home_page.dart';
 import 'settings/settings_page.dart';
+import 'settings/preferred_time.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'journal/journal_page.dart';
 import 'firebase_options.dart';
@@ -10,6 +11,7 @@ import 'settings/habitica_integration_page.dart';
 import 'settings/apps_selection_page.dart';
 import 'core/loader.dart';
 import 'color_schemes.g.dart';
+import 'core/notifications.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -17,6 +19,7 @@ void main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
   bool isLoggedIn = await SessionManager.getLoginState();
+  await LocalNotificationService().init();
   runApp(MyApp(isLoggedIn: isLoggedIn));
 }
 
@@ -44,7 +47,8 @@ class MyApp extends StatelessWidget {
         '/appsSelection': (context) => const AppSelectionPage(),
         '/habiticaIntegrationPage': (context) =>
             const HabiticaIntegrationPage(),
-        '/knowingthestudent': (context) => const Knowingthestudent()
+        '/knowingthestudent': (context) => const Knowingthestudent(),
+        '/preferredtime': (context) => PreferredTimePage(),
       },
     );
   }

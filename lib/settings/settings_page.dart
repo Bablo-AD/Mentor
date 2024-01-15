@@ -67,6 +67,18 @@ class _SettingsPageState extends State<SettingsPage> {
                       },
                       child: const Text("Edit your purpose")),
                   const SizedBox(height: 4),
+                  ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10)),
+                          padding: const EdgeInsets.all(
+                              16) // Adjust this value to suit your needs
+                          ),
+                      onPressed: () {
+                        Navigator.pushNamed(context, '/preferredtime');
+                      },
+                      child: const Text("Edit your preferred time")),
+                  const SizedBox(height: 4.0),
                   OutlinedButton(
                     style: ElevatedButton.styleFrom(
                         shape: RoundedRectangleBorder(
@@ -107,7 +119,8 @@ class _SettingsPageState extends State<SettingsPage> {
                       },
                       child: const Text("Connect with Habitica")),
                   const SizedBox(height: 24.0),
-                  const Text("General Settings", style: TextStyle(fontSize: 18)),
+                  const Text("General Settings",
+                      style: TextStyle(fontSize: 18)),
                   const SizedBox(height: 4),
                   ElevatedButton(
                       style: ElevatedButton.styleFrom(
@@ -183,7 +196,8 @@ class _SettingsPageState extends State<SettingsPage> {
                             });
                       }),
                   const SizedBox(height: 24.0),
-                  const Text("Feedback & Errors", style: TextStyle(fontSize: 18)),
+                  const Text("Feedback & Errors",
+                      style: TextStyle(fontSize: 18)),
                   const SizedBox(height: 4.0),
                   TextButton(
                       onPressed: () {

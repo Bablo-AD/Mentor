@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'dart:convert';
 import 'package:device_apps/device_apps.dart';
 import 'data.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class SessionManager {
   static const String loggedInKey = 'loggedIn';
@@ -32,11 +33,15 @@ class Loader {
     return sortedApps;
   }
 
+  static String load_user_id() {
+    String? userid = FirebaseAuth.instance.currentUser?.uid;
+    return userid ?? "";
+  }
+
   Future<List<Application>> loadSelectedApps() async {
     await Loader.loadApps();
     final SharedPreferences prefs = await _prefs;
-    List<String>? selectedAppNames =
-        prefs.getStringList('selectedApps') ?? [];
+    List<String>? selectedAppNames = prefs.getStringList('selectedApps') ?? [];
 
     List<Application> selectedApps = Data.apps
         .where((app) => selectedAppNames.contains(app.appName))
