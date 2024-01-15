@@ -12,12 +12,15 @@ import 'settings/apps_selection_page.dart';
 import 'core/loader.dart';
 import 'color_schemes.g.dart';
 import 'core/notifications.dart';
+import 'package:android_alarm_manager_plus/android_alarm_manager_plus.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+  await AndroidAlarmManager.initialize();
   bool isLoggedIn = await SessionManager.getLoginState();
   await LocalNotificationService().init();
   runApp(MyApp(isLoggedIn: isLoggedIn));

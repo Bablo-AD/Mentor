@@ -4,6 +4,11 @@ import 'dart:convert';
 import 'package:device_apps/device_apps.dart';
 import 'data.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
+import '../home/make_request.dart';
+import '../core/notifications.dart';
+import 'package:firebase_core/firebase_core.dart';
+import '../firebase_options.dart';
 
 class SessionManager {
   static const String loggedInKey = 'loggedIn';
@@ -20,7 +25,26 @@ class SessionManager {
 }
 
 class Loader {
-  final Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
+  final Future<SharedPreferences> prefs = SharedPreferences.getInstance();
+
+  @pragma('vm:entry-point')
+  static void makerequest() async {
+    print("alarm");
+    WidgetsFlutterBinding.ensureInitialized();
+    await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform,
+    );
+    LocalNotificationService notifier = LocalNotificationService();
+    notifier.showNotificationAndroid('Executing', "Building report");
+
+    try {
+      DataProcessor dataGetter = DataProcessor();
+      await dataGetter.execute();
+    } catch (e) {
+      print(e);
+    }
+    notifier.showNotificationAndroid('Daily Report', Data.completion_message);
+  }
 
   static Future<List<Application>> loadApps() async {
     List<Application> loadedApps = await DeviceApps.getInstalledApplications(
@@ -40,8 +64,8 @@ class Loader {
 
   Future<List<Application>> loadSelectedApps() async {
     await Loader.loadApps();
-    final SharedPreferences prefs = await _prefs;
-    List<String>? selectedAppNames = prefs.getStringList('selectedApps') ?? [];
+    final SharedPreferences prefss = await prefs;
+    List<String>? selectedAppNames = prefss.getStringList('selectedApps') ?? [];
 
     List<Application> selectedApps = Data.apps
         .where((app) => selectedAppNames.contains(app.appName))
@@ -52,22 +76,28 @@ class Loader {
   }
 
   Future<void> saveSelectedApps() async {
-    final SharedPreferences prefs = await _prefs;
+    final SharedPreferences prefss = await prefs;
     List<String> selectedAppNames =
         Data.selected_apps.map((app) => app.appName).toList();
-    await prefs.setStringList('selectedApps', selectedAppNames);
+    await prefss.setStringList('selectedApps', selectedAppNames);
   }
 
-  void saveScheduleTime(String selectedTime) async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-
-    await prefs.setString('scheduledTime', selectedTime);
+  Future<void> saveSelectedTime(TimeOfDay time) async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setInt('selectedHour', time.hour);
+    await prefs.setInt('selectedMinute', time.minute);
   }
 
-  Future<String?> loadScheduledTime() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    final scheduledTime = prefs.getString('scheduledTime');
-    return scheduledTime;
+  Future<TimeOfDay?> getSelectedTime() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    final int? hour = prefs.getInt('selectedHour');
+    final int? minute = prefs.getInt('selectedMinute');
+
+    if (hour != null && minute != null) {
+      return TimeOfDay(hour: hour, minute: minute);
+    } else {
+      return null;
+    }
   }
 
   void saveMessages(List<Messages> messages) async {
@@ -106,7 +136,7 @@ class Loader {
   }
 
   Future<String?> loadcompletion() async {
-    final SharedPreferences storage = await _prefs;
+    final SharedPreferences storage = await prefs;
     String? completion = storage.getString('completion');
     if (completion != null) {
       Data.completion_message = completion;
@@ -115,7 +145,7 @@ class Loader {
   }
 
   void savecompletion(String completion) async {
-    final SharedPreferences storage = await _prefs;
+    final SharedPreferences storage = await prefs;
     storage.setString('completion', completion);
   }
 
@@ -133,20 +163,20 @@ class Loader {
   }
 
   Future<String> loadserverurl() async {
-    final SharedPreferences storage = await _prefs;
+    final SharedPreferences storage = await prefs;
     String serverUrl = storage.getString('server_url') ??
         'https://prasannanrobots.pythonanywhere.com/mentor/chat';
     return serverUrl;
   }
 
   void saveserverurl(String serverUrl) async {
-    final SharedPreferences storage = await _prefs;
+    final SharedPreferences storage = await prefs;
     // Encrypt and save the data locally
     await storage.setString('server_url', serverUrl);
   }
 
   Future<Map<String, String?>> loadHabiticaDetails() async {
-    final SharedPreferences storage = await _prefs;
+    final SharedPreferences storage = await prefs;
     String? habiticaUserId = storage.getString('habitica_user_id');
     String? habiticaApiKey = storage.getString('habitica_api_key');
     return {
@@ -156,13 +186,13 @@ class Loader {
   }
 
   void saveHabiticaDetails(String habiticaUserId, String habiticaApiKey) async {
-    final SharedPreferences storage = await _prefs;
+    final SharedPreferences storage = await prefs;
     await storage.setString('habitica_user_id', habiticaUserId);
     await storage.setString('habitica_api_key', habiticaApiKey);
   }
 
   Future<Map<String, String?>> load_user_stuff() async {
-    final SharedPreferences storage = await _prefs;
+    final SharedPreferences storage = await prefs;
     String? loadedUserGoal = storage.getString('userGoal');
     String? loadedSelfPerception = storage.getString('selfPerception');
 
@@ -174,7 +204,7 @@ class Loader {
   }
 
   void save_user_stuff(String userGoal, String selfPerception) async {
-    final SharedPreferences storage = await _prefs;
+    final SharedPreferences storage = await prefs;
     await storage.setString('userGoal', userGoal);
     await storage.setString('selfPerception', selfPerception);
   }
