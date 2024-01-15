@@ -22,11 +22,11 @@ class Loader {
   final Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
 
   static Future<List<Application>> loadApps() async {
-    List<Application> loaded_apps = await DeviceApps.getInstalledApplications(
+    List<Application> loadedApps = await DeviceApps.getInstalledApplications(
       includeSystemApps: true,
       onlyAppsWithLaunchIntent: true,
     );
-    List<Application> sortedApps = List<Application>.from(loaded_apps);
+    List<Application> sortedApps = List<Application>.from(loadedApps);
     sortedApps.sort((a, b) => a.appName.compareTo(b.appName));
     Data.apps = sortedApps;
     return sortedApps;
@@ -36,7 +36,7 @@ class Loader {
     await Loader.loadApps();
     final SharedPreferences prefs = await _prefs;
     List<String>? selectedAppNames =
-        await prefs.getStringList('selectedApps') ?? [];
+        prefs.getStringList('selectedApps') ?? [];
 
     List<Application> selectedApps = Data.apps
         .where((app) => selectedAppNames.contains(app.appName))

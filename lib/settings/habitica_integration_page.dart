@@ -67,7 +67,7 @@ class _HabiticaIntegrationPageState extends State<HabiticaIntegrationPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(title: Text("Mentor/Settings/Habitica")),
+        appBar: AppBar(title: const Text("Mentor/Settings/Habitica")),
         body: SingleChildScrollView(
             child: Padding(
           padding: const EdgeInsets.all(16.0),
@@ -125,7 +125,8 @@ class _HabiticaIntegrationPageState extends State<HabiticaIntegrationPage> {
                 ),
                 const SizedBox(height: 16.0),
                 FilledButton.tonal(
-                    child: Text("Save"), onPressed: _saveSettings),
+                    onPressed: _saveSettings,
+                    child: const Text("Save")),
                 const SizedBox(height: 16.0),
                 const Text(
                   "You can leave this by pressing the back key",

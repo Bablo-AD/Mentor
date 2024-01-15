@@ -84,7 +84,7 @@ class _MentorPageState extends State<MentorPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(title: Text('Mentor')),
+        appBar: AppBar(title: const Text('Mentor')),
         body: SingleChildScrollView(
           // Wrap the body with SingleChildScrollView
           child: Padding(
@@ -105,7 +105,7 @@ class _MentorPageState extends State<MentorPage> {
                   onTap: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => AppsPage()),
+                      MaterialPageRoute(builder: (context) => const AppsPage()),
                     );
                   },
                   title: const Text("Apps"),
@@ -161,7 +161,7 @@ class _MentorPageState extends State<MentorPage> {
                     final lastJournalData =
                         journalDocs[0].data() as Map<String, dynamic>;
                     final timestamp = lastJournalData['title'] as Timestamp;
-                    var format = new DateFormat('H:m d-M-y');
+                    var format = DateFormat('H:m d-M-y');
 
                     final lastJournalTitle = format.format(timestamp.toDate());
                     final lastJournalContent =
@@ -242,7 +242,7 @@ class _MentorPageState extends State<MentorPage> {
                             ],
                           ),
                           subtitle: Text(
-                            "${result} \n Click to chat with mentor",
+                            "$result \n Click to chat with mentor",
                           ),
                         ),
                       )),

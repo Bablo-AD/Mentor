@@ -144,12 +144,12 @@ class _ChatPageState extends State<ChatPage> {
                   ),
                 ),
                 if (loading == true)
-                  Container(
+                  const SizedBox(
                     width: 50.0, // Adjust these values to suit your needs
                     height: 50.0,
                     child: Center(
                       child: Padding(
-                        padding: const EdgeInsets.all(
+                        padding: EdgeInsets.all(
                             10.0), // Adjust this value to suit your needs
                         child: CircularProgressIndicator(),
                       ),

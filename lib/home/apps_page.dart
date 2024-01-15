@@ -41,7 +41,7 @@ class _AppsPageState extends State<AppsPage> {
             padding: const EdgeInsets.all(8.0),
             child: TextField(
               onChanged: _filterApps, // Call _filterApps when the text changes
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 labelText: 'Search',
                 prefixIcon: Icon(
                   Icons.search,

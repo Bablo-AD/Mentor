@@ -31,7 +31,7 @@ class _JournalEditingPageState extends State<JournalEditingPage> {
   void initState() {
     super.initState();
     if (widget.journalTitle.isEmpty) {
-      var format = new DateFormat('H:m d-M-y');
+      var format = DateFormat('H:m d-M-y');
       journalTitle = format.format(DateTime.now()).toString();
     } else {
       journalTitle = widget.journalTitle;
@@ -86,7 +86,7 @@ class _JournalEditingPageState extends State<JournalEditingPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text("Mentor/Journal/Edit")),
+      appBar: AppBar(title: const Text("Mentor/Journal/Edit")),
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(16.0),
@@ -112,12 +112,12 @@ class _JournalEditingPageState extends State<JournalEditingPage> {
               const SizedBox(height: 16.0),
               FilledButton(
                 onPressed: saveJournalEntry,
-                child: Text("Save Journal"),
+                child: const Text("Save Journal"),
               ),
               const SizedBox(height: 8.0),
               OutlinedButton(
                 onPressed: deleteJournal,
-                child: Text("Delete Journal"),
+                child: const Text("Delete Journal"),
               ),
             ],
           ),

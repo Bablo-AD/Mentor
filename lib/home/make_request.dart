@@ -27,10 +27,10 @@ class DataProcessor {
 
     //Preparing Habitica Data
     Map<String, String?> details = await _loader.loadHabiticaDetails();
-    String? habitica_userId = details['userId'];
+    String? habiticaUserid = details['userId'];
     String? apiKey = details['apiKey'];
-    if (habitica_userId != null && apiKey != null) {
-      HabiticaData habiticaData = HabiticaData(habitica_userId, apiKey);
+    if (habiticaUserid != null && apiKey != null) {
+      HabiticaData habiticaData = HabiticaData(habiticaUserid, apiKey);
       habits = await habiticaData.execute();
     }
 
@@ -51,7 +51,7 @@ class DataProcessor {
     // Prepare the data to send in the request
     habits = (habits != "" && habits.isNotEmpty) ? "habits= $habits," : "";
     String goal =
-        (interest != null && interest.isNotEmpty) ? "goal= $interest," : "";
+        (interest.isNotEmpty) ? "goal= $interest," : "";
     String journal = (journalDataList != "[]" && journalDataList.isNotEmpty)
         ? "journal= $journalDataList,"
         : "";
@@ -68,17 +68,17 @@ class DataProcessor {
         : "";
 
     // Prepare the data to send in the request
-    String meta_data = """
+    String metaData = """
     $habits
     $goal
     $journal
     $usage
     $mygoal
     $myperception """;
-    return meta_data;
+    return metaData;
   }
 
-  Future<http.Response> meet_with_server(String message_data,
+  Future<http.Response> meet_with_server(String messageData,
       {String update_history = "True"}) async {
     FirebaseFirestore firestore = FirebaseFirestore.instance;
     DocumentSnapshot userDoc =
@@ -89,7 +89,7 @@ class DataProcessor {
     Map<String, String> data = {
       "user_id": FirebaseAuth.instance.currentUser?.uid.toString() ?? '',
       "apikey": userData['apikey'].toString(),
-      "messages": message_data,
+      "messages": messageData,
       "update_history": update_history
     };
     // Convert the data to JSON
@@ -111,8 +111,8 @@ class DataProcessor {
       responseData = Map<String, dynamic>.from(completionMemory['videos']);
     }
     Data.completion_message = completionMemory['response'].toString();
-    Loader _loader = Loader();
-    _loader.savecompletion(Data.completion_message);
+    Loader loader = Loader();
+    loader.savecompletion(Data.completion_message);
     Data.messages_data
         .add(Messages(role: 'assistant', content: Data.completion_message));
     Data.videoList = (responseData)
