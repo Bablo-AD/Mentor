@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'loader.dart';
 import 'package:device_apps/device_apps.dart';
+import 'dart:isolate';
 
 class Data {
   Loader load = Loader();
@@ -12,6 +13,7 @@ class Data {
   static List<Messages> messages_data = [];
   static String completion_message = "";
   static List<Video> videoList = [];
+  static ReceivePort port = ReceivePort();
 }
 
 class Video {

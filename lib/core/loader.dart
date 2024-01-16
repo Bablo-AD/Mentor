@@ -9,6 +9,8 @@ import '../home/make_request.dart';
 import '../core/notifications.dart';
 import 'package:firebase_core/firebase_core.dart';
 import '../firebase_options.dart';
+import 'dart:isolate';
+import 'dart:ui';
 
 class SessionManager {
   static const String loggedInKey = 'loggedIn';
@@ -35,7 +37,7 @@ class Loader {
       options: DefaultFirebaseOptions.currentPlatform,
     );
     LocalNotificationService notifier = LocalNotificationService();
-    notifier.showNotificationAndroid('Executing', "Building report");
+    //notifier.showNotificationAndroid('Executing', "Building report");
 
     try {
       DataProcessor dataGetter = DataProcessor();
@@ -44,6 +46,12 @@ class Loader {
       print(e);
     }
     notifier.showNotificationAndroid('Daily Report', Data.completion_message);
+    // Retrieve the SendPort from the IsolateNameServer
+    final SendPort? sendPort =
+        IsolateNameServer.lookupPortByName('isolateName');
+
+    // Send the completion message back to the main isolate
+    sendPort?.send(Data.completion_message);
   }
 
   static Future<List<Application>> loadApps() async {

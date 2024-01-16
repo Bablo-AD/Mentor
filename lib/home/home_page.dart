@@ -80,6 +80,12 @@ class _MentorPageState extends State<MentorPage> {
         result = Data.completion_message;
       });
     });
+    Data.port.listen((message) async {
+      setState(() {
+        Data.completion_message = message ?? "";
+        result = Data.completion_message;
+      });
+    });
   }
 
   void check_permissions() async {
