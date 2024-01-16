@@ -66,7 +66,7 @@ class _SettingsPageState extends State<SettingsPage> {
                         Navigator.pushNamed(context, '/knowingthestudent');
                       },
                       child: const Text("Edit your purpose")),
-                  const SizedBox(height: 4),
+                  const SizedBox(height: 10),
                   ElevatedButton(
                       style: ElevatedButton.styleFrom(
                           shape: RoundedRectangleBorder(
@@ -78,7 +78,7 @@ class _SettingsPageState extends State<SettingsPage> {
                         Navigator.pushNamed(context, '/preferredtime');
                       },
                       child: const Text("Edit your preferred time")),
-                  const SizedBox(height: 4.0),
+                  const SizedBox(height: 10.0),
                   OutlinedButton(
                     style: ElevatedButton.styleFrom(
                         shape: RoundedRectangleBorder(

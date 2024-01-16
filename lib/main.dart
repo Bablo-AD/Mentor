@@ -13,6 +13,8 @@ import 'core/loader.dart';
 import 'color_schemes.g.dart';
 import 'core/notifications.dart';
 import 'package:android_alarm_manager_plus/android_alarm_manager_plus.dart';
+import 'dart:ui';
+import 'core/data.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -23,6 +25,10 @@ void main() async {
   await AndroidAlarmManager.initialize();
   bool isLoggedIn = await SessionManager.getLoginState();
   await LocalNotificationService().init();
+  IsolateNameServer.registerPortWithName(
+    Data.port.sendPort,
+    'background_isolate',
+  );
   runApp(MyApp(isLoggedIn: isLoggedIn));
 }
 

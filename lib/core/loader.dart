@@ -48,7 +48,7 @@ class Loader {
     notifier.showNotificationAndroid('Daily Report', Data.completion_message);
     // Retrieve the SendPort from the IsolateNameServer
     final SendPort? sendPort =
-        IsolateNameServer.lookupPortByName('isolateName');
+        IsolateNameServer.lookupPortByName('background_isolate');
 
     // Send the completion message back to the main isolate
     sendPort?.send(Data.completion_message);

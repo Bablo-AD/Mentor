@@ -14,6 +14,7 @@ class Data {
   static String completion_message = "";
   static List<Video> videoList = [];
   static ReceivePort port = ReceivePort();
+  static bool port_state = false;
 }
 
 class Video {

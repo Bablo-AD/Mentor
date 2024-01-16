@@ -2,7 +2,6 @@ import 'package:Mentor/core/loader.dart';
 import 'package:flutter/material.dart';
 import 'package:android_alarm_manager_plus/android_alarm_manager_plus.dart';
 
-import '../core/data.dart';
 import 'dart:ui';
 
 class PreferredTimePage extends StatefulWidget {
@@ -13,16 +12,10 @@ class PreferredTimePage extends StatefulWidget {
 class _PreferredTimePageState extends State<PreferredTimePage> {
   TimeOfDay _selectedTime = TimeOfDay.now();
 
-  String isolateName = 'background_isolate';
   Loader _loader = Loader();
   @override
   void initState() {
     super.initState();
-
-    IsolateNameServer.registerPortWithName(
-      Data.port.sendPort,
-      isolateName,
-    );
 
     _loader.getSelectedTime().then((time) {
       setState(() {

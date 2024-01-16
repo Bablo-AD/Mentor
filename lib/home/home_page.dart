@@ -32,7 +32,6 @@ class _MentorPageState extends State<MentorPage> {
   Loader loader = Loader();
   List<Application> selected_apps_data = Data.selected_apps;
   String serverurl = '';
-
   LocalNotificationService notifier = LocalNotificationService();
   List<Application> loadedApps = [];
 
@@ -80,11 +79,21 @@ class _MentorPageState extends State<MentorPage> {
         result = Data.completion_message;
       });
     });
-    Data.port.listen((message) async {
-      setState(() {
+    if (Data.port_state == false) {
+      Data.port_state = true;
+      print("portListening");
+      Data.port.listen((message) async {
+        print(message);
+
         Data.completion_message = message ?? "";
-        result = Data.completion_message;
+        change_val();
       });
+    }
+  }
+
+  void change_val() {
+    setState(() {
+      result = Data.completion_message;
     });
   }
 
@@ -108,7 +117,6 @@ class _MentorPageState extends State<MentorPage> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Card(
-                    color: Theme.of(context).colorScheme.surfaceVariant,
                     child: ListTile(
                         onLongPress: () {
                           Navigator.push(
@@ -290,6 +298,7 @@ class _MentorPageState extends State<MentorPage> {
                         );
                       },
                       child: Card(
+                        color: Theme.of(context).colorScheme.surfaceVariant,
                         child: ListTile(
                           title: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -310,7 +319,7 @@ class _MentorPageState extends State<MentorPage> {
                             ],
                           ),
                           subtitle: Text(
-                            "$result \n Click to chat with mentor",
+                            "$result \n\n Click to chat with mentor",
                           ),
                         ),
                       )),
