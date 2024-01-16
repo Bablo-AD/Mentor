@@ -57,7 +57,8 @@ class _MentorPageState extends State<MentorPage> {
       isLoading = false;
       result = Data.completion_message;
       videos = Data.videoList;
-      notifier.showNotificationAndroid('Mentor-Daily Report', result);
+      notifier.showNotificationAndroid(Data.notification['title'].toString(),
+          Data.notification['subtitle'].toString());
     });
   }
 
@@ -85,7 +86,8 @@ class _MentorPageState extends State<MentorPage> {
       Data.port.listen((message) async {
         print(message);
 
-        Data.completion_message = message ?? "";
+        Data.completion_message = message['completion'] ?? "";
+        Data.videoList = message['videoList'] ?? [];
         change_val();
       });
     }
@@ -93,6 +95,7 @@ class _MentorPageState extends State<MentorPage> {
 
   void change_val() {
     setState(() {
+      videos = Data.videoList;
       result = Data.completion_message;
     });
   }

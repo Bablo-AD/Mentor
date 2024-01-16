@@ -15,6 +15,10 @@ class Data {
   static List<Video> videoList = [];
   static ReceivePort port = ReceivePort();
   static bool port_state = false;
+  static Map<String, String> notification = {
+    "title": "Mentor-Daily Update",
+    "subtitle": "You have a new message from your mentor"
+  };
 }
 
 class Video {

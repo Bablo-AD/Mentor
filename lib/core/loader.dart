@@ -45,13 +45,15 @@ class Loader {
     } catch (e) {
       print(e);
     }
-    notifier.showNotificationAndroid('Daily Report', Data.completion_message);
+    notifier.showNotificationAndroid(Data.notification['title'].toString(),
+        Data.notification['subtitle'].toString());
     // Retrieve the SendPort from the IsolateNameServer
     final SendPort? sendPort =
         IsolateNameServer.lookupPortByName('background_isolate');
 
     // Send the completion message back to the main isolate
-    sendPort?.send(Data.completion_message);
+    sendPort?.send(
+        {'completion': Data.completion_message, 'videoList': Data.videoList});
   }
 
   static Future<List<Application>> loadApps() async {

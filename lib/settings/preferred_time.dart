@@ -68,8 +68,16 @@ class _PreferredTimePageState extends State<PreferredTimePage> {
       ),
       body: Center(
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.start,
           children: [
+            Padding(
+              padding: EdgeInsets.all(20),
+              child: Text(
+                'Select your preferred time to receive messages from your mentor',
+                textAlign: TextAlign.center,
+                style: TextStyle(fontSize: 20),
+              ),
+            ),
             Text(
               'Preferred Time:',
               style: TextStyle(fontSize: 20),

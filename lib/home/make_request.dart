@@ -85,7 +85,7 @@ class DataProcessor {
       "user_id": FirebaseAuth.instance.currentUser?.uid.toString() ?? '',
       "apikey": userData['apikey'].toString(),
       "messages": messageData,
-      "update_history": update_history
+      "assistant_model": "mentorlite"
     };
     // Convert the data to JSON
     String jsonData = jsonEncode(data);
@@ -102,8 +102,14 @@ class DataProcessor {
   post_process_data(String response) async {
     var completionMemory = jsonDecode(response);
     Map<String, dynamic> responseData = {};
+    Map<String, String> notification = {};
     if (completionMemory['videos'] != null) {
       responseData = Map<String, dynamic>.from(completionMemory['videos']);
+    }
+    if (completionMemory['notifications'] != null) {
+      notification =
+          Map<String, String>.from(completionMemory['notifications']);
+      Data.notification = notification;
     }
     Data.completion_message = completionMemory['response'].toString();
     Loader loader = Loader();

@@ -205,6 +205,12 @@ class _SettingsPageState extends State<SettingsPage> {
                             'https://forms.gle/gRyfXvFPdbyQGjp38'); // Replace with your Google Form URL
                       },
                       child: const Text("Submit feedback or report errors")),
+                  const SizedBox(
+                    height: 10,
+                  ),
+                  const Center(
+                      child: Text("Version 2.1.0",
+                          style: TextStyle(fontSize: 18))),
                 ],
               ),
             ),

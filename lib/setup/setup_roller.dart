@@ -1,7 +1,9 @@
+import 'package:Mentor/settings/preferred_time.dart';
 import 'package:flutter/material.dart';
 import '../settings/knowingthestudent.dart';
 import '../home/home_page.dart';
 import '../settings/apps_selection_page.dart';
+import '../settings/preferred_time.dart';
 
 class SetupPage extends StatelessWidget {
   const SetupPage({Key? key}) : super(key: key);
@@ -22,6 +24,9 @@ class SetupPage extends StatelessWidget {
           return true;
         } else if (ModalRoute.of(context)?.settings.name ==
             '/appSelectionPage') {
+          Navigator.pop(context); // Pop to Set Goal and Purpose page
+          return false;
+        } else if (ModalRoute.of(context)?.settings.name == '/preferredtime') {
           Navigator.pop(context); // Pop to Set Goal and Purpose page
           return false;
         } else {
@@ -59,6 +64,15 @@ class SetupPage extends StatelessWidget {
           MaterialPageRoute(
             builder: (context) =>
                 const AppSelectionPage(), // Replace with the new page
+          ),
+        );
+      }).then((_) {
+        // After Connect with Habitica page is closed, navigate to the new page
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) =>
+                PreferredTimePage(), // Replace with the new page
           ),
         );
       }).then((_) {
