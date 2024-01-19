@@ -85,7 +85,6 @@ class DataProcessor {
       "user_id": FirebaseAuth.instance.currentUser?.uid.toString() ?? '',
       "apikey": userData['apikey'].toString(),
       "messages": messageData,
-      "assistant_model": "mentorlite"
     };
     // Convert the data to JSON
     String jsonData = jsonEncode(data);

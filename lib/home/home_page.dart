@@ -335,26 +335,24 @@ class _MentorPageState extends State<MentorPage> {
                     final video = videos[index];
 
                     return Card(
-                        color: const Color.fromARGB(255, 19, 19, 19),
                         child: ListTile(
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => VideoPage(
-                                    videoId: video.videoId,
-                                    description: video.videoDescription),
-                              ),
-                            );
-                          },
-                          title: Text(
-                            video.title,
-                            style: const TextStyle(
-                              color: Color.fromARGB(255, 50, 204, 102),
-                              fontWeight: FontWeight.bold,
-                            ),
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => VideoPage(
+                                videoId: video.videoId,
+                                description: video.videoDescription),
                           ),
-                        ));
+                        );
+                      },
+                      title: Text(
+                        video.title,
+                        style: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ));
                   },
                 )
               ],
