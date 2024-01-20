@@ -11,7 +11,7 @@ class AppSelectionPage extends StatefulWidget {
 }
 
 class _AppSelectionPageState extends State<AppSelectionPage> {
-  Loader _loader = Loader();
+  final Loader _loader = Loader();
 
   @override
   void initState() {

@@ -44,7 +44,7 @@ class _SettingsPageState extends State<SettingsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(title: Text("Mentor/Settings")),
+        appBar: AppBar(title: const Text("Mentor/Settings")),
         body: SingleChildScrollView(
           child: Padding(
             padding: const EdgeInsets.all(16.0),
@@ -53,25 +53,37 @@ class _SettingsPageState extends State<SettingsPage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  Text("About You", style: TextStyle(fontSize: 18)),
+                  const Text("About You", style: TextStyle(fontSize: 18)),
                   const SizedBox(height: 4.0),
                   ElevatedButton(
                       style: ElevatedButton.styleFrom(
                           shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(10)),
-                          padding: EdgeInsets.all(
+                          padding: const EdgeInsets.all(
                               16) // Adjust this value to suit your needs
                           ),
                       onPressed: () {
                         Navigator.pushNamed(context, '/knowingthestudent');
                       },
-                      child: Text("Edit your purpose")),
-                  const SizedBox(height: 4),
+                      child: const Text("Edit your purpose")),
+                  const SizedBox(height: 10),
+                  ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10)),
+                          padding: const EdgeInsets.all(
+                              16) // Adjust this value to suit your needs
+                          ),
+                      onPressed: () {
+                        Navigator.pushNamed(context, '/preferredtime');
+                      },
+                      child: const Text("Edit your preferred time")),
+                  const SizedBox(height: 10.0),
                   OutlinedButton(
                     style: ElevatedButton.styleFrom(
                         shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(10)),
-                        padding: EdgeInsets.all(
+                        padding: const EdgeInsets.all(
                             16) // Adjust this value to suit your needs
                         ),
                     onPressed: () async {
@@ -90,45 +102,46 @@ class _SettingsPageState extends State<SettingsPage> {
                       });
                       // Additional code after successful sign-out
                     },
-                    child: Text('Sign Out'),
+                    child: const Text('Sign Out'),
                   ),
                   const SizedBox(height: 24.0),
-                  Text("Integrations", style: TextStyle(fontSize: 18)),
+                  const Text("Integrations", style: TextStyle(fontSize: 18)),
                   const SizedBox(height: 4.0),
                   ElevatedButton(
                       style: ElevatedButton.styleFrom(
                           shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(
                                   10)), // Adjust this value to suit your needs
-                          padding: EdgeInsets.all(16)),
+                          padding: const EdgeInsets.all(16)),
                       onPressed: () {
                         Navigator.pushNamed(
                             context, '/habiticaIntegrationPage');
                       },
-                      child: Text("Connect with Habitica")),
+                      child: const Text("Connect with Habitica")),
                   const SizedBox(height: 24.0),
-                  Text("General Settings", style: TextStyle(fontSize: 18)),
+                  const Text("General Settings",
+                      style: TextStyle(fontSize: 18)),
                   const SizedBox(height: 4),
                   ElevatedButton(
                       style: ElevatedButton.styleFrom(
                           shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(10)),
-                          padding: EdgeInsets.all(
+                          padding: const EdgeInsets.all(
                               16) // Adjust this value to suit your needs
                           ),
                       onPressed: () {
                         Navigator.pushNamed(context, '/appsSelection');
                       },
-                      child: Text("Edit your selected apps")),
+                      child: const Text("Edit your selected apps")),
                   const SizedBox(height: 10.0),
                   ElevatedButton(
                       style: ElevatedButton.styleFrom(
                           shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(10)),
-                          padding: EdgeInsets.all(
+                          padding: const EdgeInsets.all(
                               16) // Adjust this value to suit your needs
                           ),
-                      child: Text("Edit ServerUrl"),
+                      child: const Text("Edit ServerUrl"),
                       onPressed: () {
                         showDialog(
                             barrierDismissible: true,
@@ -165,10 +178,10 @@ class _SettingsPageState extends State<SettingsPage> {
                                               },
                                             ),
                                             const SizedBox(height: 16.0),
-                                            Text(
+                                            const Text(
                                                 "Only do this when you know what you are doing"),
                                             OutlinedButton(
-                                                child: Text("Back"),
+                                                child: const Text("Back"),
                                                 onPressed: () {
                                                   Navigator.pop(context);
                                                 }),
@@ -178,19 +191,26 @@ class _SettingsPageState extends State<SettingsPage> {
                                                   _saveSettings();
                                                   Navigator.pop(context);
                                                 },
-                                                child: Text("Save")),
+                                                child: const Text("Save")),
                                           ])));
                             });
                       }),
                   const SizedBox(height: 24.0),
-                  Text("Feedback & Errors", style: TextStyle(fontSize: 18)),
+                  const Text("Feedback & Errors",
+                      style: TextStyle(fontSize: 18)),
                   const SizedBox(height: 4.0),
                   TextButton(
                       onPressed: () {
                         launch(
                             'https://forms.gle/gRyfXvFPdbyQGjp38'); // Replace with your Google Form URL
                       },
-                      child: Text("Submit feedback or report errors")),
+                      child: const Text("Submit feedback or report errors")),
+                  const SizedBox(
+                    height: 10,
+                  ),
+                  const Center(
+                      child: Text("Version 2.1.0",
+                          style: TextStyle(fontSize: 18))),
                 ],
               ),
             ),

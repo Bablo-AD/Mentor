@@ -15,10 +15,6 @@ import '../core/data.dart';
 class DataProcessor {
   final _loader = Loader();
 
-  late BuildContext context;
-  DataProcessor(BuildContext context) {
-    this.context = context;
-  }
   String? userId = FirebaseAuth.instance.currentUser?.uid;
   //Processes the request to be sent to the server
   Future<String> _preparing_data(String interest) async {
@@ -27,17 +23,17 @@ class DataProcessor {
 
     //Preparing Habitica Data
     Map<String, String?> details = await _loader.loadHabiticaDetails();
-    String? habitica_userId = details['userId'];
+    String? habiticaUserid = details['userId'];
     String? apiKey = details['apiKey'];
-    if (habitica_userId != null && apiKey != null) {
-      HabiticaData habiticaData = HabiticaData(habitica_userId, apiKey);
+    if (habiticaUserid != null && apiKey != null) {
+      HabiticaData habiticaData = HabiticaData(habiticaUserid, apiKey);
       habits = await habiticaData.execute();
     }
 
     //Preparing phone usage data
     if (Platform.isAndroid) {
       PhoneUsage phoneUsage = PhoneUsage();
-      phoneUsageData = await phoneUsage.getUsage(context);
+      phoneUsageData = await phoneUsage.getUsage();
     }
 
     //Preparing journal Data
@@ -50,8 +46,7 @@ class DataProcessor {
     String selfperception = userStuff['selfPerception'].toString();
     // Prepare the data to send in the request
     habits = (habits != "" && habits.isNotEmpty) ? "habits= $habits," : "";
-    String goal =
-        (interest != null && interest.isNotEmpty) ? "goal= $interest," : "";
+    String goal = (interest.isNotEmpty) ? "goal= $interest," : "";
     String journal = (journalDataList != "[]" && journalDataList.isNotEmpty)
         ? "journal= $journalDataList,"
         : "";
@@ -68,17 +63,17 @@ class DataProcessor {
         : "";
 
     // Prepare the data to send in the request
-    String meta_data = """
+    String metaData = """
     $habits
     $goal
     $journal
     $usage
     $mygoal
     $myperception """;
-    return meta_data;
+    return metaData;
   }
 
-  Future<http.Response> meet_with_server(String message_data,
+  Future<http.Response> meet_with_server(String messageData,
       {String update_history = "True"}) async {
     FirebaseFirestore firestore = FirebaseFirestore.instance;
     DocumentSnapshot userDoc =
@@ -89,8 +84,7 @@ class DataProcessor {
     Map<String, String> data = {
       "user_id": FirebaseAuth.instance.currentUser?.uid.toString() ?? '',
       "apikey": userData['apikey'].toString(),
-      "messages": message_data,
-      "update_history": update_history
+      "messages": messageData,
     };
     // Convert the data to JSON
     String jsonData = jsonEncode(data);
@@ -107,12 +101,19 @@ class DataProcessor {
   post_process_data(String response) async {
     var completionMemory = jsonDecode(response);
     Map<String, dynamic> responseData = {};
+    print(completionMemory);
     if (completionMemory['videos'] != null) {
       responseData = Map<String, dynamic>.from(completionMemory['videos']);
     }
+    if (completionMemory['notifications'] != null) {
+      Data.notification_title =
+          jsonDecode(completionMemory['notifications'])['title'];
+      Data.notification_body =
+          jsonDecode(completionMemory['notifications'])['subtitle'];
+    }
     Data.completion_message = completionMemory['response'].toString();
-    Loader _loader = Loader();
-    _loader.savecompletion(Data.completion_message);
+    Loader loader = Loader();
+    loader.savecompletion(Data.completion_message);
     Data.messages_data
         .add(Messages(role: 'assistant', content: Data.completion_message));
     Data.videoList = (responseData)
@@ -265,19 +266,12 @@ class HabiticaData {
 }
 
 class PhoneUsage {
-  Future<String> getUsage(BuildContext context) async {
+  Future<String> getUsage() async {
     DateTime endDate = DateTime.now();
     DateTime startDate = endDate.subtract(const Duration(days: 1));
     String outputString = "";
 
-    // check if permission is granted
-    bool? isPermission = await UsageStats.checkUsagePermission();
-    if (isPermission == false) {
-      await showPermissionDialog(context);
-      isPermission = await UsageStats.checkUsagePermission();
-    } else if (isPermission == true) {
-      outputString = await _getUsageStats(startDate, endDate);
-    }
+    outputString = await getUsageStats(startDate, endDate);
 
     return outputString;
   }
@@ -304,7 +298,7 @@ class PhoneUsage {
     );
   }
 
-  Future<String> _getUsageStats(DateTime startDate, DateTime endDate) async {
+  Future<String> getUsageStats(DateTime startDate, DateTime endDate) async {
     String outputString = "";
     List<UsageInfo> usageStats =
         await UsageStats.queryUsageStats(startDate, endDate);

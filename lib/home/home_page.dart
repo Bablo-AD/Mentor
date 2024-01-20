@@ -11,6 +11,7 @@ import 'package:usage_stats/usage_stats.dart';
 import 'package:device_apps/device_apps.dart';
 import 'apps_page.dart';
 import '../settings/apps_selection_page.dart';
+import '../core/notifications.dart';
 
 class MentorPage extends StatefulWidget {
   const MentorPage({super.key});
@@ -27,11 +28,11 @@ class _MentorPageState extends State<MentorPage> {
   String result = '';
   bool isLoading = false;
   List<Messages> messages_data = [];
-  List<Video> videos = [];
+  List<Video> videos = Data.videoList;
   Loader loader = Loader();
   List<Application> selected_apps_data = Data.selected_apps;
   String serverurl = '';
-
+  LocalNotificationService notifier = LocalNotificationService();
   List<Application> loadedApps = [];
 
   //Gets user's usage data
@@ -41,29 +42,40 @@ class _MentorPageState extends State<MentorPage> {
       videos.clear(); // Clear previous videos
       Data.videoList.clear();
     });
-    DataProcessor dataGetter = DataProcessor(context);
+    check_permissions();
+    DataProcessor dataGetter = DataProcessor();
     try {
       await dataGetter.execute();
     } catch (e) {
+      if (mounted) {
+        setState(() {
+          isLoading = false;
+          result = e.toString();
+        });
+      }
+    }
+    if (mounted) {
       setState(() {
         isLoading = false;
-        result = e.toString();
+        result = Data.completion_message;
+        videos = Data.videoList;
+        print(Data.notification_title);
       });
     }
+    notifier.showNotificationAndroid(
+        Data.notification_title, Data.notification_body);
+  }
 
-    setState(() {
-      isLoading = false;
-      result = Data.completion_message;
-      videos = Data.videoList;
+  Stream<List<Application>> load_apps() async* {
+    yield* loader.loadSelectedApps().asStream().map((value) {
+      selected_apps_data = Data.selected_apps;
+      return selected_apps_data;
     });
   }
 
   @override
   void initState() {
     super.initState();
-    loader.loadSelectedApps().then((value) {
-      selected_apps_data = Data.selected_apps;
-    });
     check_permissions();
 
     loader.loadcompletion().then((completionMessage) {
@@ -71,6 +83,24 @@ class _MentorPageState extends State<MentorPage> {
         Data.completion_message = completionMessage ?? "";
         result = Data.completion_message;
       });
+    });
+    if (Data.port_state == false) {
+      Data.port_state = true;
+      print("portListening");
+      Data.port.listen((message) async {
+        print(message);
+
+        Data.completion_message = message['completion'] ?? "";
+        Data.videoList = message['videoList'] ?? [];
+        change_val();
+      });
+    }
+  }
+
+  void change_val() {
+    setState(() {
+      videos = Data.videoList;
+      result = Data.completion_message;
     });
   }
 
@@ -84,7 +114,7 @@ class _MentorPageState extends State<MentorPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(title: Text('Mentor')),
+        appBar: AppBar(title: const Text('Mentor')),
         body: SingleChildScrollView(
           // Wrap the body with SingleChildScrollView
           child: Padding(
@@ -95,43 +125,68 @@ class _MentorPageState extends State<MentorPage> {
               children: [
                 Card(
                     child: ListTile(
-                  onLongPress: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => const AppSelectionPage()),
-                    );
-                  },
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => AppsPage()),
-                    );
-                  },
-                  title: const Text("Apps"),
-                  subtitle: ListView.builder(
-                      physics: const NeverScrollableScrollPhysics(),
-                      shrinkWrap: true,
-                      itemCount: selected_apps_data.length,
-                      itemBuilder: (context, index) {
-                        final Application app = selected_apps_data[index];
-                        return ListTile(
-                          onTap: () async {
-                            bool isInstalled = await DeviceApps.isAppInstalled(
-                                app.packageName);
-                            if (isInstalled) {
-                              DeviceApps.openApp(app.packageName);
+                        onLongPress: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => const AppSelectionPage()),
+                          );
+                        },
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => const AppsPage()),
+                          );
+                        },
+                        title: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              const Text(
+                                "Apps",
+                                style: TextStyle(fontSize: 25),
+                              ),
+                              Icon(
+                                Icons.expand,
+                              )
+                            ]),
+                        subtitle: StreamBuilder<List<Application>>(
+                          stream: Data.selected_apps.isEmpty
+                              ? load_apps()
+                              : Stream.value(Data.selected_apps),
+                          builder: (context, snapshot) {
+                            if (snapshot.connectionState ==
+                                ConnectionState.waiting) {
+                              return Center(
+                                child: CircularProgressIndicator(),
+                              ); // Loading animation
+                            } else if (snapshot.hasError) {
+                              return Text('Error: ${snapshot.error}');
+                            } else if (!snapshot.hasData) {
+                              return Text('No app is selected');
+                            } else {
+                              return ListView.builder(
+                                physics: const NeverScrollableScrollPhysics(),
+                                shrinkWrap: true,
+                                itemCount: snapshot.data?.length ?? 0,
+                                itemBuilder: (context, index) {
+                                  final Application app = snapshot.data![index];
+                                  return ListTile(
+                                    onTap: () async {
+                                      bool isInstalled =
+                                          await DeviceApps.isAppInstalled(
+                                              app.packageName);
+                                      if (isInstalled) {
+                                        DeviceApps.openApp(app.packageName);
+                                      }
+                                    },
+                                    title: Text('~ ${app.appName}'),
+                                  );
+                                },
+                              );
                             }
                           },
-                          title: Text(
-                            app.appName,
-                            style: const TextStyle(
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        );
-                      }),
-                )),
+                        ))),
                 const SizedBox(height: 16.0),
                 StreamBuilder<QuerySnapshot>(
                   stream: FirebaseFirestore.instance
@@ -161,7 +216,7 @@ class _MentorPageState extends State<MentorPage> {
                     final lastJournalData =
                         journalDocs[0].data() as Map<String, dynamic>;
                     final timestamp = lastJournalData['title'] as Timestamp;
-                    var format = new DateFormat('H:m d-M-y');
+                    var format = DateFormat('H:m d-M-y');
 
                     final lastJournalTitle = format.format(timestamp.toDate());
                     final lastJournalContent =
@@ -172,10 +227,35 @@ class _MentorPageState extends State<MentorPage> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Card(
-                          color: Theme.of(context).colorScheme.surfaceVariant,
+                          color:
+                              Theme.of(context).colorScheme.tertiaryContainer,
                           child: ListTile(
-                            title: Text(
-                              lastJournalTitle,
+                            title: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  lastJournalTitle,
+                                  style: TextStyle(fontSize: 25),
+                                ),
+                                IconButton(
+                                    tooltip: "Add",
+                                    onPressed: () {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) =>
+                                              JournalEditingPage(
+                                            journalTitle: '',
+                                            journalContent: '',
+                                            documentId: null,
+                                            userId: Data.userId
+                                                .toString(), // Pass null as document ID for a new journal
+                                          ),
+                                        ),
+                                      );
+                                    },
+                                    icon: const Icon(Icons.add)),
+                              ],
                             ),
                             subtitle: Text(
                               lastJournalContent,
@@ -208,11 +288,11 @@ class _MentorPageState extends State<MentorPage> {
                     ),
                     SizedBox(height: 10.0),
                     Text(
-                      "YOLO",
+                      "Mentor is scratching his head",
                     ),
                     SizedBox(height: 5.0),
                     Text(
-                      "Please be patient",
+                      "Please hang on for a while",
                     )
                   ])
                 else
@@ -225,11 +305,15 @@ class _MentorPageState extends State<MentorPage> {
                         );
                       },
                       child: Card(
+                        color: Theme.of(context).colorScheme.surfaceVariant,
                         child: ListTile(
                           title: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              const Text("Mentor"),
+                              const Text(
+                                "Mentor",
+                                style: TextStyle(fontSize: 25),
+                              ),
                               IconButton(
                                   tooltip: "Reload",
                                   onPressed: () {
@@ -242,7 +326,7 @@ class _MentorPageState extends State<MentorPage> {
                             ],
                           ),
                           subtitle: Text(
-                            "${result} \n Click to chat with mentor",
+                            "$result \n\n Click to chat with mentor",
                           ),
                         ),
                       )),
@@ -255,26 +339,24 @@ class _MentorPageState extends State<MentorPage> {
                     final video = videos[index];
 
                     return Card(
-                        color: const Color.fromARGB(255, 19, 19, 19),
                         child: ListTile(
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => VideoPage(
-                                    videoId: video.videoId,
-                                    description: video.videoDescription),
-                              ),
-                            );
-                          },
-                          title: Text(
-                            video.title,
-                            style: const TextStyle(
-                              color: Color.fromARGB(255, 50, 204, 102),
-                              fontWeight: FontWeight.bold,
-                            ),
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => VideoPage(
+                                videoId: video.videoId,
+                                description: video.videoDescription),
                           ),
-                        ));
+                        );
+                      },
+                      title: Text(
+                        video.title,
+                        style: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ));
                   },
                 )
               ],

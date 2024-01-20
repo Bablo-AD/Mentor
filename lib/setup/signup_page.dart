@@ -8,14 +8,16 @@ import '../core/loader.dart';
 import 'setup_roller.dart';
 
 class SignUpPage extends StatefulWidget {
+  const SignUpPage({super.key});
+
   @override
   _SignUpPageState createState() => _SignUpPageState();
 }
 
 class _SignUpPageState extends State<SignUpPage> {
-  TextEditingController _emailController = TextEditingController();
-  TextEditingController _passwordController = TextEditingController();
-  TextEditingController _confirmPasswordController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _confirmPasswordController = TextEditingController();
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
   void initialize_user() async {
@@ -123,22 +125,22 @@ class _SignUpPageState extends State<SignUpPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Mentor/Sign Up')),
+      appBar: AppBar(title: const Text('Mentor/Sign Up')),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text(
+            const Text(
               "Join the Jungle",
               style: TextStyle(fontSize: 20),
             ),
-            SizedBox(
+            const SizedBox(
               height: 30,
             ),
             TextField(
               controller: _emailController,
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 labelText: "Email",
                 border: OutlineInputBorder(),
                 contentPadding: EdgeInsets.symmetric(
@@ -151,7 +153,7 @@ class _SignUpPageState extends State<SignUpPage> {
             TextField(
               obscureText: true,
               controller: _passwordController,
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 labelText: "Password",
                 border: OutlineInputBorder(),
                 contentPadding: EdgeInsets.symmetric(
@@ -164,7 +166,7 @@ class _SignUpPageState extends State<SignUpPage> {
             TextField(
               obscureText: true,
               controller: _confirmPasswordController,
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 labelText: "Confirm Password",
                 border: OutlineInputBorder(),
                 contentPadding: EdgeInsets.symmetric(
@@ -177,12 +179,12 @@ class _SignUpPageState extends State<SignUpPage> {
             FilledButton(
               onPressed: _signUp,
               style: ElevatedButton.styleFrom(
-                padding: EdgeInsets.symmetric(vertical: 20.0, horizontal: 30.0),
+                padding: const EdgeInsets.symmetric(vertical: 20.0, horizontal: 30.0),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10.0),
                 ),
               ),
-              child: Text("Sign Up"),
+              child: const Text("Sign Up"),
             ),
           ],
         ),

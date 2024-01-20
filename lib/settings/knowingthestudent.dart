@@ -115,7 +115,7 @@ class _KnowingthestudentState extends State<Knowingthestudent> {
                   },
                 ),
                 const SizedBox(height: 16),
-                FilledButton(child: Text('Save'), onPressed: saveUserData)
+                FilledButton(onPressed: saveUserData, child: const Text('Save'))
               ],
             ),
           ),

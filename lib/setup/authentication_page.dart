@@ -98,7 +98,7 @@ class _EmailAuthState extends State<EmailAuth> {
 
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => SignUpPage()),
+          MaterialPageRoute(builder: (context) => const SignUpPage()),
         );
       }
     } catch (e) {
@@ -127,7 +127,7 @@ class _EmailAuthState extends State<EmailAuth> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Mentor/Authentication')),
+      appBar: AppBar(title: const Text('Mentor/Authentication')),
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(16.0),
@@ -137,16 +137,16 @@ class _EmailAuthState extends State<EmailAuth> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text(
+                  const Text(
                     'Making Earth a Productive Place',
                     style: TextStyle(fontSize: 20),
                   ),
-                  SizedBox(
+                  const SizedBox(
                     height: 30,
                   ),
                   TextField(
                     controller: _emailController,
-                    decoration: InputDecoration(
+                    decoration: const InputDecoration(
                       labelText: "Email",
                       border: OutlineInputBorder(),
                       contentPadding: EdgeInsets.symmetric(
@@ -157,7 +157,7 @@ class _EmailAuthState extends State<EmailAuth> {
                   TextField(
                     obscureText: true,
                     controller: _passwordController,
-                    decoration: InputDecoration(
+                    decoration: const InputDecoration(
                       labelText: "Password",
                       border: OutlineInputBorder(),
                       contentPadding: EdgeInsets.symmetric(
@@ -168,20 +168,20 @@ class _EmailAuthState extends State<EmailAuth> {
                   OutlinedButton(
                     onPressed: _signIn,
                     style: ElevatedButton.styleFrom(
-                      padding: EdgeInsets.symmetric(
+                      padding: const EdgeInsets.symmetric(
                           vertical: 20.0, horizontal: 40.0),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10.0),
                       ),
                     ),
-                    child: Text("Sign In"),
+                    child: const Text("Sign In"),
                   ),
                   const SizedBox(height: 24),
-                  Center(child: Text("New to the jungle?")),
+                  const Center(child: Text("New to the jungle?")),
                   const SizedBox(height: 8),
                   FilledButton(
                     style: ElevatedButton.styleFrom(
-                      padding: EdgeInsets.symmetric(
+                      padding: const EdgeInsets.symmetric(
                           vertical: 20.0, horizontal: 40.0),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10.0),
@@ -190,10 +190,10 @@ class _EmailAuthState extends State<EmailAuth> {
                     onPressed: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => SignUpPage()),
+                        MaterialPageRoute(builder: (context) => const SignUpPage()),
                       );
                     },
-                    child: Text("Sign Up"),
+                    child: const Text("Sign Up"),
                   ),
                 ],
               ),

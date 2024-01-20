@@ -20,7 +20,7 @@ class _JournalPageState extends State<JournalPage> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: Text(
+          title: const Text(
             "Mentor/Journal",
           ),
         ),
@@ -61,17 +61,19 @@ class _JournalPageState extends State<JournalPage> {
                         final journalData =
                             journalDocs?[index].data() as Map<String, dynamic>;
                         final timestamp = journalData['title'] as Timestamp;
-                        var format = new DateFormat('H:m d-M-y');
+                        var format = DateFormat('H:m d-M-y');
 
                         final title = format.format(timestamp.toDate());
                         final content = journalData['content'] as String;
                         final documentId = journalDocs?[index].id;
 
                         return Card(
-                          color: Theme.of(context).colorScheme.surfaceVariant,
+                          color:
+                              Theme.of(context).colorScheme.tertiaryContainer,
                           child: ListTile(
                             title: Text(
                               title.toString(),
+                              style: TextStyle(fontSize: 25),
                             ),
                             subtitle: Text(content),
                             onTap: () {
@@ -97,8 +99,8 @@ class _JournalPageState extends State<JournalPage> {
           ),
         ),
         floatingActionButton: FloatingActionButton.extended(
-          label: Text("New Day"),
-          icon: Icon(Icons.add),
+          label: const Text("New Day"),
+          icon: const Icon(Icons.add),
           onPressed: () {
             Navigator.push(
               context,

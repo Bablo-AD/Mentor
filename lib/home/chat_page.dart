@@ -32,7 +32,7 @@ class _ChatPageState extends State<ChatPage> {
         content: message,
       ));
     });
-    DataProcessor sender = DataProcessor(context);
+    DataProcessor sender = DataProcessor();
     final List<Map<String, String>> messagesData = new_messages
         .map((message) => {
               'role': message.role,
@@ -112,16 +112,21 @@ class _ChatPageState extends State<ChatPage> {
               itemBuilder: (context, index) {
                 final message = messages[index];
 
-                return Align(
-                    alignment: message.role == 'user'
-                        ? Alignment.centerRight
-                        : Alignment.centerLeft,
+                return Padding(
+                    padding: message.role == 'user'
+                        ? EdgeInsets.fromLTRB(20, 10, 5, 10)
+                        : EdgeInsets.fromLTRB(5, 10, 20, 10),
                     child: Card(
-                      margin: const EdgeInsets.all(15.0),
-                      child: Padding(
-                        padding: const EdgeInsets.all(15.0),
-                        child: Text("${message.role}\n${message.content}"),
-                      ),
+                      color: message.role == 'user'
+                          ? Theme.of(context).colorScheme.tertiaryContainer
+                          : Theme.of(context).colorScheme.surfaceVariant,
+                      child: ListTile(
+                          title: Text(message.role,
+                              style: TextStyle(fontSize: 25)),
+                          subtitle: Padding(
+                            padding: const EdgeInsets.all(5.0),
+                            child: Text(message.content),
+                          )),
                     ));
               },
             ),
@@ -144,12 +149,12 @@ class _ChatPageState extends State<ChatPage> {
                   ),
                 ),
                 if (loading == true)
-                  Container(
+                  const SizedBox(
                     width: 50.0, // Adjust these values to suit your needs
                     height: 50.0,
                     child: Center(
                       child: Padding(
-                        padding: const EdgeInsets.all(
+                        padding: EdgeInsets.all(
                             10.0), // Adjust this value to suit your needs
                         child: CircularProgressIndicator(),
                       ),
