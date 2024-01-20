@@ -28,7 +28,7 @@ class _MentorPageState extends State<MentorPage> {
   String result = '';
   bool isLoading = false;
   List<Messages> messages_data = [];
-  List<Video> videos = [];
+  List<Video> videos = Data.videoList;
   Loader loader = Loader();
   List<Application> selected_apps_data = Data.selected_apps;
   String serverurl = '';
@@ -57,8 +57,9 @@ class _MentorPageState extends State<MentorPage> {
       isLoading = false;
       result = Data.completion_message;
       videos = Data.videoList;
-      notifier.showNotificationAndroid(Data.notification['title'].toString(),
-          Data.notification['subtitle'].toString());
+      print(Data.notification_title);
+      notifier.showNotificationAndroid(
+          Data.notification_title, Data.notification_body);
     });
   }
 
@@ -284,11 +285,11 @@ class _MentorPageState extends State<MentorPage> {
                     ),
                     SizedBox(height: 10.0),
                     Text(
-                      "YOLO",
+                      "Mentor is scratching his head",
                     ),
                     SizedBox(height: 5.0),
                     Text(
-                      "Please be patient",
+                      "Please hang on for a while",
                     )
                   ])
                 else

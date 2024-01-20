@@ -45,8 +45,8 @@ class Loader {
     } catch (e) {
       print(e);
     }
-    notifier.showNotificationAndroid(Data.notification['title'].toString(),
-        Data.notification['subtitle'].toString());
+    notifier.showNotificationAndroid(
+        Data.notification_title, Data.notification_body);
     // Retrieve the SendPort from the IsolateNameServer
     final SendPort? sendPort =
         IsolateNameServer.lookupPortByName('background_isolate');
@@ -175,7 +175,7 @@ class Loader {
   Future<String> loadserverurl() async {
     final SharedPreferences storage = await prefs;
     String serverUrl = storage.getString('server_url') ??
-        'https://prasannanrobots.pythonanywhere.com/mentor/chat';
+        'https://prasannanrobots.pythonanywhere.com/mentor/chat/mentorlite';
     return serverUrl;
   }
 

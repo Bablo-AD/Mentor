@@ -101,14 +101,15 @@ class DataProcessor {
   post_process_data(String response) async {
     var completionMemory = jsonDecode(response);
     Map<String, dynamic> responseData = {};
-    Map<String, String> notification = {};
+    print(completionMemory);
     if (completionMemory['videos'] != null) {
       responseData = Map<String, dynamic>.from(completionMemory['videos']);
     }
     if (completionMemory['notifications'] != null) {
-      notification =
-          Map<String, String>.from(completionMemory['notifications']);
-      Data.notification = notification;
+      Data.notification_title =
+          jsonDecode(completionMemory['notifications'])['title'];
+      Data.notification_body =
+          jsonDecode(completionMemory['notifications'])['subtitle'];
     }
     Data.completion_message = completionMemory['response'].toString();
     Loader loader = Loader();
