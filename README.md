@@ -6,7 +6,7 @@ We have very little time on this planet and we have lots of ideas to create and 
 
 ## Downloads
 
-[Android](https://github.com/prasannan-robots/Bablo/releases/download/v2.0.0/app-arm64-v8a-release.apk)
+[Android](https://github.com/prasannan-robots/Bablo/releases/download/v2.1.0/app-arm64-v8a-release.apk)
 
 ## How this works?
 We get data from users and send them through ai model currently we use gpt3.5 to process the information and give you suggestions and criticism to make you grow. Do check the code
@@ -25,7 +25,8 @@ This is an open-source Flutter applicatio.n The app understands user goals, beli
 # Screenshots
 ### Home
 
-![Home Page](https://github.com/Bablo-AD/Mentor/assets/64462247/16d15f5c-6b13-44bc-a3f7-e98b603b59fb)
+![mentor-v2 1 0-Screenshot 2024-01-20 222539](https://github.com/Bablo-AD/Mentor/assets/64462247/9c521313-3b65-43a8-89d4-6c789aa29cbd)
+
 
 ### Daily journals
 
