@@ -47,20 +47,23 @@ class _MentorPageState extends State<MentorPage> {
     try {
       await dataGetter.execute();
     } catch (e) {
+      if (mounted) {
+        setState(() {
+          isLoading = false;
+          result = e.toString();
+        });
+      }
+    }
+    if (mounted) {
       setState(() {
         isLoading = false;
-        result = e.toString();
+        result = Data.completion_message;
+        videos = Data.videoList;
+        print(Data.notification_title);
       });
     }
-
-    setState(() {
-      isLoading = false;
-      result = Data.completion_message;
-      videos = Data.videoList;
-      print(Data.notification_title);
-      notifier.showNotificationAndroid(
-          Data.notification_title, Data.notification_body);
-    });
+    notifier.showNotificationAndroid(
+        Data.notification_title, Data.notification_body);
   }
 
   Stream<List<Application>> load_apps() async* {

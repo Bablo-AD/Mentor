@@ -7,7 +7,7 @@ class LocalNotificationService {
   Future<void> init() async {
     // Initialize native android notification
     const AndroidInitializationSettings initializationSettingsAndroid =
-        AndroidInitializationSettings('@mipmap/ic_launcher');
+        AndroidInitializationSettings('ic_stat');
 
     const InitializationSettings initializationSettings =
         InitializationSettings(
