@@ -3,7 +3,8 @@ import 'package:flutter/material.dart';
 import '../settings/knowingthestudent.dart';
 import '../home/home_page.dart';
 import '../settings/apps_selection_page.dart';
-import '../settings/preferred_time.dart';
+import 'terms_and_condition.dart';
+import 'privacy_policy.dart';
 
 class SetupPage extends StatelessWidget {
   const SetupPage({Key? key}) : super(key: key);
@@ -51,13 +52,28 @@ class SetupPage extends StatelessWidget {
 
   void navigateToNextPage(BuildContext context) {
     Future.delayed(Duration.zero, () {
-      // Navigate to Set Goal and Purpose page
       Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (context) => const Knowingthestudent(),
+          builder: (context) => PrivacyPolicy(),
         ),
       ).then((_) {
+        // Navigate to Set Goal and Purpose page
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => TermsAndConditionsScreen(),
+          ),
+        );
+      }).then((_) {
+        // Navigate to Set Goal and Purpose page
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => const Knowingthestudent(),
+          ),
+        );
+      }).then((_) {
         // After Connect with Habitica page is closed, navigate to the new page
         Navigator.push(
           context,

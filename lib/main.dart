@@ -1,3 +1,5 @@
+import 'package:Mentor/setup/setup_roller.dart';
+
 import 'settings/knowingthestudent.dart';
 import 'package:flutter/material.dart';
 import 'home/home_page.dart';
@@ -44,7 +46,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(useMaterial3: true, colorScheme: lightColorScheme),
       darkTheme: ThemeData(useMaterial3: true, colorScheme: darkColorScheme),
       themeMode: ThemeMode.system,
-      home: isLoggedIn ? const MentorPage() : const EmailAuth(),
+      home: SetupPage(), //isLoggedIn ? const MentorPage() : const EmailAuth()
       routes: {
         //main pages
         '/settings': (context) => const SettingsPage(),
