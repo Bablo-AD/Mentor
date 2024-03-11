@@ -27,7 +27,6 @@ class _MentorPageState extends State<MentorPage> {
   String interest = '';
   String result = '';
   bool isLoading = false;
-  List<Messages> messages_data = [];
   List<Video> videos = Data.videoList;
   Loader loader = Loader();
   List<Application> selected_apps_data = Data.selected_apps;
@@ -44,16 +43,17 @@ class _MentorPageState extends State<MentorPage> {
     });
     check_permissions();
     DataProcessor dataGetter = DataProcessor();
-    try {
-      await dataGetter.execute();
-    } catch (e) {
-      if (mounted) {
-        setState(() {
-          isLoading = false;
-          result = e.toString();
-        });
-      }
-    }
+    // try {
+
+    // } catch (e) {
+    //   if (mounted) {
+    //     setState(() {
+    //       isLoading = false;
+    //       result = e.toString();
+    //     });
+    //   }
+    // }
+    await dataGetter.execute();
     if (mounted) {
       setState(() {
         isLoading = false;
@@ -300,8 +300,7 @@ class _MentorPageState extends State<MentorPage> {
                       onTap: () {
                         Navigator.push(
                           context,
-                          MaterialPageRoute(
-                              builder: (context) => ChatPage(response: result)),
+                          MaterialPageRoute(builder: (context) => ChatPage()),
                         );
                       },
                       child: Card(
@@ -340,16 +339,9 @@ class _MentorPageState extends State<MentorPage> {
 
                     return Card(
                         child: ListTile(
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => VideoPage(
-                                videoId: video.videoId,
-                                description: video.videoDescription),
-                          ),
-                        );
-                      },
+                      subtitle: VideoPage(
+                          videoId: video.videoId,
+                          description: video.videoDescription),
                       title: Text(
                         video.title,
                         style: const TextStyle(

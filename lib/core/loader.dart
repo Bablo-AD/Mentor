@@ -11,6 +11,7 @@ import 'package:firebase_core/firebase_core.dart';
 import '../firebase_options.dart';
 import 'dart:isolate';
 import 'dart:ui';
+import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 
 class SessionManager {
   static const String loggedInKey = 'loggedIn';
@@ -54,6 +55,21 @@ class Loader {
     // Send the completion message back to the main isolate
     sendPort?.send(
         {'completion': Data.completion_message, 'videoList': Data.videoList});
+  }
+
+  Future<void> clearMessageHistory() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.remove('message_history');
+  }
+
+  Future<void> saveMessageHistory(String messages) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setString('message_history', messages);
+  }
+
+  Future<String> loadMessageHistory() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.getString('message_history') ?? '';
   }
 
   static Future<List<Application>> loadApps() async {
@@ -110,39 +126,33 @@ class Loader {
     }
   }
 
-  void saveMessages(List<Messages> messages) async {
+  void saveMessages(List<types.Message> messages) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
 
     // Convert messages list to JSON string
     List<String> jsonList =
-        messages.map((message) => jsonEncode(message.toJson())).toList();
-    Data.messages_data = messages;
+        messages.map((message) => jsonEncode(_messageToJson(message))).toList();
+
     // Save the JSON string list to SharedPreferences
     await prefs.setStringList('messages', jsonList);
   }
 
-  Future<List<Messages>> loadMessages() async {
-    final DocumentSnapshot documentSnapshot = await FirebaseFirestore.instance
-        .collection('users')
-        .doc(Data.userId)
-        .get();
+  Map<String, dynamic> _messageToJson(types.Message message) {
+    return message.toJson();
+  }
 
-    if (documentSnapshot['messages'] != null) {
-      Map<String, dynamic> messageData =
-          jsonDecode(documentSnapshot['messages']);
-      List<dynamic> body = messageData['body'];
-      return body
-          .map((message) {
-            return Messages(
-              role: message['role'],
-              content: message['content'],
-            );
-          })
-          .toList()
-          .cast<Messages>();
-    } else {
-      return [];
+  Future<List<types.Message>> loadMessages() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    List<String> messages = prefs.getStringList('messages') ?? [];
+    List<types.Message> message_list = [];
+    for (var message in messages) {
+      try {
+        message_list.add(types.TextMessage.fromJson(jsonDecode(message)));
+      } catch (e) {
+        print('Error decoding message: $e, $message');
+      }
     }
+    return message_list;
   }
 
   Future<String?> loadcompletion() async {

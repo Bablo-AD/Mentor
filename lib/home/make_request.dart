@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 import 'package:csv/csv.dart';
 import 'package:usage_stats/usage_stats.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 
 import 'dart:convert';
 import 'dart:io';
@@ -73,18 +74,18 @@ class DataProcessor {
     return metaData;
   }
 
-  Future<http.Response> meet_with_server(String messageData,
-      {String update_history = "True"}) async {
+  Future<http.Response> meet_with_server(String messageData) async {
     FirebaseFirestore firestore = FirebaseFirestore.instance;
     DocumentSnapshot userDoc =
         await firestore.collection('users').doc(userId).get();
-
+    String message = await _loader.loadMessageHistory();
     Map<String, dynamic> userData = userDoc.data() as Map<String, dynamic>;
 
     Map<String, String> data = {
       "user_id": FirebaseAuth.instance.currentUser?.uid.toString() ?? '',
       "apikey": userData['apikey'].toString(),
       "messages": messageData,
+      "message_history": message
     };
     // Convert the data to JSON
     String jsonData = jsonEncode(data);
@@ -105,17 +106,29 @@ class DataProcessor {
     if (completionMemory['videos'] != null) {
       responseData = Map<String, dynamic>.from(completionMemory['videos']);
     }
-    if (completionMemory['notifications'] != null) {
+    if (completionMemory['notification']['title'] != null &&
+        completionMemory['notification']['title'] != '') {
       Data.notification_title =
-          jsonDecode(completionMemory['notifications'])['title'];
+          jsonDecode(completionMemory['notification']['title']);
       Data.notification_body =
-          jsonDecode(completionMemory['notifications'])['subtitle'];
+          jsonDecode(completionMemory['notification']['message']);
     }
-    Data.completion_message = completionMemory['response'].toString();
+    Data.completion_message = '';
+    for (var message in completionMemory['reply']) {
+      final mentorMessage = types.TextMessage(
+        author: types.User(id: 'mentor'),
+        createdAt: DateTime.now().millisecondsSinceEpoch,
+        id: Data.uuid.v1(),
+        text: message,
+      );
+      Data.completion_message += message;
+      Data.messages_data.insert(0, mentorMessage);
+    }
     Loader loader = Loader();
+    loader.saveMessages(Data.messages_data);
+    loader.saveMessageHistory(completionMemory['message_history']);
     loader.savecompletion(Data.completion_message);
-    Data.messages_data
-        .add(Messages(role: 'assistant', content: Data.completion_message));
+
     Data.videoList = (responseData)
         .entries
         .map((entry) => Video.fromJson({

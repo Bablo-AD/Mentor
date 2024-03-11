@@ -46,7 +46,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(useMaterial3: true, colorScheme: lightColorScheme),
       darkTheme: ThemeData(useMaterial3: true, colorScheme: darkColorScheme),
       themeMode: ThemeMode.system,
-      home: SetupPage(), //isLoggedIn ? const MentorPage() : const EmailAuth()
+      home: isLoggedIn ? const MentorPage() : const EmailAuth(),
       routes: {
         //main pages
         '/settings': (context) => const SettingsPage(),

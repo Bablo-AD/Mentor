@@ -1,63 +1,84 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
+import 'package:flutter_chat_ui/flutter_chat_ui.dart';
 import '../core/data.dart';
 import 'make_request.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import '../core/loader.dart';
+import 'dart:math';
+
 //import 'package:cloud_firestore/cloud_firestore.dart';
+String randomString() {
+  final random = Random.secure();
+  final values = List<int>.generate(16, (i) => random.nextInt(255));
+  return base64UrlEncode(values);
+}
 
 class ChatPage extends StatefulWidget {
-  final String response;
-
-  const ChatPage({Key? key, required this.response}) : super(key: key);
+  const ChatPage({super.key});
 
   @override
-  _ChatPageState createState() => _ChatPageState();
+  State<ChatPage> createState() => _ChatPageState();
 }
 
 class _ChatPageState extends State<ChatPage> {
-  List<Messages> messages = Data.messages_data;
-  List<Messages> new_messages = [];
-  final ScrollController _scrollController = ScrollController();
-  TextEditingController textEditingController = TextEditingController();
-  final Loader _loader = Loader();
-  String serverurl = '';
-  bool loading = false;
-  void _sendMessage(String message) async {
-    setState(() {
-      loading = true;
-      new_messages.clear();
-      new_messages.add(Messages(
-        role: 'user',
-        content: message,
-      ));
-    });
-    DataProcessor sender = DataProcessor();
-    final List<Map<String, String>> messagesData = new_messages
-        .map((message) => {
-              'role': message.role,
-              'content': message.content,
-            })
-        .toList();
-    http.Response response =
-        await sender.meet_with_server(messagesData.toString());
-    if (response.statusCode == 200) {
-      final completion = jsonDecode(response.body)['response'].toString();
+  final _user = const types.User(id: '82091008-a484-4a89-ae75-a22bf8d6f3ac');
+  final _mentor = const types.User(id: 'mentor');
+  DataProcessor sender = DataProcessor();
+  Loader _loader = Loader();
+  @override
+  void initState() {
+    super.initState();
+    loader();
+  }
 
+  void loader() async {
+    List<types.Message> val = await _loader.loadMessages();
+
+    setState(() {
+      Data.messages_data = val;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) => Scaffold(
+        appBar: AppBar(
+          title: Text("Mentor/Chat"),
+          centerTitle: true,
+        ),
+        body: Chat(
+          messages: Data.messages_data,
+          onSendPressed: _handleSendPressed,
+          user: _user,
+          typingIndicatorOptions: TypingIndicatorOptions(),
+        ),
+      );
+
+  void _addMessage(types.Message message) {
+    setState(() {
+      Data.messages_data.insert(0, message);
+    });
+  }
+
+  void _handleSendPressed(types.PartialText message) async {
+    final textMessage = types.TextMessage(
+      author: _user,
+      createdAt: DateTime.now().millisecondsSinceEpoch,
+      id: Data.uuid.v1(),
+      text: message.text,
+    );
+    _addMessage(textMessage);
+
+    http.Response response = await sender.meet_with_server(message.text);
+    if (response.statusCode == 200) {
+      sender.post_process_data(response.body);
       setState(() {
-        loading = false;
-        new_messages.add(Messages(
-          role: 'assistant',
-          content: completion,
-        ));
-        messages = [...messages, ...new_messages];
+        Data.messages_data;
       });
     } else {
       // Handle error case
       print('Error: ${response.statusCode}');
-      setState(() {
-        loading = false;
-      });
       showDialog(
         context: context,
         builder: (BuildContext context) {
@@ -76,107 +97,5 @@ class _ChatPageState extends State<ChatPage> {
         },
       );
     }
-
-    // Clear the text input field
-    textEditingController.clear();
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    _loader.loadMessages().then((message) {
-      setState(() {
-        Data.messages_data = message;
-        messages = message;
-      });
-    });
-    // Scroll to the last message when the page is loaded
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-          title: const Text(
-        'Mentor/Chat',
-      )),
-      body: Column(
-        children: [
-          Expanded(
-            child: ListView.builder(
-              controller: _scrollController,
-              itemCount: messages.length,
-              itemBuilder: (context, index) {
-                final message = messages[index];
-
-                return Padding(
-                    padding: message.role == 'user'
-                        ? EdgeInsets.fromLTRB(20, 10, 5, 10)
-                        : EdgeInsets.fromLTRB(5, 10, 20, 10),
-                    child: Card(
-                      color: message.role == 'user'
-                          ? Theme.of(context).colorScheme.tertiaryContainer
-                          : Theme.of(context).colorScheme.surfaceVariant,
-                      child: ListTile(
-                          title: Text(message.role,
-                              style: TextStyle(fontSize: 25)),
-                          subtitle: Padding(
-                            padding: const EdgeInsets.all(5.0),
-                            child: Text(message.content),
-                          )),
-                    ));
-              },
-            ),
-          ),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 8.0),
-            child: Row(
-              children: [
-                Expanded(
-                  child: TextField(
-                    controller: textEditingController,
-                    style: const TextStyle(
-                      fontSize: 16.0,
-                    ),
-                    decoration: const InputDecoration(
-                      filled: true,
-                      hintStyle: TextStyle(),
-                      hintText: 'Type a message...',
-                    ),
-                  ),
-                ),
-                if (loading == true)
-                  const SizedBox(
-                    width: 50.0, // Adjust these values to suit your needs
-                    height: 50.0,
-                    child: Center(
-                      child: Padding(
-                        padding: EdgeInsets.all(
-                            10.0), // Adjust this value to suit your needs
-                        child: CircularProgressIndicator(),
-                      ),
-                    ),
-                  )
-                else
-                  IconButton(
-                    icon: const Icon(
-                      Icons.send,
-                    ),
-                    onPressed: () {
-                      final message = textEditingController.text.trim();
-                      if (message.isNotEmpty) {
-                        _sendMessage(message);
-                      }
-                    },
-                  ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
   }
 }

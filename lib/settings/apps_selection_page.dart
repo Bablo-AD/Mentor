@@ -37,9 +37,6 @@ class _AppSelectionPageState extends State<AppSelectionPage> {
                 return Column(
                   children: [
                     CheckboxListTile(
-                      activeColor: const Color.fromARGB(255, 50, 204, 102),
-                      checkColor: const Color.fromARGB(255, 19, 19, 19),
-                      tileColor: const Color.fromARGB(255, 19, 19, 19),
                       title: Text(
                         app.appName,
                       ),

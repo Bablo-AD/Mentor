@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
+import 'package:url_launcher/url_launcher.dart';
+import 'package:flutter/gestures.dart';
 
 class PrivacyPolicy extends StatefulWidget {
   @override
@@ -7,8 +9,6 @@ class PrivacyPolicy extends StatefulWidget {
 }
 
 class _PrivacyPolicyState extends State<PrivacyPolicy> {
-  bool _isAccepted = false;
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -16,15 +16,30 @@ class _PrivacyPolicyState extends State<PrivacyPolicy> {
         title: Text('Privacy Policy'),
       ),
       body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            Expanded(
-              child: SingleChildScrollView(
-                child: Html(
-                  data:
-                      """
+          padding: const EdgeInsets.all(16.0), child: PrivacyPolicyWidget()),
+    );
+  }
+}
+
+class PrivacyPolicyWidget extends StatefulWidget {
+  const PrivacyPolicyWidget({super.key});
+
+  @override
+  State<PrivacyPolicyWidget> createState() => _PrivacyPolicyWidgetState();
+}
+
+class _PrivacyPolicyWidgetState extends State<PrivacyPolicyWidget> {
+  bool _isAccepted = false;
+  bool _isTermsAccepted = false;
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        Expanded(
+          child: Html(
+            data:
+                """
                 <h1>Privacy Policy</h1>
                 <h2>THIS IS ONLY FOR DEVELOPMENT TESTING.IT SHOULD NOT BE DEPLOYED</h2>
 <p>Last updated: February 14, 2024</p>
@@ -176,34 +191,65 @@ class _PrivacyPolicyState extends State<PrivacyPolicy> {
 </li>
 </ul>
                 """,
-                ),
+          ),
+        ),
+        Row(
+          children: <Widget>[
+            Checkbox(
+              value: _isAccepted,
+              onChanged: (bool? value) {
+                setState(() {
+                  _isAccepted = value!;
+                });
+              },
+            ),
+            Text('I agree to share the data'),
+            Checkbox(
+              value: _isTermsAccepted,
+              onChanged: (bool? value) {
+                setState(() {
+                  _isTermsAccepted = value!;
+                });
+              },
+            ),
+            RichText(
+              text: TextSpan(
+                children: [
+                  TextSpan(
+                    text: 'I agree to the ',
+                    style: DefaultTextStyle.of(context).style,
+                  ),
+                  TextSpan(
+                    text: 'terms and conditions',
+                    style: DefaultTextStyle.of(context)
+                        .style
+                        .copyWith(color: Colors.blue),
+                    recognizer: TapGestureRecognizer()
+                      ..onTap = () async {
+                        Uri url = Uri.parse(
+                            'https://bablo-ad.github.io/'); // Replace with your terms and conditions URL
+                        if (await canLaunchUrl(url)) {
+                          await launchUrl(url);
+                        } else {
+                          throw 'Could not launch $url';
+                        }
+                      },
+                  ),
+                ],
               ),
-            ),
-            Row(
-              children: <Widget>[
-                Checkbox(
-                  value: _isAccepted,
-                  onChanged: (bool? value) {
-                    setState(() {
-                      _isAccepted = value!;
-                    });
-                  },
-                ),
-                Text('I agree to share the data'),
-              ],
-            ),
-            ElevatedButton(
-              onPressed: _isAccepted
-                  ? () {
-                      // Navigate to the next screen
-                      Navigator.of(context).pop();
-                    }
-                  : null,
-              child: Text('Continue'),
             ),
           ],
         ),
-      ),
+        ElevatedButton(
+          onPressed: _isAccepted && _isTermsAccepted
+              ? () {
+                  // Navigate to the next screen
+                  Navigator.of(context).pop();
+                }
+              : null,
+          child: Text('Continue'),
+        ),
+      ],
     );
   }
 }

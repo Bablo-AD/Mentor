@@ -208,83 +208,105 @@ class _EmailAuthState extends State<EmailAuth> {
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(16.0),
-          child: Card(
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Text(
-                    'Making Earth a Productive Place',
-                    style: TextStyle(fontSize: 20),
-                  ),
-                  const SizedBox(
-                    height: 30,
-                  ),
-                  TextField(
-                    controller: _emailController,
-                    decoration: const InputDecoration(
-                      labelText: "Email",
-                      border: OutlineInputBorder(),
-                      contentPadding: EdgeInsets.symmetric(
-                          vertical: 12.0, horizontal: 16.0),
-                    ),
-                  ),
-                  const SizedBox(height: 24.0),
-                  TextField(
-                    obscureText: true,
-                    controller: _passwordController,
-                    decoration: const InputDecoration(
-                      labelText: "Password",
-                      border: OutlineInputBorder(),
-                      contentPadding: EdgeInsets.symmetric(
-                          vertical: 12.0, horizontal: 16.0),
-                    ),
-                  ),
-                  const SizedBox(height: 24.0),
-                  OutlinedButton(
-                    onPressed: _signIn,
-                    style: ElevatedButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(
-                          vertical: 20.0, horizontal: 40.0),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10.0),
-                      ),
-                    ),
-                    child: const Text("Sign In"),
-                  ),
-                  const SizedBox(height: 24),
-                  const Center(child: Text("New to the jungle?")),
-                  const SizedBox(height: 8),
-                  FilledButton(
-                    style: ElevatedButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(
-                          vertical: 20.0, horizontal: 40.0),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10.0),
-                      ),
-                    ),
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => const SignUpPage()),
-                      );
-                    },
-                    child: const Text("Sign Up"),
-                  ),
-                  const SizedBox(height: 24),
-                  SignInButton(
-                    Buttons.Google,
-                    text: "Sign up with Google",
-                    onPressed: signInWithGoogle,
-                    elevation: 0.5,
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10.0)),
-                  )
-                ],
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              ClipRRect(
+                borderRadius: BorderRadius.circular(20.0),
+                child: Image.asset(
+                  'asset/Time_clock_logo.png', width: 80.0, // Adjust as needed
+                  height: 80.0,
+                ),
               ),
-            ),
+              const Text(
+                'Sign in your account',
+                style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(
+                height: 60,
+              ),
+              Align(
+                alignment: Alignment.centerLeft,
+                child: Text("Email", style: TextStyle(fontSize: 24)),
+              ),
+              const SizedBox(
+                height: 10,
+              ),
+              TextField(
+                controller: _emailController,
+                decoration: const InputDecoration(
+                  labelText: "Enter your email",
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.all(Radius.circular(20.0)),
+                  ),
+                  contentPadding:
+                      EdgeInsets.symmetric(vertical: 12.0, horizontal: 16.0),
+                ),
+              ),
+              const SizedBox(height: 40.0),
+              Align(
+                alignment: Alignment.centerLeft,
+                child: Text("Password", style: TextStyle(fontSize: 24)),
+              ),
+              const SizedBox(
+                height: 10,
+              ),
+              TextField(
+                obscureText: true,
+                controller: _passwordController,
+                decoration: const InputDecoration(
+                  labelText: "Enter your password",
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.all(Radius.circular(20.0)),
+                  ),
+                  contentPadding:
+                      EdgeInsets.symmetric(vertical: 12.0, horizontal: 16.0),
+                ),
+              ),
+              const SizedBox(height: 24.0),
+              TextButton(
+                style: ElevatedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(
+                      vertical: 20.0, horizontal: 40.0),
+                ),
+                onPressed: _signIn,
+                child: const Text("Sign In",
+                    style: TextStyle(
+                        fontSize: 22.64, fontWeight: FontWeight.bold)),
+              ),
+              const SizedBox(height: 24),
+              const Center(
+                  child: Text("Don't have an account?",
+                      style: TextStyle(fontSize: 20))),
+              const SizedBox(height: 10),
+              FilledButton(
+                style: ElevatedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(
+                      vertical: 10.0, horizontal: 30.0),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10.0),
+                  ),
+                ),
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const SignUpPage()),
+                  );
+                },
+                child: const Text("Sign Up", style: TextStyle(fontSize: 22)),
+              ),
+              const SizedBox(height: 24),
+              SignInButton(
+                padding: const EdgeInsets.symmetric(
+                    vertical: 10.0, horizontal: 20.0),
+                Buttons.Google,
+                text: "Continue with Google",
+                onPressed: signInWithGoogle,
+                elevation: 1,
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10.0)),
+              )
+            ],
           ),
         ),
       ),

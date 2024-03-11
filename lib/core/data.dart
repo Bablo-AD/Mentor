@@ -2,15 +2,19 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'loader.dart';
 import 'package:device_apps/device_apps.dart';
 import 'dart:isolate';
+import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
+import 'package:uuid/uuid.dart';
 
 class Data {
   Loader load = Loader();
+  static var uuid = Uuid();
   static String? userId = FirebaseAuth.instance.currentUser?.uid;
   static List<Application> apps = [];
   static List<Application> selected_apps = [];
   static String response = "";
   static String interest = "";
-  static List<Messages> messages_data = [];
+  static List<types.Message> messages_data = [];
+
   static String completion_message = "";
   static List<Video> videoList = [];
   static ReceivePort port = ReceivePort();
@@ -35,18 +39,5 @@ class Video {
       videoId: json['videoId'].toString() ?? '',
       videoDescription: json['videoDescription'].toString() ?? '',
     );
-  }
-}
-
-class Messages {
-  final String role;
-  final String content;
-
-  Messages({required this.role, required this.content});
-  Map<String, dynamic> toJson() {
-    return {
-      'role': role,
-      'content': content,
-    };
   }
 }

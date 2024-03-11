@@ -195,6 +195,23 @@ class _SettingsPageState extends State<SettingsPage> {
                                           ])));
                             });
                       }),
+                  const SizedBox(height: 10.0),
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10)),
+                        padding: const EdgeInsets.all(
+                            16) // Adjust this value to suit your needs
+                        ),
+                    onPressed: () {
+                      _loader.clearMessageHistory();
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                            content: Text('Message history cleared!')),
+                      );
+                    },
+                    child: const Text("Clear Message History"),
+                  ),
                   const SizedBox(height: 24.0),
                   const Text("Feedback & Errors",
                       style: TextStyle(fontSize: 18)),
