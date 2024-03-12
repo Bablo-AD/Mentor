@@ -73,9 +73,11 @@ class _ChatPageState extends State<ChatPage> {
     http.Response response = await sender.meet_with_server(message.text);
     if (response.statusCode == 200) {
       sender.post_process_data(response.body);
-      setState(() {
-        Data.messages_data;
-      });
+      if (mounted) {
+        setState(() {
+          Data.messages_data;
+        });
+      }
     } else {
       // Handle error case
       print('Error: ${response.statusCode}');
