@@ -1,0 +1,100 @@
+import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import '../core/data.dart';
+
+class EmailSettingsPage extends StatefulWidget {
+  @override
+  _EmailSettingsPageState createState() => _EmailSettingsPageState();
+}
+
+class _EmailSettingsPageState extends State<EmailSettingsPage> {
+  final _formKey = GlobalKey<FormState>();
+  final _emailController = TextEditingController();
+  Future<String> loadEmail() async {
+    DocumentSnapshot doc = await FirebaseFirestore.instance
+        .collection('users')
+        .doc(Data.userId)
+        .get();
+    return doc['parentmail'];
+  }
+
+  void _saveEmail() {
+    if (_formKey.currentState?.validate() ?? false) {
+      // Save email to Firebase
+      String email = _emailController.text;
+      // Add your Firebase code here to save the email address
+
+      FirebaseFirestore.instance
+          .collection('users')
+          .doc(Data.userId)
+          .update({'parentmail': email})
+          .then((_) => print('Updated successfully'))
+          .catchError((error) => print('Update failed: $error'));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Email saved successfully')),
+      );
+      Navigator.pop(context);
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    loadEmail().then((email) => _emailController.text = email);
+  }
+
+  @override
+  void dispose() {
+    _emailController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Mentor/Parental Controls'),
+      ),
+      body: Padding(
+        padding: EdgeInsets.all(16.0),
+        child: Form(
+          key: _formKey,
+          child: Column(
+            children: [
+              Text(
+                'Enter your email address to receive notifications about your child\'s behavior.',
+                style:
+                    TextStyle(fontSize: 16), // Adjust the text style as needed
+              ),
+              SizedBox(
+                height: 10,
+              ),
+              TextFormField(
+                controller: _emailController,
+                keyboardType: TextInputType.emailAddress,
+                decoration: InputDecoration(
+                  labelText: 'Email',
+                ),
+                validator: (value) {
+                  if (value?.isEmpty ?? false) {
+                    return 'Please enter an email address';
+                  }
+                  if (!RegExp(r'^[\w-]+(\.[\w-]+)*@([\w-]+\.)+[a-zA-Z]{2,7}$')
+                      .hasMatch(value ?? '')) {
+                    return 'Please enter a valid email address';
+                  }
+                  return null;
+                },
+              ),
+              SizedBox(height: 16.0),
+              ElevatedButton(
+                onPressed: _saveEmail,
+                child: Text('Save'),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}

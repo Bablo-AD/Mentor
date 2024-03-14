@@ -55,7 +55,7 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions android = FirebaseOptions(
     apiKey: 'AIzaSyCleJ7fK1h5-1k_4kvy8E4vqh9EwgknFZA',
-    appId: '1:1045034252917:android:a9fa46111b4efa8d7ed63c',
+    appId: '1:1045034252917:android:5a50c396b88125327ed63c',
     messagingSenderId: '1045034252917',
     projectId: 'anti-distractor',
     storageBucket: 'anti-distractor.appspot.com',

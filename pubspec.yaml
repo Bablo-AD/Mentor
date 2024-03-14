@@ -49,6 +49,12 @@ dependencies:
   device_apps: ^2.2.0
   flutter_local_notifications: ^16.3.0
   android_alarm_manager_plus: ^3.0.4
+  google_sign_in: ^6.2.1
+  flutter_signin_button: ^2.0.0
+  flutter_html: ^3.0.0-beta.2
+  introduction_screen: ^3.1.12
+  flutter_chat_ui: ^1.6.12
+  uuid: ^4.3.3
 
 dev_dependencies:
   flutter_test:
@@ -88,8 +94,8 @@ flutter:
   uses-material-design: true
 
   # To add assets to your application, add an assets section, like this:
-  # assets:
-  #   - images/a_dot_burr.jpeg
+  assets:
+   - asset/Time_clock_logo.png
   #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see
