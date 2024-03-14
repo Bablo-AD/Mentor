@@ -137,6 +137,9 @@ class DataProcessor {
               'videoDescription': entry.value[1],
             }))
         .toList();
+    if (Data.videoList != []) {
+      loader.saveVideoList();
+    }
   }
 
   execute([String interest = ""]) async {

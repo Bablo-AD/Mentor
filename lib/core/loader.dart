@@ -57,6 +57,25 @@ class Loader {
         {'completion': Data.completion_message, 'videoList': Data.videoList});
   }
 
+  Future<void> saveVideoList() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    List<String> videoListJson =
+        Data.videoList.map((video) => jsonEncode(video.toJson())).toList();
+    await prefs.setStringList('videoList', videoListJson);
+  }
+
+  Future<List<Video>> loadVideoList() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    List<String>? videoListJson = prefs.getStringList('videoList');
+    if (videoListJson == null) {
+      return [];
+    } else {
+      return videoListJson
+          .map((videoJson) => Video.fromJson(jsonDecode(videoJson)))
+          .toList();
+    }
+  }
+
   Future<void> clearMessageHistory() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.remove('message_history');

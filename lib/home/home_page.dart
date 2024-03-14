@@ -77,7 +77,11 @@ class _MentorPageState extends State<MentorPage> {
   void initState() {
     super.initState();
     check_permissions();
-
+    loader.loadVideoList().then((value) {
+      setState(() {
+        videos = value;
+      });
+    });
     loader.loadcompletion().then((completionMessage) {
       setState(() {
         Data.completion_message = completionMessage ?? "";
@@ -339,9 +343,16 @@ class _MentorPageState extends State<MentorPage> {
 
                     return Card(
                         child: ListTile(
-                      subtitle: VideoPage(
-                          videoId: video.videoId,
-                          description: video.videoDescription),
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => VideoPage(
+                                videoId: video.videoId,
+                                description: video.videoDescription),
+                          ),
+                        );
+                      },
                       title: Text(
                         video.title,
                         style: const TextStyle(

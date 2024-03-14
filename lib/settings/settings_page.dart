@@ -5,6 +5,7 @@ import '../core/loader.dart';
 import '../setup/authentication_page.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'parent_mode.dart';
 
 class SettingsPage extends StatefulWidget {
   const SettingsPage({Key? key}) : super(key: key);
@@ -133,6 +134,22 @@ class _SettingsPageState extends State<SettingsPage> {
                         Navigator.pushNamed(context, '/appsSelection');
                       },
                       child: const Text("Edit your selected apps")),
+                  const SizedBox(height: 10),
+                  ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10)),
+                          padding: const EdgeInsets.all(
+                              16) // Adjust this value to suit your needs
+                          ),
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => EmailSettingsPage()),
+                        );
+                      },
+                      child: const Text("Parental controls")),
                   const SizedBox(height: 10.0),
                   ElevatedButton(
                       style: ElevatedButton.styleFrom(
@@ -226,7 +243,7 @@ class _SettingsPageState extends State<SettingsPage> {
                     height: 10,
                   ),
                   const Center(
-                      child: Text("Version 2.1.0",
+                      child: Text("Version 2.1.1",
                           style: TextStyle(fontSize: 18))),
                 ],
               ),

@@ -18,27 +18,34 @@ class VideoPage extends StatelessWidget {
       ),
     );
 
-    return Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-          IconButton(
-            icon: const Icon(Icons.open_in_browser,
-                color: Color.fromARGB(255, 50, 204, 102)),
-            onPressed: () {
-              _launchURL(videoId);
-            },
-          ),
-          const SizedBox(
-            height: 2,
-          ),
-          YoutubePlayer(
-            controller: youtubePlayerController,
-            showVideoProgressIndicator: true,
-            progressIndicatorColor: const Color.fromARGB(255, 50, 204, 102),
-          ),
-          const SizedBox(height: 16.0),
-          Text(description),
-        ]));
+    return Scaffold(
+      appBar: AppBar(title: const Text('Mentor/Video')),
+      body: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                IconButton(
+                  icon: const Icon(Icons.open_in_browser,
+                      color: Color.fromARGB(255, 50, 204, 102)),
+                  onPressed: () {
+                    _launchURL(videoId);
+                  },
+                ),
+                const SizedBox(
+                  height: 2,
+                ),
+                YoutubePlayer(
+                  controller: youtubePlayerController,
+                  showVideoProgressIndicator: true,
+                  progressIndicatorColor:
+                      const Color.fromARGB(255, 50, 204, 102),
+                ),
+                const SizedBox(height: 16.0),
+                Text(description),
+              ])),
+    );
   }
 }
 

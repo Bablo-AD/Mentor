@@ -40,4 +40,11 @@ class Video {
       videoDescription: json['videoDescription'].toString() ?? '',
     );
   }
+  Map<String, dynamic> toJson() {
+    return {
+      'title': this.title,
+      'videoId': this.videoId,
+      'videoDescription': this.videoDescription,
+    };
+  }
 }
