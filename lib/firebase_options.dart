@@ -67,6 +67,7 @@ class DefaultFirebaseOptions {
     messagingSenderId: '1045034252917',
     projectId: 'anti-distractor',
     storageBucket: 'anti-distractor.appspot.com',
+    androidClientId: '1045034252917-r7uqe9cdibl8s9kho7najs8fm8c2becs.apps.googleusercontent.com',
     iosClientId: '1045034252917-fomavjanuhv01pfg90jcmnb3g89ktl7e.apps.googleusercontent.com',
     iosBundleId: 'com.example.antiDistractor',
   );
@@ -77,6 +78,7 @@ class DefaultFirebaseOptions {
     messagingSenderId: '1045034252917',
     projectId: 'anti-distractor',
     storageBucket: 'anti-distractor.appspot.com',
+    androidClientId: '1045034252917-r7uqe9cdibl8s9kho7najs8fm8c2becs.apps.googleusercontent.com',
     iosClientId: '1045034252917-uo5ihvjdctjaggjfas2o5d3a6eu2grqt.apps.googleusercontent.com',
     iosBundleId: 'com.example.antiDistractor.RunnerTests',
   );

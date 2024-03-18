@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import '../settings/knowingthestudent.dart';
 import '../home/home_page.dart';
 import '../settings/apps_selection_page.dart';
-import 'legal.dart';
+import '../settings/preferred_time.dart';
 import 'package:introduction_screen/introduction_screen.dart';
 import 'package:flutter_html/flutter_html.dart';
 
@@ -15,16 +15,30 @@ class SetupPage extends StatefulWidget {
 }
 
 class _SetupPageState extends State<SetupPage> {
+  final _introKey = GlobalKey<IntroductionScreenState>();
   @override
   Widget build(BuildContext context) {
     return IntroductionScreen(
       pages: [
-        PageViewModel(title: 'Page One', bodyWidget: PrivacyPolicyWidget()),
         PageViewModel(
-            title: 'Page Two', bodyWidget: const Text('That\'s all folks'))
+          title: 'Set your preferred time',
+          bodyWidget: PreferredTimeSelection(),
+        ),
+        PageViewModel(
+            title: 'How this works?',
+            image: const Center(
+              child: Icon(Icons.lock, size: 100.0),
+            ),
+            body:
+                'This app collects information from your phone and journal data, then sends it to our server. Our AI processes this data and uses books, research articles to provide you with the best content.We don\'t store any of the data on our servers except journal data. Everything else is stored on your phone locally.'),
       ],
-      showNextButton: false,
-      showDoneButton: false,
+      showNextButton: true,
+      next: Text("Next"),
+      showDoneButton: true,
+      done: Text("Done"),
+      onDone: () {
+        Navigator.pushReplacementNamed(context, '/mentor');
+      },
     );
   }
 }

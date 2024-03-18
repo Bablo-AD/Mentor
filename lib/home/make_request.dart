@@ -89,7 +89,7 @@ class DataProcessor {
     };
     // Convert the data to JSON
     String jsonData = jsonEncode(data);
-    String serverUrl = await _loader.loadserverurl();
+    String serverUrl = Data.serverurl;
 
     var response = await http.post(
       Uri.parse(serverUrl.toString()),
@@ -297,9 +297,9 @@ class PhoneUsage {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text('Permission Required'),
+          title: const Text('Permission for tracking your phone usage'),
           content: const Text(
-              'Please grant the usage permission to track app usage.'),
+              'Mentor needs permission to track your phone usage to understand you. This data is not stored.'),
           actions: [
             TextButton(
               child: const Text('OK'),

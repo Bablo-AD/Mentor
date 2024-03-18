@@ -10,9 +10,25 @@ class PreferredTimePage extends StatefulWidget {
 }
 
 class _PreferredTimePageState extends State<PreferredTimePage> {
-  TimeOfDay _selectedTime = TimeOfDay.now();
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+        appBar: AppBar(
+          title: Text('Select Preferred Time'),
+        ),
+        body: PreferredTimeSelection());
+  }
+}
 
+class PreferredTimeSelection extends StatefulWidget {
+  @override
+  _PreferredTimeSelectionState createState() => _PreferredTimeSelectionState();
+}
+
+class _PreferredTimeSelectionState extends State<PreferredTimeSelection> {
+  TimeOfDay _selectedTime = TimeOfDay.now();
   Loader _loader = Loader();
+
   @override
   void initState() {
     super.initState();
@@ -62,38 +78,33 @@ class _PreferredTimePageState extends State<PreferredTimePage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Select Preferred Time'),
-      ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            Padding(
-              padding: EdgeInsets.all(20),
-              child: Text(
-                'Select your preferred time to receive messages from your mentor',
-                textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 20),
-              ),
-            ),
-            Text(
-              'Preferred Time:',
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Padding(
+            padding: EdgeInsets.all(20),
+            child: Text(
+              'Select your preferred time to reflect back and improve. Your AI mentor will evaluate and provide feedback...',
+              textAlign: TextAlign.center,
               style: TextStyle(fontSize: 20),
             ),
-            SizedBox(height: 10),
-            Text(
-              '${_selectedTime.format(context)}',
-              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-            ),
-            SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: () => _selectTime(context),
-              child: Text('Select Time'),
-            ),
-          ],
-        ),
+          ),
+          Text(
+            'Preferred Time:',
+            style: TextStyle(fontSize: 20),
+          ),
+          SizedBox(height: 10),
+          Text(
+            '${_selectedTime.format(context)}',
+            style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+          ),
+          SizedBox(height: 20),
+          ElevatedButton(
+            onPressed: () => _selectTime(context),
+            child: Text('Select Time'),
+          ),
+        ],
       ),
     );
   }

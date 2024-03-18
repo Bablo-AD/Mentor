@@ -55,6 +55,10 @@ dependencies:
   introduction_screen: ^3.1.12
   flutter_chat_ui: ^1.6.12
   uuid: ^4.3.3
+  firebase_crashlytics: ^3.4.18
+  firebase_analytics: ^10.8.9
+  firebase_performance: ^0.9.3+17
+  firebase_remote_config: ^4.3.17
 
 dev_dependencies:
   flutter_test:

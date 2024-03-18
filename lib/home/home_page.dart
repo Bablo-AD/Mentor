@@ -43,17 +43,17 @@ class _MentorPageState extends State<MentorPage> {
     });
     check_permissions();
     DataProcessor dataGetter = DataProcessor();
-    // try {
+    try {
+      await dataGetter.execute();
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          isLoading = false;
+          result = e.toString();
+        });
+      }
+    }
 
-    // } catch (e) {
-    //   if (mounted) {
-    //     setState(() {
-    //       isLoading = false;
-    //       result = e.toString();
-    //     });
-    //   }
-    // }
-    await dataGetter.execute();
     if (mounted) {
       setState(() {
         isLoading = false;
@@ -88,6 +88,7 @@ class _MentorPageState extends State<MentorPage> {
         result = Data.completion_message;
       });
     });
+
     if (Data.port_state == false) {
       Data.port_state = true;
       print("portListening");
@@ -97,6 +98,12 @@ class _MentorPageState extends State<MentorPage> {
         Data.completion_message = message['completion'] ?? "";
         Data.videoList = message['videoList'] ?? [];
         change_val();
+      });
+    }
+    if (result == '') {
+      setState(() {
+        isLoading = true;
+        _Makerequest(interest);
       });
     }
   }
@@ -155,42 +162,43 @@ class _MentorPageState extends State<MentorPage> {
                               )
                             ]),
                         subtitle: StreamBuilder<List<Application>>(
-                          stream: Data.selected_apps.isEmpty
-                              ? load_apps()
-                              : Stream.value(Data.selected_apps),
-                          builder: (context, snapshot) {
-                            if (snapshot.connectionState ==
-                                ConnectionState.waiting) {
-                              return Center(
-                                child: CircularProgressIndicator(),
-                              ); // Loading animation
-                            } else if (snapshot.hasError) {
-                              return Text('Error: ${snapshot.error}');
-                            } else if (!snapshot.hasData) {
-                              return Text('No app is selected');
-                            } else {
-                              return ListView.builder(
-                                physics: const NeverScrollableScrollPhysics(),
-                                shrinkWrap: true,
-                                itemCount: snapshot.data?.length ?? 0,
-                                itemBuilder: (context, index) {
-                                  final Application app = snapshot.data![index];
-                                  return ListTile(
-                                    onTap: () async {
-                                      bool isInstalled =
-                                          await DeviceApps.isAppInstalled(
-                                              app.packageName);
-                                      if (isInstalled) {
-                                        DeviceApps.openApp(app.packageName);
-                                      }
-                                    },
-                                    title: Text('~ ${app.appName}'),
-                                  );
-                                },
-                              );
-                            }
-                          },
-                        ))),
+                            stream: Data.selected_apps.isEmpty
+                                ? load_apps()
+                                : Stream.value(Data.selected_apps),
+                            builder: (context, snapshot) {
+                              if (snapshot.connectionState ==
+                                  ConnectionState.waiting) {
+                                return Center(
+                                  child: CircularProgressIndicator(),
+                                ); // Loading animation
+                              } else if (snapshot.hasError) {
+                                return Text('Error: ${snapshot.error}');
+                              } else if (snapshot.data!.isEmpty) {
+                                return Text(
+                                    'Select the apps you want to display by long pressing. If changes didn\'t show up click the home again');
+                              } else {
+                                return ListView.builder(
+                                  physics: const NeverScrollableScrollPhysics(),
+                                  shrinkWrap: true,
+                                  itemCount: snapshot.data?.length ?? 0,
+                                  itemBuilder: (context, index) {
+                                    final Application app =
+                                        snapshot.data![index];
+                                    return ListTile(
+                                      onTap: () async {
+                                        bool isInstalled =
+                                            await DeviceApps.isAppInstalled(
+                                                app.packageName);
+                                        if (isInstalled) {
+                                          DeviceApps.openApp(app.packageName);
+                                        }
+                                      },
+                                      title: Text('~ ${app.appName}'),
+                                    );
+                                  },
+                                );
+                              }
+                            }))),
                 const SizedBox(height: 16.0),
                 StreamBuilder<QuerySnapshot>(
                   stream: FirebaseFirestore.instance
