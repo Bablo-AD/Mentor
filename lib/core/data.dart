@@ -14,7 +14,7 @@ class Data {
   static String response = "";
   static String interest = "";
   static List<types.Message> messages_data = [];
-
+  static String serverurl = "";
   static String completion_message = "";
   static List<Video> videoList = [];
   static ReceivePort port = ReceivePort();

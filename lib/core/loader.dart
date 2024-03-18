@@ -79,6 +79,7 @@ class Loader {
   Future<void> clearMessageHistory() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.remove('message_history');
+    await prefs.remove('messages');
   }
 
   Future<void> saveMessageHistory(String messages) async {

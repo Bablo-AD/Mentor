@@ -17,6 +17,9 @@ import 'core/notifications.dart';
 import 'package:android_alarm_manager_plus/android_alarm_manager_plus.dart';
 import 'dart:ui';
 import 'core/data.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
+import 'package:firebase_remote_config/firebase_remote_config.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -31,14 +34,36 @@ void main() async {
     Data.port.sendPort,
     'background_isolate',
   );
+  FlutterError.onError = (errorDetails) {
+    FirebaseCrashlytics.instance.recordFlutterFatalError(errorDetails);
+  };
+  // Pass all uncaught asynchronous errors that aren't handled by the Flutter framework to Crashlytics
+  PlatformDispatcher.instance.onError = (error, stack) {
+    FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);
+    return true;
+  };
+  final remoteConfig = FirebaseRemoteConfig.instance;
+  await remoteConfig.setConfigSettings(RemoteConfigSettings(
+    fetchTimeout: const Duration(minutes: 1),
+    minimumFetchInterval: const Duration(hours: 1),
+  ));
+  remoteConfig.setDefaults(<String, dynamic>{
+    'serverurl':
+        'https://prasannanrobots.pythonanywhere.com/mentor/chat/mentorlite',
+  });
+  await remoteConfig.fetchAndActivate();
+
+  // Get the server URL
+  Data.serverurl = remoteConfig.getString('serverurl');
+
   runApp(MyApp(isLoggedIn: isLoggedIn));
 }
 
 class MyApp extends StatelessWidget {
   final bool isLoggedIn;
 
-  const MyApp({Key? key, required this.isLoggedIn}) : super(key: key);
-
+  MyApp({Key? key, required this.isLoggedIn}) : super(key: key);
+  final FirebaseAuth _auth = FirebaseAuth.instance;
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -46,7 +71,18 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(useMaterial3: true, colorScheme: lightColorScheme),
       darkTheme: ThemeData(useMaterial3: true, colorScheme: darkColorScheme),
       themeMode: ThemeMode.system,
-      home: isLoggedIn ? const MentorPage() : const EmailAuth(),
+      home: StreamBuilder<User?>(
+          stream: _auth.authStateChanges(),
+          builder: (BuildContext context, AsyncSnapshot<User?> snapshot) {
+            if (snapshot.connectionState == ConnectionState.active) {
+              if (snapshot.data == null) {
+                return EmailAuth();
+              } else {
+                return MentorPage();
+              }
+            }
+            return CircularProgressIndicator();
+          }),
       routes: {
         //main pages
         '/settings': (context) => const SettingsPage(),
