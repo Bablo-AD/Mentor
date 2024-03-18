@@ -86,6 +86,10 @@ class _MentorPageState extends State<MentorPage> {
       setState(() {
         Data.completion_message = completionMessage ?? "";
         result = Data.completion_message;
+        if (result == '') {
+          isLoading = true;
+          _Makerequest(interest);
+        }
       });
     });
 
@@ -98,12 +102,6 @@ class _MentorPageState extends State<MentorPage> {
         Data.completion_message = message['completion'] ?? "";
         Data.videoList = message['videoList'] ?? [];
         change_val();
-      });
-    }
-    if (result == '') {
-      setState(() {
-        isLoading = true;
-        _Makerequest(interest);
       });
     }
   }
