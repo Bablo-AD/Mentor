@@ -90,14 +90,14 @@ class _KnowingthestudentState extends State<Knowingthestudent> {
                 ),
                 const SizedBox(height: 16),
                 const Text(
-                  "Tell me about your personality",
+                  "Tell me about yourself.",
                 ),
                 const SizedBox(height: 10),
                 TextFormField(
                   controller: _selfPerceptionController,
                   validator: (value) {
                     if (value == null || value.isEmpty) {
-                      return 'This is used to know your current mental state';
+                      return 'This is used to know your current workable factor';
                     }
                     return null; // Return null if the value is valid
                   },
