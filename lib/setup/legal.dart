@@ -4,6 +4,8 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter/gestures.dart';
 
 class PrivacyPolicy extends StatefulWidget {
+  const PrivacyPolicy({super.key});
+
   @override
   _PrivacyPolicyState createState() => _PrivacyPolicyState();
 }
@@ -13,10 +15,10 @@ class _PrivacyPolicyState extends State<PrivacyPolicy> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Privacy Policy'),
+        title: const Text('Privacy Policy'),
       ),
-      body: Padding(
-          padding: const EdgeInsets.all(16.0), child: PrivacyPolicyWidget()),
+      body: const Padding(
+          padding: EdgeInsets.all(16.0), child: PrivacyPolicyWidget()),
     );
   }
 }
@@ -203,7 +205,7 @@ class _PrivacyPolicyWidgetState extends State<PrivacyPolicyWidget> {
                 });
               },
             ),
-            Text('I agree to share the data'),
+            const Text('I agree to share the data'),
             Checkbox(
               value: _isTermsAccepted,
               onChanged: (bool? value) {
@@ -247,7 +249,7 @@ class _PrivacyPolicyWidgetState extends State<PrivacyPolicyWidget> {
                   Navigator.of(context).pop();
                 }
               : null,
-          child: Text('Continue'),
+          child: const Text('Continue'),
         ),
       ],
     );

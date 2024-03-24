@@ -6,6 +6,7 @@ import '../setup/authentication_page.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'parent_mode.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 
 class SettingsPage extends StatefulWidget {
   const SettingsPage({Key? key}) : super(key: key);
@@ -20,6 +21,7 @@ class _SettingsPageState extends State<SettingsPage> {
   final _loader = Loader();
 
   final TextEditingController _serverurlController = TextEditingController();
+  String _version = '';
 
   void _saveSettings() async {
     if (_formKey.currentState!.validate()) {
@@ -40,6 +42,10 @@ class _SettingsPageState extends State<SettingsPage> {
 
   void _loadSettings() async {
     _serverurlController.text = await _loader.loadserverurl();
+    PackageInfo packageInfo = await PackageInfo.fromPlatform();
+    setState(() {
+      _version = packageInfo.version;
+    });
   }
 
   @override
@@ -146,7 +152,7 @@ class _SettingsPageState extends State<SettingsPage> {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => EmailSettingsPage()),
+                              builder: (context) => const EmailSettingsPage()),
                         );
                       },
                       child: const Text("Parental controls")),
@@ -242,8 +248,8 @@ class _SettingsPageState extends State<SettingsPage> {
                   const SizedBox(
                     height: 10,
                   ),
-                  const Center(
-                      child: Text("Version 2.1.1",
+                  Center(
+                      child: Text("Version $_version.",
                           style: TextStyle(fontSize: 18))),
                 ],
               ),

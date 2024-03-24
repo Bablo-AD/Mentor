@@ -1,11 +1,6 @@
 import 'package:Mentor/settings/preferred_time.dart';
 import 'package:flutter/material.dart';
-import '../settings/knowingthestudent.dart';
-import '../home/home_page.dart';
-import '../settings/apps_selection_page.dart';
-import '../settings/preferred_time.dart';
 import 'package:introduction_screen/introduction_screen.dart';
-import 'package:flutter_html/flutter_html.dart';
 
 class SetupPage extends StatefulWidget {
   const SetupPage({super.key});
@@ -22,7 +17,7 @@ class _SetupPageState extends State<SetupPage> {
       pages: [
         PageViewModel(
           title: 'Set your preferred time',
-          bodyWidget: PreferredTimeSelection(),
+          bodyWidget: const PreferredTimeSelection(),
         ),
         PageViewModel(
             title: 'How this works?',
@@ -33,9 +28,9 @@ class _SetupPageState extends State<SetupPage> {
                 'This app collects information from your phone and journal data, then sends it to our server. Our AI processes this data and uses books, research articles to provide you with the best content.We don\'t store any of the data on our servers except journal data. Everything else is stored on your phone locally.'),
       ],
       showNextButton: true,
-      next: Text("Next"),
+      next: const Text("Next"),
       showDoneButton: true,
-      done: Text("Done"),
+      done: const Text("Done"),
       onDone: () {
         Navigator.pushReplacementNamed(context, '/mentor');
       },

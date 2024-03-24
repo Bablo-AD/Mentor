@@ -3,6 +3,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import '../core/data.dart';
 
 class EmailSettingsPage extends StatefulWidget {
+  const EmailSettingsPage({super.key});
+
   @override
   _EmailSettingsPageState createState() => _EmailSettingsPageState();
 }
@@ -31,7 +33,7 @@ class _EmailSettingsPageState extends State<EmailSettingsPage> {
           .then((_) => print('Updated successfully'))
           .catchError((error) => print('Update failed: $error'));
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Email saved successfully')),
+        const SnackBar(content: Text('Email saved successfully')),
       );
       Navigator.pop(context);
     }
@@ -53,26 +55,26 @@ class _EmailSettingsPageState extends State<EmailSettingsPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Mentor/Parental Controls'),
+        title: const Text('Mentor/Parental Controls'),
       ),
       body: Padding(
-        padding: EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(16.0),
         child: Form(
           key: _formKey,
           child: Column(
             children: [
-              Text(
+              const Text(
                 'Enter your email address to receive notifications about your child\'s behavior.',
                 style:
                     TextStyle(fontSize: 16), // Adjust the text style as needed
               ),
-              SizedBox(
+              const SizedBox(
                 height: 10,
               ),
               TextFormField(
                 controller: _emailController,
                 keyboardType: TextInputType.emailAddress,
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   labelText: 'Email',
                 ),
                 validator: (value) {
@@ -86,10 +88,10 @@ class _EmailSettingsPageState extends State<EmailSettingsPage> {
                   return null;
                 },
               ),
-              SizedBox(height: 16.0),
+              const SizedBox(height: 16.0),
               ElevatedButton(
                 onPressed: _saveEmail,
-                child: Text('Save'),
+                child: const Text('Save'),
               ),
             ],
           ),

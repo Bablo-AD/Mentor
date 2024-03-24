@@ -28,7 +28,7 @@ class _ChatPageState extends State<ChatPage> {
       id: '82091008-a484-4a89-ae75-a22bf8d6f3ac', firstName: "Mentor");
   DataProcessor sender = DataProcessor();
   List<types.User> typing_users = [];
-  Loader _loader = Loader();
+  final Loader _loader = Loader();
   @override
   void initState() {
     super.initState();
@@ -46,7 +46,7 @@ class _ChatPageState extends State<ChatPage> {
   @override
   Widget build(BuildContext context) => Scaffold(
         appBar: AppBar(
-          title: Text("Mentor/Chat"),
+          title: const Text("Mentor/Chat"),
           centerTitle: true,
         ),
         body: Chat(

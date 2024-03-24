@@ -7,7 +7,7 @@ import 'package:uuid/uuid.dart';
 
 class Data {
   Loader load = Loader();
-  static var uuid = Uuid();
+  static var uuid = const Uuid();
   static String? userId = FirebaseAuth.instance.currentUser?.uid;
   static List<Application> apps = [];
   static List<Application> selected_apps = [];
@@ -42,9 +42,9 @@ class Video {
   }
   Map<String, dynamic> toJson() {
     return {
-      'title': this.title,
-      'videoId': this.videoId,
-      'videoDescription': this.videoDescription,
+      'title': title,
+      'videoId': videoId,
+      'videoDescription': videoDescription,
     };
   }
 }

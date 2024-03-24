@@ -2,9 +2,10 @@ import 'package:Mentor/core/loader.dart';
 import 'package:flutter/material.dart';
 import 'package:android_alarm_manager_plus/android_alarm_manager_plus.dart';
 
-import 'dart:ui';
 
 class PreferredTimePage extends StatefulWidget {
+  const PreferredTimePage({super.key});
+
   @override
   _PreferredTimePageState createState() => _PreferredTimePageState();
 }
@@ -14,20 +15,22 @@ class _PreferredTimePageState extends State<PreferredTimePage> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: Text('Select Preferred Time'),
+          title: const Text('Select Preferred Time'),
         ),
-        body: PreferredTimeSelection());
+        body: const PreferredTimeSelection());
   }
 }
 
 class PreferredTimeSelection extends StatefulWidget {
+  const PreferredTimeSelection({super.key});
+
   @override
   _PreferredTimeSelectionState createState() => _PreferredTimeSelectionState();
 }
 
 class _PreferredTimeSelectionState extends State<PreferredTimeSelection> {
   TimeOfDay _selectedTime = TimeOfDay.now();
-  Loader _loader = Loader();
+  final Loader _loader = Loader();
 
   @override
   void initState() {
@@ -82,7 +85,7 @@ class _PreferredTimeSelectionState extends State<PreferredTimeSelection> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Padding(
+          const Padding(
             padding: EdgeInsets.all(20),
             child: Text(
               'Select your preferred time to reflect back and improve. Your AI mentor will evaluate and provide feedback...',
@@ -90,19 +93,19 @@ class _PreferredTimeSelectionState extends State<PreferredTimeSelection> {
               style: TextStyle(fontSize: 20),
             ),
           ),
-          Text(
+          const Text(
             'Preferred Time:',
             style: TextStyle(fontSize: 20),
           ),
-          SizedBox(height: 10),
+          const SizedBox(height: 10),
           Text(
-            '${_selectedTime.format(context)}',
-            style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+            _selectedTime.format(context),
+            style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
           ),
-          SizedBox(height: 20),
+          const SizedBox(height: 20),
           ElevatedButton(
             onPressed: () => _selectTime(context),
-            child: Text('Select Time'),
+            child: const Text('Select Time'),
           ),
         ],
       ),

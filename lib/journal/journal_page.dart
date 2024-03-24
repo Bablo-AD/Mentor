@@ -73,7 +73,7 @@ class _JournalPageState extends State<JournalPage> {
                           child: ListTile(
                             title: Text(
                               title.toString(),
-                              style: TextStyle(fontSize: 25),
+                              style: const TextStyle(fontSize: 25),
                             ),
                             subtitle: Text(content),
                             onTap: () {

@@ -148,10 +148,10 @@ class _MentorPageState extends State<MentorPage> {
                                 builder: (context) => const AppsPage()),
                           );
                         },
-                        title: Row(
+                        title: const Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              const Text(
+                              Text(
                                 "Apps",
                                 style: TextStyle(fontSize: 25),
                               ),
@@ -166,13 +166,13 @@ class _MentorPageState extends State<MentorPage> {
                             builder: (context, snapshot) {
                               if (snapshot.connectionState ==
                                   ConnectionState.waiting) {
-                                return Center(
+                                return const Center(
                                   child: CircularProgressIndicator(),
                                 ); // Loading animation
                               } else if (snapshot.hasError) {
                                 return Text('Error: ${snapshot.error}');
                               } else if (snapshot.data!.isEmpty) {
-                                return Text(
+                                return const Text(
                                     'Select the apps you want to display by long pressing. If changes didn\'t show up click the home again');
                               } else {
                                 return ListView.builder(
@@ -245,7 +245,7 @@ class _MentorPageState extends State<MentorPage> {
                               children: [
                                 Text(
                                   lastJournalTitle,
-                                  style: TextStyle(fontSize: 25),
+                                  style: const TextStyle(fontSize: 25),
                                 ),
                                 IconButton(
                                     tooltip: "Add",
@@ -310,7 +310,7 @@ class _MentorPageState extends State<MentorPage> {
                       onTap: () {
                         Navigator.push(
                           context,
-                          MaterialPageRoute(builder: (context) => ChatPage()),
+                          MaterialPageRoute(builder: (context) => const ChatPage()),
                         );
                       },
                       child: Card(
