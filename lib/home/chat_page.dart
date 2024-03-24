@@ -23,10 +23,12 @@ class ChatPage extends StatefulWidget {
 }
 
 class _ChatPageState extends State<ChatPage> {
-  final _user = const types.User(id: '82091008-a484-4a89-ae75-a22bf8d6f3ac');
-  final _mentor = const types.User(id: 'mentor');
+  final _user = const types.User(id: 'user');
+  final _mentor = const types.User(
+      id: '82091008-a484-4a89-ae75-a22bf8d6f3ac', firstName: "Mentor");
   DataProcessor sender = DataProcessor();
-  Loader _loader = Loader();
+  List<types.User> typing_users = [];
+  final Loader _loader = Loader();
   @override
   void initState() {
     super.initState();
@@ -44,22 +46,17 @@ class _ChatPageState extends State<ChatPage> {
   @override
   Widget build(BuildContext context) => Scaffold(
         appBar: AppBar(
-          title: Text("Mentor/Chat"),
+          title: const Text("Mentor/Chat"),
           centerTitle: true,
         ),
         body: Chat(
           messages: Data.messages_data,
           onSendPressed: _handleSendPressed,
           user: _user,
-          typingIndicatorOptions: TypingIndicatorOptions(),
+          typingIndicatorOptions:
+              TypingIndicatorOptions(typingUsers: typing_users),
         ),
       );
-
-  void _addMessage(types.Message message) {
-    setState(() {
-      Data.messages_data.insert(0, message);
-    });
-  }
 
   void _handleSendPressed(types.PartialText message) async {
     final textMessage = types.TextMessage(
@@ -68,7 +65,10 @@ class _ChatPageState extends State<ChatPage> {
       id: Data.uuid.v1(),
       text: message.text,
     );
-    _addMessage(textMessage);
+    setState(() {
+      Data.messages_data.insert(0, textMessage);
+      typing_users = [_mentor];
+    });
 
     http.Response response = await sender.meet_with_server(message.text);
     if (response.statusCode == 200) {
@@ -76,6 +76,7 @@ class _ChatPageState extends State<ChatPage> {
       if (mounted) {
         setState(() {
           Data.messages_data;
+          typing_users = [];
         });
       }
     } else {

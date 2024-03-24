@@ -1,5 +1,3 @@
-import 'package:Mentor/setup/setup_roller.dart';
-
 import 'settings/knowingthestudent.dart';
 import 'package:flutter/material.dart';
 import 'home/home_page.dart';
@@ -76,12 +74,12 @@ class MyApp extends StatelessWidget {
           builder: (BuildContext context, AsyncSnapshot<User?> snapshot) {
             if (snapshot.connectionState == ConnectionState.active) {
               if (snapshot.data == null) {
-                return EmailAuth();
+                return const EmailAuth();
               } else {
-                return MentorPage();
+                return const MentorPage();
               }
             }
-            return CircularProgressIndicator();
+            return const CircularProgressIndicator();
           }),
       routes: {
         //main pages
@@ -95,7 +93,7 @@ class MyApp extends StatelessWidget {
         '/habiticaIntegrationPage': (context) =>
             const HabiticaIntegrationPage(),
         '/knowingthestudent': (context) => const Knowingthestudent(),
-        '/preferredtime': (context) => PreferredTimePage(),
+        '/preferredtime': (context) => const PreferredTimePage(),
       },
     );
   }

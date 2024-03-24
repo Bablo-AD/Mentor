@@ -116,7 +116,7 @@ class DataProcessor {
     Data.completion_message = '';
     for (var message in completionMemory['reply']) {
       final mentorMessage = types.TextMessage(
-        author: types.User(id: 'mentor'),
+        author: const types.User(id: 'mentor'),
         createdAt: DateTime.now().millisecondsSinceEpoch,
         id: Data.uuid.v1(),
         text: message,

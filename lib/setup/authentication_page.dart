@@ -54,7 +54,7 @@ class _EmailAuthState extends State<EmailAuth> {
               // The user account is already linked to the Google provider, so we can ignore this error
             } else {
               // An unexpected error occurred
-              throw e;
+              rethrow;
             }
           }
         }
@@ -227,7 +227,7 @@ class _EmailAuthState extends State<EmailAuth> {
               const SizedBox(
                 height: 60,
               ),
-              Align(
+              const Align(
                 alignment: Alignment.centerLeft,
                 child: Text("Email", style: TextStyle(fontSize: 24)),
               ),
@@ -246,7 +246,7 @@ class _EmailAuthState extends State<EmailAuth> {
                 ),
               ),
               const SizedBox(height: 40.0),
-              Align(
+              const Align(
                 alignment: Alignment.centerLeft,
                 child: Text("Password", style: TextStyle(fontSize: 24)),
               ),

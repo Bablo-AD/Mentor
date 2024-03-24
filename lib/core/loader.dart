@@ -164,15 +164,15 @@ class Loader {
   Future<List<types.Message>> loadMessages() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     List<String> messages = prefs.getStringList('messages') ?? [];
-    List<types.Message> message_list = [];
+    List<types.Message> messageList = [];
     for (var message in messages) {
       try {
-        message_list.add(types.TextMessage.fromJson(jsonDecode(message)));
+        messageList.add(types.TextMessage.fromJson(jsonDecode(message)));
       } catch (e) {
         print('Error decoding message: $e, $message');
       }
     }
-    return message_list;
+    return messageList;
   }
 
   Future<String?> loadcompletion() async {
