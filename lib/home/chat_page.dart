@@ -70,35 +70,13 @@ class _ChatPageState extends State<ChatPage> {
       typing_users = [_mentor];
     });
 
-    http.Response response = await sender.meet_with_server(message.text);
-    if (response.statusCode == 200) {
-      sender.post_process_data(response.body);
-      if (mounted) {
-        setState(() {
-          Data.messages_data;
-          typing_users = [];
-        });
-      }
-    } else {
-      // Handle error case
-      print('Error: ${response.statusCode}');
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            title: const Text('An error occurred try again later'),
-            content: Text(response.statusCode.toString()),
-            actions: <Widget>[
-              TextButton(
-                child: const Text('OK'),
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-              ),
-            ],
-          );
-        },
-      );
+    await sender.execute(message.text);
+    if (mounted) {
+      setState(() {
+        Data.messages_data;
+        typing_users = [];
+      });
     }
+    ;
   }
 }

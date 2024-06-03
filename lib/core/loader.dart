@@ -233,19 +233,23 @@ class Loader {
 
   Future<Map<String, String?>> load_user_stuff() async {
     final SharedPreferences storage = await prefs;
-    String? loadedUserGoal = storage.getString('userGoal');
+    String? loadedUserGoallong = storage.getString('longuserGoal');
+    String? loadedUserGoal = storage.getString('shortTermGoal');
     String? loadedSelfPerception = storage.getString('selfPerception');
 
     Map<String, String?> userStuff = {
-      "userGoal": loadedUserGoal,
-      "selfPerception": loadedSelfPerception
+      "userGoal": loadedUserGoallong,
+      "selfPerception": loadedSelfPerception,
+      "shortTermGoal": loadedUserGoal
     };
     return userStuff;
   }
 
-  void save_user_stuff(String userGoal, String selfPerception) async {
+  void save_user_stuff(
+      String userGoal, String selfPerception, String shortgoal) async {
     final SharedPreferences storage = await prefs;
-    await storage.setString('userGoal', userGoal);
+    await storage.setString('longuserGoal', userGoal);
     await storage.setString('selfPerception', selfPerception);
+    await storage.setString('shortTermGoal', shortgoal);
   }
 }

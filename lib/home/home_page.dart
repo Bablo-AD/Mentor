@@ -43,16 +43,16 @@ class _MentorPageState extends State<MentorPage> {
     });
     check_permissions();
     DataProcessor dataGetter = DataProcessor();
-    try {
-      await dataGetter.execute();
-    } catch (e) {
-      if (mounted) {
-        setState(() {
-          isLoading = false;
-          result = e.toString();
-        });
-      }
-    }
+    //try {
+    await dataGetter.execute();
+    // } catch (e) {
+    //   if (mounted) {
+    //     setState(() {
+    //       isLoading = false;
+    //       result = e.toString();
+    //     });
+    //  }
+    //}
 
     if (mounted) {
       setState(() {
@@ -310,7 +310,8 @@ class _MentorPageState extends State<MentorPage> {
                       onTap: () {
                         Navigator.push(
                           context,
-                          MaterialPageRoute(builder: (context) => const ChatPage()),
+                          MaterialPageRoute(
+                              builder: (context) => const ChatPage()),
                         );
                       },
                       child: Card(

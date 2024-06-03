@@ -15,6 +15,9 @@ class _KnowingthestudentState extends State<Knowingthestudent> {
   final TextEditingController _userGoalController = TextEditingController();
   final TextEditingController _selfPerceptionController =
       TextEditingController();
+  final TextEditingController _shortTermGoalController =
+      TextEditingController();
+  String shortTermGoal = '';
   String userGoal = '';
   String selfPerception = '';
 
@@ -29,20 +32,22 @@ class _KnowingthestudentState extends State<Knowingthestudent> {
 
     String loadedUserGoal = userStuff['userGoal'] ?? "";
     String loadedSelfPerception = userStuff['selfPerception'] ?? "";
-
+    String loadedShortTermGoal = userStuff['shortTermGoal'] ?? "";
     setState(() {
       userGoal = loadedUserGoal;
       _userGoalController.text = userGoal;
       selfPerception = loadedSelfPerception;
       _selfPerceptionController.text =
           selfPerception; // Set the text in the controller
+      shortTermGoal = loadedShortTermGoal;
+      _shortTermGoalController.text = shortTermGoal;
     });
   }
 
   void saveUserData() async {
     if (_formKey.currentState!.validate()) {
-      _loader.save_user_stuff(
-          _userGoalController.text, _selfPerceptionController.text);
+      _loader.save_user_stuff(_userGoalController.text,
+          _selfPerceptionController.text, _shortTermGoalController.text);
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Got it!')),
       );
@@ -66,6 +71,28 @@ class _KnowingthestudentState extends State<Knowingthestudent> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
+                const Text('What is your short term goal?'),
+                const SizedBox(height: 10),
+                TextFormField(
+                  controller: _shortTermGoalController,
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Please enter your short term goal';
+                    }
+                    return null; // Return null if the value is valid
+                  },
+                  maxLines: null,
+                  keyboardType: TextInputType.multiline,
+                  decoration: const InputDecoration(
+                    filled: true,
+                    labelText: 'Your Short Term Goal',
+                  ),
+                  onChanged: (value) {
+                    setState(() {
+                      shortTermGoal = value;
+                    });
+                  },
+                ),
                 const Text('What is your current goal or purpose?'),
                 const SizedBox(height: 10),
                 TextFormField(
@@ -80,7 +107,7 @@ class _KnowingthestudentState extends State<Knowingthestudent> {
                   keyboardType: TextInputType.multiline,
                   decoration: const InputDecoration(
                     filled: true,
-                    labelText: 'Your Goal',
+                    labelText: 'Your Long Term Goal',
                   ),
                   onChanged: (value) {
                     setState(() {
@@ -106,7 +133,7 @@ class _KnowingthestudentState extends State<Knowingthestudent> {
                   keyboardType: TextInputType.multiline,
                   decoration: const InputDecoration(
                     filled: true,
-                    labelText: 'Self-Perception',
+                    labelText: 'About You',
                   ),
                   onChanged: (value) {
                     setState(() {
