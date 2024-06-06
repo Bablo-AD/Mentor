@@ -20,6 +20,7 @@ import 'utils/notifications.dart';
 import 'utils/data.dart';
 import 'utils/util.dart';
 import 'utils/theme.dart';
+import 'setup/signup_page.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -105,6 +106,7 @@ class MyApp extends StatelessWidget {
             const HabiticaIntegrationPage(),
         '/knowingthestudent': (context) => const Knowingthestudent(),
         '/preferredtime': (context) => const PreferredTimePage(),
+        '/signup': (context) => const SignUpPage(),
       },
     );
   }
