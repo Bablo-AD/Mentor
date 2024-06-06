@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../core/loader.dart';
+import '../utils/loader.dart';
 
 class Knowingthestudent extends StatefulWidget {
   const Knowingthestudent({Key? key}) : super(key: key);

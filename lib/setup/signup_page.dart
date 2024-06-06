@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'dart:math';
 import 'dart:convert';
-import '../core/data.dart';
+import '../utils/data.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import '../core/loader.dart';
+import '../utils/loader.dart';
 import 'setup_roller.dart';
 
 class SignUpPage extends StatefulWidget {

@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:intl/intl.dart';
-import '../core/data.dart';
+import '../utils/data.dart';
 
 class JournalEditingPage extends StatefulWidget {
   const JournalEditingPage({

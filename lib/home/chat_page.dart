@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:flutter_chat_ui/flutter_chat_ui.dart';
-import '../core/data.dart';
+import '../utils/data.dart';
 import 'make_request.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import '../core/loader.dart';
+import '../utils/loader.dart';
 import 'dart:math';
 
 //import 'package:cloud_firestore/cloud_firestore.dart';

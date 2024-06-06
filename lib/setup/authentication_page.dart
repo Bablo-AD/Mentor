@@ -1,5 +1,5 @@
-import '../core/loader.dart';
-import '../core/data.dart';
+import '../utils/loader.dart';
+import '../utils/data.dart';
 import 'signup_page.dart';
 import 'package:flutter_signin_button/flutter_signin_button.dart';
 import 'package:flutter/material.dart';
