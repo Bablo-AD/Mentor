@@ -92,7 +92,7 @@ class DataProcessor {
     }
     // Convert the data to JSON
     String jsonData = jsonEncode(data);
-    String serverUrl = "http://192.168.29.225:8000/mentor";
+    String serverUrl = "https://sample-lwyntbevca-uc.a.run.app/mentor";
 
     var response = await http.post(
       Uri.parse(serverUrl.toString()),
