@@ -27,7 +27,7 @@ class _EmailAuthState extends State<EmailAuth> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               const Text(
-                'Sign in your account',
+                'Sign up',
                 style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
               ),
               const SizedBox(
