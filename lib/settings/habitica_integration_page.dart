@@ -1,7 +1,7 @@
 import '../home/make_request.dart';
 import 'package:flutter/material.dart';
 
-import '../core/loader.dart';
+import '../utils/loader.dart';
 
 class HabiticaIntegrationPage extends StatefulWidget {
   const HabiticaIntegrationPage({Key? key}) : super(key: key);

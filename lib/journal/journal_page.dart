@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 import 'journal_editing_page.dart';
-import '../core/data.dart';
+import '../utils/data.dart';
 import 'package:intl/intl.dart';
 
 class JournalPage extends StatefulWidget {

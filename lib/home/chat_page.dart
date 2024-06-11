@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:flutter_chat_ui/flutter_chat_ui.dart';
-import '../core/data.dart';
+import '../utils/data.dart';
 import 'make_request.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import '../core/loader.dart';
+import '../utils/loader.dart';
 import 'dart:math';
 
 //import 'package:cloud_firestore/cloud_firestore.dart';
@@ -70,35 +70,13 @@ class _ChatPageState extends State<ChatPage> {
       typing_users = [_mentor];
     });
 
-    http.Response response = await sender.meet_with_server(message.text);
-    if (response.statusCode == 200) {
-      sender.post_process_data(response.body);
-      if (mounted) {
-        setState(() {
-          Data.messages_data;
-          typing_users = [];
-        });
-      }
-    } else {
-      // Handle error case
-      print('Error: ${response.statusCode}');
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            title: const Text('An error occurred try again later'),
-            content: Text(response.statusCode.toString()),
-            actions: <Widget>[
-              TextButton(
-                child: const Text('OK'),
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-              ),
-            ],
-          );
-        },
-      );
+    await sender.execute(message.text);
+    if (mounted) {
+      setState(() {
+        Data.messages_data;
+        typing_users = [];
+      });
     }
+    ;
   }
 }

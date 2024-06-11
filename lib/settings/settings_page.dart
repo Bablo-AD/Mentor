@@ -1,7 +1,8 @@
+import 'package:Mentor/utils/data.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
-import '../core/loader.dart';
+import '../utils/loader.dart';
 import '../setup/authentication_page.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -26,6 +27,7 @@ class _SettingsPageState extends State<SettingsPage> {
   void _saveSettings() async {
     if (_formKey.currentState!.validate()) {
       // Retrieve the input values
+      Data.serverurl = _serverurlController.text;
       _loader.saveserverurl(_serverurlController.text);
 
       ScaffoldMessenger.of(context).showSnackBar(
@@ -41,7 +43,7 @@ class _SettingsPageState extends State<SettingsPage> {
   }
 
   void _loadSettings() async {
-    _serverurlController.text = await _loader.loadserverurl();
+    _serverurlController.text = Data.serverurl;
     PackageInfo packageInfo = await PackageInfo.fromPlatform();
     setState(() {
       _version = packageInfo.version;

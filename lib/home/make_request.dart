@@ -10,17 +10,17 @@ import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'dart:convert';
 import 'dart:io';
 
-import '../core/loader.dart';
-import '../core/data.dart';
+import '../utils/loader.dart';
+import '../utils/data.dart';
 
 class DataProcessor {
   final _loader = Loader();
 
   String? userId = FirebaseAuth.instance.currentUser?.uid;
   //Processes the request to be sent to the server
-  Future<String> _preparing_data(String interest) async {
+  Future<Map<String, dynamic>> _preparing_data() async {
     String habits = '';
-    String phoneUsageData = '';
+    Map<String, String> phoneUsageData = {};
 
     //Preparing Habitica Data
     Map<String, String?> details = await _loader.loadHabiticaDetails();
@@ -46,35 +46,32 @@ class DataProcessor {
     String usergoal = userStuff['userGoal'].toString();
     String selfperception = userStuff['selfPerception'].toString();
     // Prepare the data to send in the request
-    habits = (habits != "" && habits.isNotEmpty) ? "habits= $habits," : "";
-    String goal = (interest.isNotEmpty) ? "goal= $interest," : "";
-    String journal = (journalDataList != "[]" && journalDataList.isNotEmpty)
-        ? "journal= $journalDataList,"
-        : "";
-    String usage = (phoneUsageData != "\n" && phoneUsageData.isNotEmpty)
-        ? "usage= $phoneUsageData,"
-        : "";
-    String mygoal = (userStuff['userGoal'] != null &&
-            userStuff['userGoal']?.isNotEmpty == true)
-        ? "mygoal= $usergoal,"
-        : "";
-    String myperception = (userStuff['selfPerception'] != null &&
-            userStuff['selfPerception']?.isNotEmpty == true)
-        ? "myperception= $selfperception"
-        : "";
 
     // Prepare the data to send in the request
-    String metaData = """
-    $habits
-    $goal
-    $journal
-    $usage
-    $mygoal
-    $myperception """;
+    Map<String, dynamic> metaData = {
+      if (habits != "" && habits.isNotEmpty) "habits": habits,
+      if (journalDataList != "[]" && journalDataList.isNotEmpty)
+        "journal": journalDataList,
+      if (phoneUsageData != "\n" && phoneUsageData.isNotEmpty)
+        "usage": phoneUsageData,
+      if (userStuff['userGoal'] != null &&
+          userStuff['userGoal']?.isNotEmpty == true)
+        "mygoal": usergoal,
+      if (userStuff['selfPerception'] != null &&
+          userStuff['selfPerception']?.isNotEmpty == true)
+        "myperception": selfperception,
+      if (userStuff['shortTermGoal'] != null &&
+          userStuff['shortTermGoal']?.isNotEmpty == true)
+        "shortTermGoal": userStuff['shortTermGoal'],
+    };
+
+    // Prepare the data to send in the request
+
     return metaData;
   }
 
-  Future<http.Response> meet_with_server(String messageData) async {
+  Future<http.Response> meet_with_server(
+      {Map<String, dynamic>? messageData, String? messages}) async {
     FirebaseFirestore firestore = FirebaseFirestore.instance;
     DocumentSnapshot userDoc =
         await firestore.collection('users').doc(userId).get();
@@ -84,12 +81,18 @@ class DataProcessor {
     Map<String, String> data = {
       "user_id": FirebaseAuth.instance.currentUser?.uid.toString() ?? '',
       "apikey": userData['apikey'].toString(),
-      "messages": messageData,
       "message_history": message
     };
+    if (messageData != null) {
+      data["user_data"] = jsonEncode(messageData);
+    }
+
+    if (messages != null) {
+      data["messages"] = messages;
+    }
     // Convert the data to JSON
     String jsonData = jsonEncode(data);
-    String serverUrl = Data.serverurl;
+    String serverUrl = "https://sample-lwyntbevca-uc.a.run.app/mentor";
 
     var response = await http.post(
       Uri.parse(serverUrl.toString()),
@@ -108,10 +111,8 @@ class DataProcessor {
     }
     if (completionMemory['notification']['title'] != null &&
         completionMemory['notification']['title'] != '') {
-      Data.notification_title =
-          jsonDecode(completionMemory['notification']['title']);
-      Data.notification_body =
-          jsonDecode(completionMemory['notification']['message']);
+      Data.notification_title = completionMemory['notification']['title'];
+      Data.notification_body = completionMemory['notification']['message'];
     }
     Data.completion_message = '';
     for (var message in completionMemory['reply']) {
@@ -142,9 +143,10 @@ class DataProcessor {
     }
   }
 
-  execute([String interest = ""]) async {
-    String messageData = await _preparing_data(interest);
-    http.Response response = await meet_with_server(messageData);
+  execute([String send_message = ""]) async {
+    Map<String, dynamic> messageData = await _preparing_data();
+    http.Response response = await meet_with_server(
+        messageData: messageData, messages: send_message);
     if (response.statusCode == 200) {
       post_process_data(response.body);
     } else {
@@ -282,14 +284,19 @@ class HabiticaData {
 }
 
 class PhoneUsage {
-  Future<String> getUsage() async {
+  Future<Map<String, String>> getUsage() async {
     DateTime endDate = DateTime.now();
-    DateTime startDate = endDate.subtract(const Duration(days: 1));
-    String outputString = "";
+    Map<String, String> usageData = {};
 
-    outputString = await getUsageStats(startDate, endDate);
+    for (int i = 0; i < 5; i++) {
+      DateTime startDate = endDate.subtract(const Duration(days: 1));
+      String date = DateFormat('yyyy-MM-dd').format(startDate);
+      String usage = await getUsageStats(startDate, endDate);
+      usageData[date] = usage;
+      endDate = startDate;
+    }
 
-    return outputString;
+    return usageData;
   }
 
   static Future<void> showPermissionDialog(BuildContext context) async {
@@ -327,9 +334,8 @@ class PhoneUsage {
           int hours = duration.inHours;
           int minutes = duration.inMinutes.remainder(60);
           if (hours > 0 || minutes > 0) {
-            outputString += 'Package name: ${appUsage.packageName} ';
-            outputString +=
-                'Total time in foreground: $hours hours $minutes minutes\n';
+            outputString += 'App name: ${appUsage.packageName} ';
+            outputString += 'Total time used: $hours hours $minutes minutes\n';
           }
         }
       }

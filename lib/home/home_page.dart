@@ -1,17 +1,20 @@
-import '../core/data.dart';
-import 'make_request.dart';
-import '../journal/journal_editing_page.dart';
-import 'video_page.dart';
-import 'chat_page.dart';
 import 'package:flutter/material.dart';
-import '../core/loader.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
 import 'package:usage_stats/usage_stats.dart';
 import 'package:device_apps/device_apps.dart';
+
+import '../utils/data.dart';
+import 'make_request.dart';
+import '../journal/journal_editing_page.dart';
+import 'video_page.dart';
+import 'chat_page.dart';
+import '../utils/loader.dart';
 import 'apps_page.dart';
 import '../settings/apps_selection_page.dart';
-import '../core/notifications.dart';
+import '../utils/notifications.dart';
+
+
 
 class MentorPage extends StatefulWidget {
   const MentorPage({super.key});
@@ -43,16 +46,16 @@ class _MentorPageState extends State<MentorPage> {
     });
     check_permissions();
     DataProcessor dataGetter = DataProcessor();
-    try {
-      await dataGetter.execute();
-    } catch (e) {
-      if (mounted) {
-        setState(() {
-          isLoading = false;
-          result = e.toString();
-        });
-      }
-    }
+    //try {
+    await dataGetter.execute();
+    // } catch (e) {
+    //   if (mounted) {
+    //     setState(() {
+    //       isLoading = false;
+    //       result = e.toString();
+    //     });
+    //  }
+    //}
 
     if (mounted) {
       setState(() {
@@ -310,7 +313,8 @@ class _MentorPageState extends State<MentorPage> {
                       onTap: () {
                         Navigator.push(
                           context,
-                          MaterialPageRoute(builder: (context) => const ChatPage()),
+                          MaterialPageRoute(
+                              builder: (context) => const ChatPage()),
                         );
                       },
                       child: Card(

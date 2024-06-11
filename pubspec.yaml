@@ -60,6 +60,8 @@ dependencies:
   firebase_performance: ^0.9.3+17
   firebase_remote_config: ^4.3.17
   package_info_plus: ^5.0.1
+  google_fonts: ^6.2.1
+  flutter_native_splash: ^2.4.0
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -113,14 +115,14 @@ flutter:
   # "family" key with the font family name, and a "fonts" key with a
   # list giving the asset and other descriptors for the font. For
   
-  fonts:
-    - family: Monospace
-      fonts:
-        - asset: asset/font/SpaceMono-Regular.ttf
-        - asset: asset/font/SpaceMono-Italic.ttf
-          style: italic
-        - asset: asset/font/SpaceMono-Bold.ttf
-        - asset: asset/font/SpaceMono-BoldItalic.ttf  
+  # fonts:
+  #   - family: Monospace
+  #     fonts:
+  #       - asset: asset/font/SpaceMono-Regular.ttf
+  #       - asset: asset/font/SpaceMono-Italic.ttf
+  #         style: italic
+  #       - asset: asset/font/SpaceMono-Bold.ttf
+  #       - asset: asset/font/SpaceMono-BoldItalic.ttf  
   #     fonts:
   #       - asset: fonts/Schyler-Regular.ttf
   #       - asset: fonts/Schyler-Italic.ttf
