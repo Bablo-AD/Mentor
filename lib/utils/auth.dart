@@ -10,9 +10,9 @@ import '../setup/setup_roller.dart';
 import 'loader.dart';
 import 'data.dart';
 
-class firebaseauthhelper {
+class Firebaseauthhelper {
   final BuildContext context;
-  firebaseauthhelper({required this.context});
+  Firebaseauthhelper({required this.context});
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
   final GoogleSignIn googleSignIn = GoogleSignIn();
@@ -95,8 +95,8 @@ class firebaseauthhelper {
   Future<void> signIn(emailController, passwordController) async {
     try {
       UserCredential userCredential = await _auth.signInWithEmailAndPassword(
-        email: emailController.text.trim(),
-        password: passwordController.text.trim(),
+        email: emailController.trim(),
+        password: passwordController.trim(),
       );
       // User sign-in successful
       User? user = userCredential.user;

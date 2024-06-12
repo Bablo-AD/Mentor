@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'dart:math';
 import 'dart:convert';
-import '../utils/data.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+
+import '../utils/data.dart';
 import '../utils/loader.dart';
+import '../utils/widgets/common.dart';
 import 'setup_roller.dart';
 
 class SignUpPage extends StatefulWidget {
@@ -17,7 +19,8 @@ class SignUpPage extends StatefulWidget {
 class _SignUpPageState extends State<SignUpPage> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  final TextEditingController _confirmPasswordController = TextEditingController();
+  final TextEditingController _confirmPasswordController =
+      TextEditingController();
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
   void initialize_user() async {
@@ -133,57 +136,20 @@ class _SignUpPageState extends State<SignUpPage> {
           children: [
             const Text(
               "Join the Jungle",
-              style: TextStyle(fontSize: 20),
+              style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
             ),
             const SizedBox(
               height: 30,
             ),
-            TextField(
-              controller: _emailController,
-              decoration: const InputDecoration(
-                labelText: "Email",
-                border: OutlineInputBorder(),
-                contentPadding: EdgeInsets.symmetric(
-                  vertical: 12.0,
-                  horizontal: 16.0,
-                ),
-              ),
-            ),
-            const SizedBox(height: 20.0),
-            TextField(
-              obscureText: true,
-              controller: _passwordController,
-              decoration: const InputDecoration(
-                labelText: "Password",
-                border: OutlineInputBorder(),
-                contentPadding: EdgeInsets.symmetric(
-                  vertical: 12.0,
-                  horizontal: 16.0,
-                ),
-              ),
-            ),
-            const SizedBox(height: 20.0),
-            TextField(
-              obscureText: true,
-              controller: _confirmPasswordController,
-              decoration: const InputDecoration(
-                labelText: "Confirm Password",
-                border: OutlineInputBorder(),
-                contentPadding: EdgeInsets.symmetric(
-                  vertical: 12.0,
-                  horizontal: 16.0,
-                ),
-              ),
-            ),
+            buildTextField(_emailController, "Email"),
+            const SizedBox(height: 5.0),
+            buildTextField(_passwordController, "Password", obscureText: true),
+            const SizedBox(height: 5.0),
+            buildTextField(_confirmPasswordController, "Confirm Password",
+                obscureText: true),
             const SizedBox(height: 30.0),
             FilledButton(
               onPressed: _signUp,
-              style: ElevatedButton.styleFrom(
-                padding: const EdgeInsets.symmetric(vertical: 20.0, horizontal: 30.0),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10.0),
-                ),
-              ),
               child: const Text("Sign Up"),
             ),
           ],
