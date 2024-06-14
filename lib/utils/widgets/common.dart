@@ -27,27 +27,42 @@ Widget buildTextField(TextEditingController controller, String label,
 class CustomTextFormField extends StatelessWidget {
   final String hintText;
   final IconData prefixIcon;
+  final Widget? suffixIcon;
   final String? Function(String?)? validator;
   final bool obscureText;
   final TextEditingController? controller;
 
   const CustomTextFormField({
-    super.key,
+    Key? key,
     required this.hintText,
     required this.prefixIcon,
-    required this.validator,
+    this.validator,
     this.controller,
     this.obscureText = false,
-  });
+    this.suffixIcon,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return TextFormField(
+    return
+        // Container(
+        //   decoration: BoxDecoration(
+        //     boxShadow: [
+        //       BoxShadow(
+        //         color: Colors.grey.withOpacity(0.5),
+        //         spreadRadius: 0.5,
+        //         blurRadius: 30, // changes position of shadow
+        //       ),
+        //     ],
+        //   ),
+        //   child:
+        TextFormField(
       controller: controller,
       validator: validator,
       obscureText: obscureText,
       decoration: InputDecoration(
         hintText: hintText,
+        suffixIcon: suffixIcon,
         prefixIcon: Icon(prefixIcon),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(30.0),
@@ -56,6 +71,7 @@ class CustomTextFormField extends StatelessWidget {
         filled: true,
         fillColor: Colors.white,
       ),
+      //  ),
     );
   }
 }

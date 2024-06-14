@@ -16,6 +16,27 @@ class Firebaseauthhelper {
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
   final GoogleSignIn googleSignIn = GoogleSignIn();
+  Future<void> resetPassword(String email) async {
+    try {
+      await _auth.sendPasswordResetEmail(email: email);
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Password reset email sent check your email'),
+          ),
+        );
+      }
+    } on FirebaseAuthException catch (e) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content:
+                Text('Error occurred check your email or create new account'),
+          ),
+        );
+      }
+    }
+  }
 
   Future<void> signInWithGoogle() async {
     try {
@@ -68,7 +89,7 @@ class Firebaseauthhelper {
         Navigator.pushReplacementNamed(context, '/settings');
       }
     } catch (e) {
-      // Handle sign-in errors
+      //Handle sign-in errors
       print('Google sign-in error: $e');
       if (context.mounted) {
         showDialog(
@@ -158,8 +179,8 @@ class Firebaseauthhelper {
     try {
       UserCredential userCredential =
           await _auth.createUserWithEmailAndPassword(
-        email: emailController.text.trim(),
-        password: passwordController.text.trim(),
+        email: emailController.trim(),
+        password: passwordController.trim(),
       );
       // User account creation successful
       User? user = userCredential.user;

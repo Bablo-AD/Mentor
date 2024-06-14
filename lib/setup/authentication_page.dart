@@ -1,84 +1,8 @@
 import 'package:flutter_signin_button/flutter_signin_button.dart';
 import 'package:flutter/material.dart';
-
+import 'package:flutter_custom_clippers/flutter_custom_clippers.dart';
 import '../utils/auth.dart';
 import '../utils/widgets/common.dart';
-
-// class EmailAuth extends StatefulWidget {
-//   static const id = 'EmailAuth';
-//   const EmailAuth({super.key});
-
-//   @override
-//   _EmailAuthState createState() => _EmailAuthState();
-// }
-
-// class _EmailAuthState extends State<EmailAuth> {
-//   final TextEditingController _emailController = TextEditingController();
-//   final TextEditingController _passwordController = TextEditingController();
-
-//   @override
-//   Widget build(BuildContext context) {
-//     final firebaseauthhelper _auth = firebaseauthhelper(context: context);
-//     return Scaffold(
-//       appBar: AppBar(title: const Text('Mentor/Authentication')),
-//       body: SingleChildScrollView(
-//         child: Padding(
-//           padding: const EdgeInsets.all(16.0),
-//           child: Column(
-//             mainAxisAlignment: MainAxisAlignment.center,
-//             children: [
-//               const Text('Sign up',
-//                   style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold)),
-//               const SizedBox(height: 40),
-//               buildTextField(_emailController, "Email"),
-//               buildTextField(_passwordController, "Password",
-//                   obscureText: true),
-//               ElevatedButton(
-//                 style: ElevatedButton.styleFrom(
-//                   padding: const EdgeInsets.symmetric(
-//                       vertical: 20.0, horizontal: 40.0),
-//                 ),
-//                 onPressed: () async {
-//                   await _auth.signIn(_emailController, _passwordController);
-//                 },
-//                 child: const Text("Sign In",
-//                     style:
-//                         TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-//               ),
-//               const SizedBox(height: 24),
-//               const Text("Don't have an account?",
-//                   style: TextStyle(fontSize: 20)),
-//               const SizedBox(height: 10),
-//               ElevatedButton(
-//                 style: ElevatedButton.styleFrom(
-//                   padding: const EdgeInsets.symmetric(
-//                       vertical: 10.0, horizontal: 30.0),
-//                   shape: RoundedRectangleBorder(
-//                     borderRadius: BorderRadius.circular(10.0),
-//                   ),
-//                 ),
-//                 onPressed: () {
-//                   Navigator.pushNamed(context, '/signup');
-//                 },
-//                 child: const Text("Sign Up", style: TextStyle(fontSize: 22)),
-//               ),
-//               const SizedBox(height: 24),
-//               const Text("Or continue with", style: TextStyle(fontSize: 20)),
-//               SignInButton(
-//                 Buttons.Google,
-//                 text: "Continue with Google",
-//                 onPressed: _auth.signInWithGoogle,
-//                 elevation: 1,
-//                 shape: RoundedRectangleBorder(
-//                     borderRadius: BorderRadius.circular(10.0)),
-//               )
-//             ],
-//           ),
-//         ),
-//       ),
-//     );
-//   }
-// }
 
 class EmailAuth extends StatefulWidget {
   const EmailAuth({Key? key}) : super(key: key);
@@ -97,19 +21,27 @@ class _EmailAuthState extends State<EmailAuth> {
   Widget build(BuildContext context) {
     final Firebaseauthhelper auth = Firebaseauthhelper(context: context);
     return Scaffold(
-        body: Container(
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [Colors.yellow.shade100, Colors.orange.shade100],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
+        // backgroundColor: const Color.fromRGBO(255, 237, 212, 1),
+        body: SingleChildScrollView(
+            child: Column(children: [
+      ClipPath(
+        clipper: WaveClipperTwo(flip: true),
+        child: Container(
+          height: 120,
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [Color(0x73EECE13), Color.fromARGB(136, 255, 250, 94)],
+            ),
+          ),
         ),
       ),
-      padding: const EdgeInsets.symmetric(horizontal: 30.0, vertical: 50.0),
-      child: Center(
-        child: Form(
-          key: _formKey,
-          child: SingleChildScrollView(
+      Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 30.0, vertical: 50.0),
+        child: Center(
+          child: Form(
+            key: _formKey,
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -120,7 +52,7 @@ class _EmailAuthState extends State<EmailAuth> {
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                const SizedBox(height: 30.0),
+                const SizedBox(height: 40.0),
                 CustomTextFormField(
                   hintText: 'Your Name',
                   prefixIcon: Icons.person,
@@ -131,9 +63,9 @@ class _EmailAuthState extends State<EmailAuth> {
                     return null;
                   },
                 ),
-                const SizedBox(height: 20.0),
+                const SizedBox(height: 30.0),
                 CustomTextFormField(
-                  hintText: 'E-mail',
+                  hintText: 'Your E-mail',
                   controller: _emailController,
                   prefixIcon: Icons.email,
                   validator: (value) {
@@ -143,12 +75,24 @@ class _EmailAuthState extends State<EmailAuth> {
                     return null;
                   },
                 ),
-                const SizedBox(height: 20.0),
+                const SizedBox(height: 30.0),
                 CustomTextFormField(
                   hintText: 'Password',
                   controller: _passwordController,
                   prefixIcon: Icons.lock,
                   obscureText: !_passwordVisible,
+                  suffixIcon: IconButton(
+                    icon: Icon(
+                      _passwordVisible
+                          ? Icons.visibility
+                          : Icons.visibility_off,
+                    ),
+                    onPressed: () {
+                      setState(() {
+                        _passwordVisible = !_passwordVisible;
+                      });
+                    },
+                  ),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
                       return 'Please enter your password';
@@ -156,10 +100,10 @@ class _EmailAuthState extends State<EmailAuth> {
                     return null;
                   },
                 ),
-                const SizedBox(height: 20.0),
+                const SizedBox(height: 30.0),
                 CustomTextFormField(
                   hintText: 'Retype Password',
-                  prefixIcon: Icons.phone,
+                  prefixIcon: Icons.check,
                   obscureText: !_passwordVisible,
                   validator: (value) {
                     if (value == null || value.isEmpty) {
@@ -168,8 +112,8 @@ class _EmailAuthState extends State<EmailAuth> {
                     return null;
                   },
                 ),
-                const SizedBox(height: 30.0),
-                ElevatedButton(
+                const SizedBox(height: 40.0),
+                FilledButton(
                   onPressed: () {
                     if (_formKey.currentState!.validate()) {
                       auth.signUp(
@@ -178,7 +122,7 @@ class _EmailAuthState extends State<EmailAuth> {
                   },
                   style: FilledButton.styleFrom(
                     padding: const EdgeInsets.symmetric(
-                        horizontal: 80.0, vertical: 15.0),
+                        horizontal: 60.0, vertical: 15.0),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(30.0),
                     ),
@@ -189,11 +133,30 @@ class _EmailAuthState extends State<EmailAuth> {
                   ),
                 ),
                 const SizedBox(height: 20.0),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  // text: TextSpan(
+                  //   style: const TextStyle(fontSize: 16.0, color: Colors.black),
+                  children: [
+                    const Text('Already a user? '),
+                    GestureDetector(
+                      onTap: () {
+                        // Navigate to the sign in page
+                        Navigator.pushNamed(context, '/signin');
+                      },
+                      child: const Text(
+                        'Sign in',
+                        style: TextStyle(color: Colors.blue),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 30.0),
                 const Text(
                   'Or create with',
                   style: TextStyle(fontSize: 16.0),
                 ),
-                const SizedBox(height: 20.0),
+                const SizedBox(height: 10.0),
                 SignInButton(
                   Buttons.Google,
                   text: ' Google SignIn',
@@ -206,6 +169,6 @@ class _EmailAuthState extends State<EmailAuth> {
           ),
         ),
       ),
-    ));
+    ])));
   }
 }
