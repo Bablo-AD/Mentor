@@ -88,7 +88,7 @@ class MyApp extends StatelessWidget {
               if (snapshot.data == null) {
                 return const EmailAuth();
               } else {
-                return const MentorPage();
+                return HomePage();
               }
             }
             return const CircularProgressIndicator();

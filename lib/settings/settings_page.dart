@@ -17,6 +17,7 @@ class SettingsPage extends StatefulWidget {
 }
 
 class _SettingsPageState extends State<SettingsPage> {
+  bool get wantKeepAlive => true;
   int _selectedIndex = 2;
   final _formKey = GlobalKey<FormState>();
   final _loader = Loader();
@@ -53,175 +54,18 @@ class _SettingsPageState extends State<SettingsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(title: const Text("Mentor/Settings")),
-        body: SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Form(
-              key: _formKey,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  const Text("About You", style: TextStyle(fontSize: 18)),
-                  const SizedBox(height: 4.0),
-                  ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                          shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10)),
-                          padding: const EdgeInsets.all(
-                              16) // Adjust this value to suit your needs
-                          ),
-                      onPressed: () {
-                        Navigator.pushNamed(context, '/knowingthestudent');
-                      },
-                      child: const Text("Edit your purpose")),
-                  const SizedBox(height: 10),
-                  ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                          shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10)),
-                          padding: const EdgeInsets.all(
-                              16) // Adjust this value to suit your needs
-                          ),
-                      onPressed: () {
-                        Navigator.pushNamed(context, '/preferredtime');
-                      },
-                      child: const Text("Edit your preferred time")),
-                  const SizedBox(height: 10.0),
-                  OutlinedButton(
-                    style: ElevatedButton.styleFrom(
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10)),
-                        padding: const EdgeInsets.all(
-                            16) // Adjust this value to suit your needs
-                        ),
-                    onPressed: () async {
-                      await FirebaseAuth.instance.signOut();
-                      await SessionManager.saveLoginState(false);
-                      SharedPreferences preferences =
-                          await SharedPreferences.getInstance();
-                      await preferences.clear();
-                      setState(() {
-                        Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const EmailAuth(),
-                          ),
-                        );
-                      });
-                      // Additional code after successful sign-out
-                    },
-                    child: const Text('Sign Out'),
-                  ),
-                  const SizedBox(height: 24.0),
-                  const Text("Integrations", style: TextStyle(fontSize: 18)),
-                  const SizedBox(height: 4.0),
-                  ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                          shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(
-                                  10)), // Adjust this value to suit your needs
-                          padding: const EdgeInsets.all(16)),
-                      onPressed: () {
-                        Navigator.pushNamed(
-                            context, '/habiticaIntegrationPage');
-                      },
-                      child: const Text("Connect with Habitica")),
-                  const SizedBox(height: 24.0),
-                  const Text("General Settings",
-                      style: TextStyle(fontSize: 18)),
-                  const SizedBox(height: 4),
-                  ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                          shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10)),
-                          padding: const EdgeInsets.all(
-                              16) // Adjust this value to suit your needs
-                          ),
-                      onPressed: () {
-                        Navigator.pushNamed(context, '/appsSelection');
-                      },
-                      child: const Text("Edit your selected apps")),
-                  const SizedBox(height: 10),
-                  ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                          shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10)),
-                          padding: const EdgeInsets.all(
-                              16) // Adjust this value to suit your needs
-                          ),
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => const EmailSettingsPage()),
-                        );
-                      },
-                      child: const Text("Parental controls")),
-                  const SizedBox(height: 10.0),
-                  ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                          shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10)),
-                          padding: const EdgeInsets.all(
-                              16) // Adjust this value to suit your needs
-                          ),
-                      child: const Text("Edit ServerUrl"),
-                      onPressed: () {
-                        showDialog(
-                            barrierDismissible: true,
-                            barrierLabel: MaterialLocalizations.of(context)
-                                .modalBarrierDismissLabel,
-                            context: context,
-                            builder: (BuildContext context) {
-                              return Dialog.fullscreen(
-                                  child: Padding(
-                                      padding: const EdgeInsets.all(16.0),
-                                      child: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.stretch,
-                                          children: [
-                                            TextFormField(
-                                              controller: _serverurlController,
-                                              style: const TextStyle(),
-                                              decoration: const InputDecoration(
-                                                labelText: 'ServerUrl',
-                                                enabledBorder:
-                                                    UnderlineInputBorder(
-                                                  borderSide: BorderSide(),
-                                                ),
-                                                focusedBorder:
-                                                    UnderlineInputBorder(
-                                                  borderSide: BorderSide(),
-                                                ),
-                                              ),
-                                              validator: (value) {
-                                                if (value!.isEmpty) {
-                                                  return 'Please enter a valid Url';
-                                                }
-                                                return null;
-                                              },
-                                            ),
-                                            const SizedBox(height: 16.0),
-                                            const Text(
-                                                "Only do this when you know what you are doing"),
-                                            OutlinedButton(
-                                                child: const Text("Back"),
-                                                onPressed: () {
-                                                  Navigator.pop(context);
-                                                }),
-                                            const SizedBox(height: 4.0),
-                                            FilledButton(
-                                                onPressed: () {
-                                                  _saveSettings();
-                                                  Navigator.pop(context);
-                                                },
-                                                child: const Text("Save")),
-                                          ])));
-                            });
-                      }),
-                  const SizedBox(height: 10.0),
-                  ElevatedButton(
+      appBar: AppBar(title: const Text("Mentor/Settings")),
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Form(
+            key: _formKey,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                const Text("About You", style: TextStyle(fontSize: 18)),
+                const SizedBox(height: 4.0),
+                ElevatedButton(
                     style: ElevatedButton.styleFrom(
                         shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(10)),
@@ -229,68 +73,188 @@ class _SettingsPageState extends State<SettingsPage> {
                             16) // Adjust this value to suit your needs
                         ),
                     onPressed: () {
-                      _loader.clearMessageHistory();
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                            content: Text('Message history cleared!')),
+                      Navigator.pushNamed(context, '/knowingthestudent');
+                    },
+                    child: const Text("Edit your purpose")),
+                const SizedBox(height: 10),
+                ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10)),
+                        padding: const EdgeInsets.all(
+                            16) // Adjust this value to suit your needs
+                        ),
+                    onPressed: () {
+                      Navigator.pushNamed(context, '/preferredtime');
+                    },
+                    child: const Text("Edit your preferred time")),
+                const SizedBox(height: 10.0),
+                OutlinedButton(
+                  style: ElevatedButton.styleFrom(
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10)),
+                      padding: const EdgeInsets.all(
+                          16) // Adjust this value to suit your needs
+                      ),
+                  onPressed: () async {
+                    await FirebaseAuth.instance.signOut();
+                    await SessionManager.saveLoginState(false);
+                    SharedPreferences preferences =
+                        await SharedPreferences.getInstance();
+                    await preferences.clear();
+                    setState(() {
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const EmailAuth(),
+                        ),
+                      );
+                    });
+                    // Additional code after successful sign-out
+                  },
+                  child: const Text('Sign Out'),
+                ),
+                const SizedBox(height: 24.0),
+                const Text("Integrations", style: TextStyle(fontSize: 18)),
+                const SizedBox(height: 4.0),
+                ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(
+                                10)), // Adjust this value to suit your needs
+                        padding: const EdgeInsets.all(16)),
+                    onPressed: () {
+                      Navigator.pushNamed(context, '/habiticaIntegrationPage');
+                    },
+                    child: const Text("Connect with Habitica")),
+                const SizedBox(height: 24.0),
+                const Text("General Settings", style: TextStyle(fontSize: 18)),
+                const SizedBox(height: 4),
+                ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10)),
+                        padding: const EdgeInsets.all(
+                            16) // Adjust this value to suit your needs
+                        ),
+                    onPressed: () {
+                      Navigator.pushNamed(context, '/appsSelection');
+                    },
+                    child: const Text("Edit your selected apps")),
+                const SizedBox(height: 10),
+                ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10)),
+                        padding: const EdgeInsets.all(
+                            16) // Adjust this value to suit your needs
+                        ),
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const EmailSettingsPage()),
                       );
                     },
-                    child: const Text("Clear Message History"),
-                  ),
-                  const SizedBox(height: 24.0),
-                  const Text("Feedback & Errors",
-                      style: TextStyle(fontSize: 18)),
-                  const SizedBox(height: 4.0),
-                  TextButton(
-                      onPressed: () {
-                        launch(
-                            'https://forms.gle/gRyfXvFPdbyQGjp38'); // Replace with your Google Form URL
-                      },
-                      child: const Text("Submit feedback or report errors")),
-                  const SizedBox(
-                    height: 10,
-                  ),
-                  Center(
-                      child: Text("Version $_version.",
-                          style: TextStyle(fontSize: 18))),
-                ],
-              ),
+                    child: const Text("Parental controls")),
+                const SizedBox(height: 10.0),
+                ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10)),
+                        padding: const EdgeInsets.all(
+                            16) // Adjust this value to suit your needs
+                        ),
+                    child: const Text("Edit ServerUrl"),
+                    onPressed: () {
+                      showDialog(
+                          barrierDismissible: true,
+                          barrierLabel: MaterialLocalizations.of(context)
+                              .modalBarrierDismissLabel,
+                          context: context,
+                          builder: (BuildContext context) {
+                            return Dialog.fullscreen(
+                                child: Padding(
+                                    padding: const EdgeInsets.all(16.0),
+                                    child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.stretch,
+                                        children: [
+                                          TextFormField(
+                                            controller: _serverurlController,
+                                            style: const TextStyle(),
+                                            decoration: const InputDecoration(
+                                              labelText: 'ServerUrl',
+                                              enabledBorder:
+                                                  UnderlineInputBorder(
+                                                borderSide: BorderSide(),
+                                              ),
+                                              focusedBorder:
+                                                  UnderlineInputBorder(
+                                                borderSide: BorderSide(),
+                                              ),
+                                            ),
+                                            validator: (value) {
+                                              if (value!.isEmpty) {
+                                                return 'Please enter a valid Url';
+                                              }
+                                              return null;
+                                            },
+                                          ),
+                                          const SizedBox(height: 16.0),
+                                          const Text(
+                                              "Only do this when you know what you are doing"),
+                                          OutlinedButton(
+                                              child: const Text("Back"),
+                                              onPressed: () {
+                                                Navigator.pop(context);
+                                              }),
+                                          const SizedBox(height: 4.0),
+                                          FilledButton(
+                                              onPressed: () {
+                                                _saveSettings();
+                                                Navigator.pop(context);
+                                              },
+                                              child: const Text("Save")),
+                                        ])));
+                          });
+                    }),
+                const SizedBox(height: 10.0),
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10)),
+                      padding: const EdgeInsets.all(
+                          16) // Adjust this value to suit your needs
+                      ),
+                  onPressed: () {
+                    _loader.clearMessageHistory();
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('Message history cleared!')),
+                    );
+                  },
+                  child: const Text("Clear Message History"),
+                ),
+                const SizedBox(height: 24.0),
+                const Text("Feedback & Errors", style: TextStyle(fontSize: 18)),
+                const SizedBox(height: 4.0),
+                TextButton(
+                    onPressed: () {
+                      launch(
+                          'https://forms.gle/gRyfXvFPdbyQGjp38'); // Replace with your Google Form URL
+                    },
+                    child: const Text("Submit feedback or report errors")),
+                const SizedBox(
+                  height: 10,
+                ),
+                Center(
+                    child: Text("Version $_version.",
+                        style: TextStyle(fontSize: 18))),
+              ],
             ),
           ),
         ),
-        bottomNavigationBar: NavigationBar(
-          selectedIndex: _selectedIndex,
-          onDestinationSelected: (int index) {
-            setState(() {
-              _selectedIndex = index;
-              switch (index) {
-                case 0:
-                  Navigator.pushReplacementNamed(context, '/mentor');
-                  break;
-                case 1:
-                  Navigator.pushReplacementNamed(context, '/journal');
-                  break;
-                case 2:
-                  Navigator.pushReplacementNamed(context, '/settings');
-                  break;
-              }
-            });
-          },
-          destinations: const <Widget>[
-            NavigationDestination(
-              selectedIcon: Icon(Icons.home),
-              icon: Icon(Icons.home_outlined),
-              label: 'Home',
-            ),
-            NavigationDestination(
-              icon: Icon(Icons.book),
-              label: 'Journal',
-            ),
-            NavigationDestination(
-              icon: Icon(Icons.settings),
-              label: 'Settings',
-            ),
-          ],
-        ));
+      ),
+    );
   }
 }
