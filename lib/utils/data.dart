@@ -1,4 +1,3 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'loader.dart';
 import 'package:device_apps/device_apps.dart';
 import 'dart:isolate';
@@ -8,7 +7,6 @@ import 'package:uuid/uuid.dart';
 class Data {
   Loader load = Loader();
   static var uuid = const Uuid();
-  static String? userId = FirebaseAuth.instance.currentUser?.uid;
   static List<Application> apps = [];
   static List<Application> selected_apps = [];
   static String response = "";
@@ -35,9 +33,9 @@ class Video {
 
   factory Video.fromJson(Map<String, dynamic> json) {
     return Video(
-      title: json['title'].toString() ?? '',
-      videoId: json['videoId'].toString() ?? '',
-      videoDescription: json['videoDescription'].toString() ?? '',
+      title: json['title'].toString(),
+      videoId: json['videoId'].toString(),
+      videoDescription: json['videoDescription'].toString(),
     );
   }
   Map<String, dynamic> toJson() {

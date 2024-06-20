@@ -41,8 +41,6 @@ dependencies:
   shared_preferences: ^2.1.1
   flutter_launcher_icons: ^0.13.1
   flutter_secure_storage: ^8.0.0
-  cloud_firestore: ^4.8.1
-  firebase_auth: ^4.6.3
   csv: ^5.0.2
   intl: ^0.18.1
   usage_stats: ^1.2.0

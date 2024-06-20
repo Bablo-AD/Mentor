@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import 'package:csv/csv.dart';
 import 'package:usage_stats/usage_stats.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 
 import 'dart:convert';
@@ -72,17 +70,9 @@ class DataProcessor {
 
   Future<http.Response> meet_with_server(
       {Map<String, dynamic>? messageData, String? messages}) async {
-    FirebaseFirestore firestore = FirebaseFirestore.instance;
-    DocumentSnapshot userDoc =
-        await firestore.collection('users').doc(userId).get();
     String message = await _loader.loadMessageHistory();
-    Map<String, dynamic> userData = userDoc.data() as Map<String, dynamic>;
 
-    Map<String, String> data = {
-      "user_id": FirebaseAuth.instance.currentUser?.uid.toString() ?? '',
-      "apikey": userData['apikey'].toString(),
-      "message_history": message
-    };
+    Map<String, String> data = {"message_history": message};
     if (messageData != null) {
       data["user_data"] = jsonEncode(messageData);
     }

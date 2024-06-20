@@ -1,6 +1,4 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 
 import 'journal_editing_page.dart';
 import '../utils/data.dart';
@@ -16,7 +14,6 @@ class JournalPage extends StatefulWidget {
 class _JournalPageState extends State<JournalPage> {
   bool get wantKeepAlive => true;
   int _selectedIndex = 1;
-  String? userId = FirebaseAuth.instance.currentUser?.uid;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
