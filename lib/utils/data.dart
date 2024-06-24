@@ -3,10 +3,18 @@ import 'package:device_apps/device_apps.dart';
 import 'dart:isolate';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:uuid/uuid.dart';
+import 'dart:async';
 
 class Data {
   Loader load = Loader();
   static var uuid = const Uuid();
+  static final StreamController<Map<String, dynamic>> _journalController =
+      StreamController.broadcast();
+  static Stream<Map<String, dynamic>> get journalStream =>
+      _journalController.stream;
+  static StreamSink<Map<String, dynamic>> get journalSink =>
+      _journalController.sink;
+  static Map<String, dynamic> journal = {};
   static List<Application> apps = [];
   static List<Application> selected_apps = [];
   static String response = "";

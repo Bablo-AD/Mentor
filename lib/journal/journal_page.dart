@@ -30,13 +30,8 @@ class _JournalPageState extends State<JournalPage> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               const SizedBox(height: 16.0),
-              StreamBuilder<QuerySnapshot>(
-                stream: FirebaseFirestore.instance
-                    .collection('users')
-                    .doc(Data.userId)
-                    .collection("journal")
-                    .orderBy('title', descending: true)
-                    .snapshots(),
+              StreamBuilder<Map<String, dynamic>>(
+                stream: Data.journalStream,
                 builder: (context, snapshot) {
                   if (snapshot.hasError) {
                     return Text('Error: ${snapshot.error}');
@@ -48,22 +43,16 @@ class _JournalPageState extends State<JournalPage> {
                     );
                   }
 
-                  final journalDocs = snapshot.data?.docs;
+                  final journalDocs = snapshot.data!;
 
                   return ListView.builder(
                     scrollDirection: Axis.vertical,
                     shrinkWrap: true,
                     physics: const NeverScrollableScrollPhysics(),
-                    itemCount: journalDocs?.length ?? 0,
+                    itemCount: journalDocs.keys.length,
                     itemBuilder: (context, index) {
-                      final journalData =
-                          journalDocs?[index].data() as Map<String, dynamic>;
-                      final timestamp = journalData['title'] as Timestamp;
-                      var format = DateFormat('H:m d-M-y');
-
-                      final title = format.format(timestamp.toDate());
-                      final content = journalData['content'] as String;
-                      final documentId = journalDocs?[index].id;
+                      final title = journalDocs.keys.elementAt(index);
+                      final content = journalDocs[title];
 
                       return Card(
                         color: Theme.of(context).colorScheme.tertiaryContainer,
@@ -77,12 +66,10 @@ class _JournalPageState extends State<JournalPage> {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (context) => JournalEditingPage(
-                                    journalTitle: title.toString(),
-                                    journalContent: content,
-                                    documentId: documentId,
-                                    userId: userId.toString()),
-                              ),
+                                  builder: (context) => JournalEditingPage(
+                                        journalTitle: title.toString(),
+                                        journalContent: content,
+                                      )),
                             );
                           },
                         ),
@@ -102,12 +89,10 @@ class _JournalPageState extends State<JournalPage> {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => JournalEditingPage(
+              builder: (context) => const JournalEditingPage(
                 journalTitle: '',
-                journalContent: '',
-                documentId: null,
-                userId: userId
-                    .toString(), // Pass null as document ID for a new journal
+                journalContent:
+                    '', // Pass null as document ID for a new journal
               ),
             ),
           );

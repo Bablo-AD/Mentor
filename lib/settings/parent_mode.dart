@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import '../utils/data.dart';
 
 class EmailSettingsPage extends StatefulWidget {
@@ -12,11 +11,9 @@ class EmailSettingsPage extends StatefulWidget {
 class _EmailSettingsPageState extends State<EmailSettingsPage> {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
+  
   Future<String> loadEmail() async {
-    DocumentSnapshot doc = await FirebaseFirestore.instance
-        .collection('users')
-        .doc(Data.userId)
-        .get();
+    DocumentSnapshot doc = Data.
     return doc['parentmail'];
   }
 

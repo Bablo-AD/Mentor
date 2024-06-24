@@ -1,9 +1,7 @@
 import 'package:Mentor/utils/data.dart';
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 
 import '../utils/loader.dart';
-import '../setup/authentication_page.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'parent_mode.dart';
@@ -88,32 +86,6 @@ class _SettingsPageState extends State<SettingsPage> {
                       Navigator.pushNamed(context, '/preferredtime');
                     },
                     child: const Text("Edit your preferred time")),
-                const SizedBox(height: 10.0),
-                OutlinedButton(
-                  style: ElevatedButton.styleFrom(
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10)),
-                      padding: const EdgeInsets.all(
-                          16) // Adjust this value to suit your needs
-                      ),
-                  onPressed: () async {
-                    await FirebaseAuth.instance.signOut();
-                    await SessionManager.saveLoginState(false);
-                    SharedPreferences preferences =
-                        await SharedPreferences.getInstance();
-                    await preferences.clear();
-                    setState(() {
-                      Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const EmailAuth(),
-                        ),
-                      );
-                    });
-                    // Additional code after successful sign-out
-                  },
-                  child: const Text('Sign Out'),
-                ),
                 const SizedBox(height: 24.0),
                 const Text("Integrations", style: TextStyle(fontSize: 18)),
                 const SizedBox(height: 4.0),

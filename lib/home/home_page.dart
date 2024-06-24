@@ -1,6 +1,5 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
 import 'package:usage_stats/usage_stats.dart';
 import 'package:device_apps/device_apps.dart';
@@ -185,13 +184,8 @@ class _MentorPageState extends State<MentorPage> {
             children: [
               const AppsChooser(),
               const SizedBox(height: 16.0),
-              StreamBuilder<QuerySnapshot>(
-                stream: FirebaseFirestore.instance
-                    .collection('users')
-                    .doc(Data.userId)
-                    .collection("journal")
-                    .orderBy('title', descending: true)
-                    .snapshots(),
+              StreamBuilder<Map<String, dynamic>>(
+                stream: Data.journalStream,
                 builder: (context, snapshot) {
                   if (snapshot.hasError) {
                     return Text('Error: ${snapshot.error}');
@@ -203,22 +197,21 @@ class _MentorPageState extends State<MentorPage> {
                     );
                   }
 
-                  final journalDocs = snapshot.data?.docs;
+                  final journalDocs = snapshot.data;
 
                   if (journalDocs == null || journalDocs.isEmpty) {
                     return const Text(
                         'Not wrote a journal yet? Go to journal page');
                   }
 
-                  final lastJournalData =
-                      journalDocs[0].data() as Map<String, dynamic>;
-                  final timestamp = lastJournalData['title'] as Timestamp;
-                  var format = DateFormat('H:m d-M-y');
+                  // Assuming the keys are timestamps in a sortable format
+                  final lastEntryKey = journalDocs.keys
+                      .reduce((a, b) => a.compareTo(b) > 0 ? a : b);
+                  final lastJournalData = journalDocs[lastEntryKey];
 
-                  final lastJournalTitle = format.format(timestamp.toDate());
-                  final lastJournalContent =
-                      lastJournalData['content'] as String;
-
+                  // Assuming 'title' and 'content' are part of the journal data
+                  final lastJournalTitle = lastEntryKey;
+                  final lastJournalContent = lastJournalData;
                   return Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -240,12 +233,9 @@ class _MentorPageState extends State<MentorPage> {
                                       context,
                                       MaterialPageRoute(
                                         builder: (context) =>
-                                            JournalEditingPage(
+                                            const JournalEditingPage(
                                           journalTitle: '',
                                           journalContent: '',
-                                          documentId: null,
-                                          userId: Data.userId
-                                              .toString(), // Pass null as document ID for a new journal
                                         ),
                                       ),
                                     );
@@ -253,9 +243,7 @@ class _MentorPageState extends State<MentorPage> {
                                   icon: const Icon(Icons.add)),
                             ],
                           ),
-                          subtitle: Text(
-                            lastJournalContent,
-                          ),
+                          subtitle: Text(lastJournalContent),
                           onTap: () {
                             Navigator.push(
                               context,
@@ -263,8 +251,6 @@ class _MentorPageState extends State<MentorPage> {
                                 builder: (context) => JournalEditingPage(
                                   journalTitle: lastJournalTitle,
                                   journalContent: lastJournalContent,
-                                  documentId: journalDocs[0].id,
-                                  userId: Data.userId.toString(),
                                 ),
                               ),
                             );

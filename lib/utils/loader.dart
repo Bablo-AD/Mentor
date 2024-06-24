@@ -1,14 +1,10 @@
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'dart:convert';
 import 'package:device_apps/device_apps.dart';
 import 'data.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import '../home/make_request.dart';
 import 'notifications.dart';
-import 'package:firebase_core/firebase_core.dart';
-import '../firebase_options.dart';
 import 'dart:isolate';
 import 'dart:ui';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
@@ -34,9 +30,7 @@ class Loader {
   static void makerequest() async {
     print("alarm");
     WidgetsFlutterBinding.ensureInitialized();
-    await Firebase.initializeApp(
-      options: DefaultFirebaseOptions.currentPlatform,
-    );
+
     LocalNotificationService notifier = LocalNotificationService();
     //notifier.showNotificationAndroid('Executing', "Building report");
 
@@ -101,11 +95,6 @@ class Loader {
     sortedApps.sort((a, b) => a.appName.compareTo(b.appName));
     Data.apps = sortedApps;
     return sortedApps;
-  }
-
-  static String load_user_id() {
-    String? userid = FirebaseAuth.instance.currentUser?.uid;
-    return userid ?? "";
   }
 
   Future<List<Application>> loadSelectedApps() async {
@@ -189,17 +178,33 @@ class Loader {
     storage.setString('completion', completion);
   }
 
-  static Future<List<QueryDocumentSnapshot>> loadjournal() async {
-    final QuerySnapshot snapshot = await FirebaseFirestore.instance
-        .collection('users')
-        .doc(Data.userId)
-        .collection("journal")
-        .where('title',
-            isGreaterThan: Timestamp.fromDate(
-                DateTime.now().subtract(const Duration(days: 1))))
-        .get();
-    List<QueryDocumentSnapshot> documents = snapshot.docs;
-    return documents;
+  void loadjournal() async {
+    final SharedPreferences storage = await prefs;
+    String? journal = storage.getString('journal');
+    if (journal != null) {
+      Data.journal = jsonDecode(journal);
+    }
+  }
+
+  Future<void> saveJournal({Map<String, dynamic>? journal}) async {
+    final SharedPreferences storage = await SharedPreferences.getInstance();
+    String journalString = jsonEncode(journal ?? Data.journal);
+    await storage.setString('journal', journalString);
+  }
+
+  Future<void> addJournal(String content) async {
+    Data.journal[DateTime.now().toIso8601String()] = content;
+    Data.journalSink.add(Data.journal);
+  }
+
+  Future<void> removeJournal(String key) async {
+    Data.journal.remove(key); // Remove the entry with the given key
+    Data.journalSink.add(Data.journal);
+  }
+
+  Future<void> updateJournal(String key, String content) async {
+    Data.journal[key] = content;
+    Data.journalSink.add(Data.journal);
   }
 
   Future<String> loadserverurl() async {
@@ -214,6 +219,8 @@ class Loader {
     // Encrypt and save the data locally
     await storage.setString('server_url', serverUrl);
   }
+
+  // Bro na saptu varen...
 
   Future<Map<String, String?>> loadHabiticaDetails() async {
     final SharedPreferences storage = await prefs;

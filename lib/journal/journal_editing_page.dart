@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import '../utils/loader.dart';
 import '../utils/data.dart';
 
 class JournalEditingPage extends StatefulWidget {
@@ -7,23 +8,19 @@ class JournalEditingPage extends StatefulWidget {
     Key? key,
     required this.journalTitle,
     required this.journalContent,
-    required this.documentId,
-    required this.userId,
   }) : super(key: key);
 
   final String journalTitle;
   final String journalContent;
-  final String? documentId;
-  final String userId;
   @override
   _JournalEditingPageState createState() => _JournalEditingPageState();
 }
 
 class _JournalEditingPageState extends State<JournalEditingPage> {
-  final _firebaseService = FirebaseService();
   late String journalTitle;
   late String journalContent;
   late TextEditingController _contentController;
+  final Loader _loader = Loader();
 
   @override
   void initState() {
@@ -47,14 +44,13 @@ class _JournalEditingPageState extends State<JournalEditingPage> {
 
   void saveJournalEntry() async {
     if (journalContent.isNotEmpty) {
-      if (widget.documentId != null) {
+      if (Data.journal.containsKey(journalTitle)) {
         // Existing journal, update it
-        await _firebaseService.updateJournal(
-            widget.documentId!, journalContent);
+        _loader.updateJournal(journalTitle, journalContent);
       } else {
-        // New journal, create it
-        await _firebaseService.createJournal(journalContent);
+        _loader.addJournal(journalContent);
       }
+      _loader.saveJournal();
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Saved!')),
       );
@@ -67,17 +63,15 @@ class _JournalEditingPageState extends State<JournalEditingPage> {
   }
 
   void deleteJournal() async {
-    String? documentId = widget.documentId;
-    if (documentId != null) {
-      await FirebaseService().deleteJournal(documentId);
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Journal deleted!')),
-      );
-      if (mounted) {
-        setState(() {
-          Navigator.pop(context);
-        });
-      }
+    _loader.removeJournal(widget.journalTitle);
+    _loader.saveJournal();
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Journal deleted!')),
+    );
+    if (mounted) {
+      setState(() {
+        Navigator.pop(context);
+      });
     }
   }
 
@@ -122,43 +116,5 @@ class _JournalEditingPageState extends State<JournalEditingPage> {
         ),
       ),
     );
-  }
-}
-
-class FirebaseService {
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-
-  Future<void> createJournal(String content) async {
-    String? userId = FirebaseAuth.instance.currentUser?.uid;
-
-    await _firestore
-        .collection('users')
-        .doc(Data.userId)
-        .collection("journal")
-        .add({
-      'userId': userId,
-      'title': DateTime.now(),
-      'content': content,
-    });
-  }
-
-  Future<void> deleteJournal(String documentId) async {
-    await _firestore
-        .collection('users')
-        .doc(Data.userId)
-        .collection("journal")
-        .doc(documentId)
-        .delete();
-  }
-
-  Future<void> updateJournal(String documentId, String content) async {
-    await _firestore
-        .collection('users')
-        .doc(Data.userId)
-        .collection("journal")
-        .doc(documentId)
-        .update({
-      'content': content,
-    });
   }
 }

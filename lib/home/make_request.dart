@@ -14,7 +14,6 @@ import '../utils/data.dart';
 class DataProcessor {
   final _loader = Loader();
 
-  String? userId = FirebaseAuth.instance.currentUser?.uid;
   //Processes the request to be sent to the server
   Future<Map<String, dynamic>> _preparing_data() async {
     String habits = '';
@@ -36,8 +35,7 @@ class DataProcessor {
     }
 
     //Preparing journal Data
-    String journalDataList = await getJournalData(userId.toString())
-        .then((journalDataList) => jsonEncode(journalDataList));
+    String journalDataList = jsonEncode(Data.journal);
 
     //Preparing usergoal,self perception
     Map<String, String?> userStuff = await _loader.load_user_stuff();
@@ -144,24 +142,24 @@ class DataProcessor {
     }
   }
 
-  Future<List<Map<String, dynamic>>> getJournalData(String userId) async {
-    List<QueryDocumentSnapshot> documents = await Loader.loadjournal();
-    List<Map<String, dynamic>> journalDataList = documents.map((doc) {
-      // Extract the date from the Timestamp
-      DateTime date = (doc['title'] as Timestamp).toDate();
-      String formattedDate = DateFormat('yyyy-MM-dd').format(date);
+  // Future<List<Map<String, dynamic>>> getJournalData(String userId) async {
+  //   List<QueryDocumentSnapshot> documents = await Loader.loadjournal();
+  //   List<Map<String, dynamic>> journalDataList = documents.map((doc) {
+  //     // Extract the date from the Timestamp
+  //     DateTime date = (doc['title'] as Timestamp).toDate();
+  //     String formattedDate = DateFormat('yyyy-MM-dd').format(date);
 
-      // Create a new map without the userId field
-      Map<String, dynamic> newData =
-          Map.from(doc.data() as Map<dynamic, dynamic>)..remove('userId');
+  //     // Create a new map without the userId field
+  //     Map<String, dynamic> newData =
+  //         Map.from(doc.data() as Map<dynamic, dynamic>)..remove('userId');
 
-      // Set the 'title' field to the formatted date
-      newData['title'] = formattedDate;
+  //     // Set the 'title' field to the formatted date
+  //     newData['title'] = formattedDate;
 
-      return newData;
-    }).toList();
-    return journalDataList;
-  }
+  //     return newData;
+  //   }).toList();
+  //   return journalDataList;
+  // }
 }
 
 class HabiticaData {
