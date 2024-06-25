@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../utils/data.dart';
+import '../utils/loader.dart';
 
 class EmailSettingsPage extends StatefulWidget {
   const EmailSettingsPage({super.key});
@@ -11,24 +12,15 @@ class EmailSettingsPage extends StatefulWidget {
 class _EmailSettingsPageState extends State<EmailSettingsPage> {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
-  
-  Future<String> loadEmail() async {
-    DocumentSnapshot doc = Data.
-    return doc['parentmail'];
-  }
+  Loader loademail = Loader();
 
   void _saveEmail() {
     if (_formKey.currentState?.validate() ?? false) {
       // Save email to Firebase
       String email = _emailController.text;
       // Add your Firebase code here to save the email address
+      loademail.save_parents_email(email);
 
-      FirebaseFirestore.instance
-          .collection('users')
-          .doc(Data.userId)
-          .update({'parentmail': email})
-          .then((_) => print('Updated successfully'))
-          .catchError((error) => print('Update failed: $error'));
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Email saved successfully')),
       );
@@ -39,7 +31,9 @@ class _EmailSettingsPageState extends State<EmailSettingsPage> {
   @override
   void initState() {
     super.initState();
-    loadEmail().then((email) => _emailController.text = email);
+    loademail
+        .load_parents_email()
+        .then((email) => _emailController.text = email.toString());
   }
 
   @override

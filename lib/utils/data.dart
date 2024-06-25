@@ -14,6 +14,10 @@ class Data {
       _journalController.stream;
   static StreamSink<Map<String, dynamic>> get journalSink =>
       _journalController.sink;
+  static final StreamController<List<Application>> _appController =
+      StreamController.broadcast();
+  static Stream<List<Application>> get appStream => _appController.stream;
+  static StreamSink<List<Application>> get appSink => _appController.sink;
   static Map<String, dynamic> journal = {};
   static List<Application> apps = [];
   static List<Application> selected_apps = [];

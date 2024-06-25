@@ -107,6 +107,7 @@ class Loader {
         .toList();
 
     Data.selected_apps = selectedApps;
+    Data.appSink.add(selectedApps);
     return selectedApps;
   }
 
@@ -114,6 +115,7 @@ class Loader {
     final SharedPreferences prefss = await prefs;
     List<String> selectedAppNames =
         Data.selected_apps.map((app) => app.appName).toList();
+    Data.appSink.add(Data.selected_apps);
     await prefss.setStringList('selectedApps', selectedAppNames);
   }
 
@@ -184,6 +186,7 @@ class Loader {
     if (journal != null) {
       Data.journal = jsonDecode(journal);
     }
+    Data.journalSink.add(Data.journal);
   }
 
   Future<void> saveJournal({Map<String, dynamic>? journal}) async {
@@ -258,5 +261,16 @@ class Loader {
     await storage.setString('longuserGoal', userGoal);
     await storage.setString('selfPerception', selfPerception);
     await storage.setString('shortTermGoal', shortgoal);
+  }
+
+  void save_parents_email(String email) async {
+    final SharedPreferences storage = await prefs;
+    await storage.setString('Parents_email', email);
+  }
+
+  Future<String?> load_parents_email() async {
+    final SharedPreferences storage = await prefs;
+    String? email = storage.getString('Parents_email');
+    return email;
   }
 }

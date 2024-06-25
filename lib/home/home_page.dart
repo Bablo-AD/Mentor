@@ -23,7 +23,6 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   int _selectedIndex = 0;
-
   final _pageController = PageController();
 
   @override
@@ -125,6 +124,7 @@ class _MentorPageState extends State<MentorPage> {
 
   @override
   void initState() {
+    loader.loadjournal();
     super.initState();
     check_permissions();
     loader.loadVideoList().then((value) {
@@ -223,7 +223,8 @@ class _MentorPageState extends State<MentorPage> {
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               Text(
-                                lastJournalTitle,
+                                DateFormat('yyyy-MM-dd')
+                                    .format(DateTime.parse(lastJournalTitle)),
                                 style: const TextStyle(fontSize: 25),
                               ),
                               IconButton(
@@ -388,9 +389,19 @@ class _AppsChooserState extends State<AppsChooser> {
 
   @override
   Widget build(BuildContext context) {
-    return ValueListenableBuilder(
-      valueListenable: selectedAppsNotifier,
-      builder: (context, List<Application> selected_apps_data, _) {
+    return StreamBuilder<List<Application>>(
+      stream: Data.appStream,
+      builder: (context, snapshot) {
+        if (snapshot.hasError) {
+          return Text('Error: ${snapshot.error}');
+        }
+
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(
+            child: CircularProgressIndicator(),
+          );
+        }
+        final appDocs = snapshot.data!;
         return Card(
           child: ListTile(
             onLongPress: () {
@@ -419,15 +430,15 @@ class _AppsChooserState extends State<AppsChooser> {
                 )
               ],
             ),
-            subtitle: selected_apps_data.isEmpty
+            subtitle: appDocs.isEmpty
                 ? const Text(
                     'Select the apps you want to display by long pressing. If changes didn\'t show up click the home again')
                 : ListView.builder(
                     physics: const NeverScrollableScrollPhysics(),
                     shrinkWrap: true,
-                    itemCount: selected_apps_data.length,
+                    itemCount: appDocs.length,
                     itemBuilder: (context, index) {
-                      final Application app = selected_apps_data[index];
+                      final Application app = appDocs[index];
                       return ListTile(
                         onTap: () async {
                           bool isInstalled =

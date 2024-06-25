@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'journal_editing_page.dart';
 import '../utils/data.dart';
+import '../utils/loader.dart';
 import 'package:intl/intl.dart';
 
 class JournalPage extends StatefulWidget {
@@ -13,7 +14,14 @@ class JournalPage extends StatefulWidget {
 
 class _JournalPageState extends State<JournalPage> {
   bool get wantKeepAlive => true;
+  Loader loader = Loader();
   int _selectedIndex = 1;
+  @override
+  void initState() {
+    loader.loadjournal();
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -45,37 +53,44 @@ class _JournalPageState extends State<JournalPage> {
 
                   final journalDocs = snapshot.data!;
 
-                  return ListView.builder(
-                    scrollDirection: Axis.vertical,
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-                    itemCount: journalDocs.keys.length,
-                    itemBuilder: (context, index) {
-                      final title = journalDocs.keys.elementAt(index);
-                      final content = journalDocs[title];
+                  return journalDocs.isEmpty
+                      ? const Text(
+                          'Add journal by clicking the "+" button below.')
+                      : ListView.builder(
+                          scrollDirection: Axis.vertical,
+                          shrinkWrap: true,
+                          physics: const NeverScrollableScrollPhysics(),
+                          itemCount: journalDocs.keys.length,
+                          itemBuilder: (context, index) {
+                            final title = journalDocs.keys.elementAt(index);
+                            final content = journalDocs[title];
 
-                      return Card(
-                        color: Theme.of(context).colorScheme.tertiaryContainer,
-                        child: ListTile(
-                          title: Text(
-                            title.toString(),
-                            style: const TextStyle(fontSize: 25),
-                          ),
-                          subtitle: Text(content),
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => JournalEditingPage(
-                                        journalTitle: title.toString(),
-                                        journalContent: content,
-                                      )),
+                            return Card(
+                              color: Theme.of(context)
+                                  .colorScheme
+                                  .tertiaryContainer,
+                              child: ListTile(
+                                title: Text(
+                                  DateFormat('yyyy-MM-dd')
+                                      .format(DateTime.parse(title)),
+                                  style: const TextStyle(fontSize: 25),
+                                ),
+                                subtitle: Text(content),
+                                onTap: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) =>
+                                            JournalEditingPage(
+                                              journalTitle: title,
+                                              journalContent: content,
+                                            )),
+                                  );
+                                },
+                              ),
                             );
                           },
-                        ),
-                      );
-                    },
-                  );
+                        );
                 },
               ),
             ],
