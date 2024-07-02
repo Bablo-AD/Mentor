@@ -14,6 +14,7 @@ import 'utils/notifications.dart';
 import 'utils/data.dart';
 import 'utils/util.dart';
 import 'utils/theme.dart';
+import 'home/mentor_page.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -52,6 +53,7 @@ class MyApp extends StatelessWidget {
       home: HomePage(),
       routes: {
         //main pages
+        '/home': (context) => const HomePage(),
         '/settings': (context) => const SettingsPage(),
         '/journal': (context) => const JournalPage(),
         '/mentor': (context) => const MentorPage(),
