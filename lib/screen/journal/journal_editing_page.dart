@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import '../utils/loader.dart';
-import '../utils/data.dart';
+import '../../utils/loader.dart';
+import '../../utils/data.dart';
 
 class JournalEditingPage extends StatefulWidget {
   const JournalEditingPage({

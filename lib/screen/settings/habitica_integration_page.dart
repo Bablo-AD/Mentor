@@ -1,7 +1,7 @@
 import '../home/make_request.dart';
 import 'package:flutter/material.dart';
 
-import '../utils/loader.dart';
+import '../../utils/loader.dart';
 
 class HabiticaIntegrationPage extends StatefulWidget {
   const HabiticaIntegrationPage({Key? key}) : super(key: key);
@@ -125,8 +125,7 @@ class _HabiticaIntegrationPageState extends State<HabiticaIntegrationPage> {
                 ),
                 const SizedBox(height: 16.0),
                 FilledButton.tonal(
-                    onPressed: _saveSettings,
-                    child: const Text("Save")),
+                    onPressed: _saveSettings, child: const Text("Save")),
                 const SizedBox(height: 16.0),
                 const Text(
                   "You can leave this by pressing the back key",

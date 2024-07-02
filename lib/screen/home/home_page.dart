@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import '../journal/journal_page.dart';
 import '../settings/settings_page.dart';
 import 'mentor_page.dart';
-import '../utils/loader.dart';
+import '../../utils/loader.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:device_apps/device_apps.dart';
-import '../utils/data.dart';
-import '../utils/loader.dart';
+import '../../utils/data.dart';
+import '../../utils/loader.dart';
 
 class AppSelectionPage extends StatefulWidget {
   const AppSelectionPage({super.key});

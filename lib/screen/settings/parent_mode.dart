@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import '../utils/data.dart';
-import '../utils/loader.dart';
+import '../../utils/data.dart';
+import '../../utils/loader.dart';
 
 class EmailSettingsPage extends StatefulWidget {
   const EmailSettingsPage({super.key});

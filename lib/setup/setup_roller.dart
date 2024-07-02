@@ -1,4 +1,4 @@
-import 'package:Mentor/settings/preferred_time.dart';
+import 'package:Mentor/screen/settings/preferred_time.dart';
 import 'package:flutter/material.dart';
 import 'package:introduction_screen/introduction_screen.dart';
 

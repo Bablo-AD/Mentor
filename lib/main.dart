@@ -2,19 +2,19 @@ import 'package:flutter/material.dart';
 import 'package:android_alarm_manager_plus/android_alarm_manager_plus.dart';
 import 'dart:ui';
 
-import 'settings/knowingthestudent.dart';
-import 'home/home_page.dart';
-import 'settings/settings_page.dart';
-import 'settings/preferred_time.dart';
-import 'journal/journal_page.dart';
-import 'settings/habitica_integration_page.dart';
-import 'settings/apps_selection_page.dart';
+import 'screen/settings/knowingthestudent.dart';
+import 'screen/home/home_page.dart';
+import 'screen/settings/settings_page.dart';
+import 'screen/settings/preferred_time.dart';
+import 'screen/journal/journal_page.dart';
+import 'screen/settings/habitica_integration_page.dart';
+import 'screen/settings/apps_selection_page.dart';
 import 'utils/loader.dart';
 import 'utils/notifications.dart';
 import 'utils/data.dart';
 import 'utils/util.dart';
 import 'utils/theme.dart';
-import 'home/mentor_page.dart';
+import 'screen/home/mentor_page.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

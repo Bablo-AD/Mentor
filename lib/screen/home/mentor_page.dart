@@ -3,15 +3,15 @@ import 'package:usage_stats/usage_stats.dart';
 import 'package:device_apps/device_apps.dart';
 import 'package:flutter/material.dart';
 
-import '../utils/data.dart';
+import '../../utils/data.dart';
 import 'make_request.dart';
 import '../journal/journal_editing_page.dart';
 import 'video_page.dart';
 import 'chat_page.dart';
-import '../utils/loader.dart';
+import '../../utils/loader.dart';
 import 'apps_page.dart';
 import '../settings/apps_selection_page.dart';
-import '../utils/notifications.dart';
+import '../../utils/notifications.dart';
 
 class MentorPage extends StatefulWidget {
   const MentorPage({super.key});
