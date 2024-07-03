@@ -61,6 +61,7 @@ dependencies:
   google_fonts: ^6.2.1
   flutter_native_splash: ^2.4.0
   flutter_custom_clippers: ^2.1.0
+  fl_chart: ^0.68.0
 dev_dependencies:
   flutter_test:
     sdk: flutter
