@@ -4,7 +4,7 @@ import 'package:device_apps/device_apps.dart';
 import 'package:flutter/material.dart';
 
 import '../../utils/data.dart';
-import 'make_request.dart';
+import '../../utils/make_request.dart';
 import '../journal/journal_editing_page.dart';
 import 'video_page.dart';
 import 'chat_page.dart';

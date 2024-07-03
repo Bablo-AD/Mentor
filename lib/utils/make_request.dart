@@ -8,8 +8,8 @@ import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'dart:convert';
 import 'dart:io';
 
-import '../../utils/loader.dart';
-import '../../utils/data.dart';
+import 'loader.dart';
+import 'data.dart';
 
 class DataProcessor {
   final _loader = Loader();

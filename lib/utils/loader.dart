@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:device_apps/device_apps.dart';
 import 'data.dart';
 import 'package:flutter/material.dart';
-import '../screen/home/make_request.dart';
+import 'make_request.dart';
 import 'notifications.dart';
 import 'dart:isolate';
 import 'dart:ui';
