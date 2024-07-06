@@ -64,7 +64,11 @@ class _JournalPageState extends State<JournalPage> {
                           physics: const NeverScrollableScrollPhysics(),
                           itemCount: journalDocs.keys.length,
                           itemBuilder: (context, index) {
-                            final title = journalDocs.keys.elementAt(index);
+                            final int reverseIndex =
+                                journalDocs.length - 1 - index;
+
+                            final title =
+                                journalDocs.keys.elementAt(reverseIndex);
                             final content = journalDocs[title];
 
                             return Card(

@@ -1,5 +1,6 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
+import 'package:collection/collection.dart';
 
 import '../data.dart';
 
@@ -13,7 +14,7 @@ class LineChartSample2 extends StatefulWidget {
 class _LineChartSample2State extends State<LineChartSample2> {
   List<Color> gradientColors = [
     Colors.green[400]!,
-    Colors.green[400]!.withOpacity(0.2),
+    Colors.teal,
   ];
 
   bool showAvg = false;
@@ -84,14 +85,17 @@ class _LineChartSample2State extends State<LineChartSample2> {
     );
     Widget text;
     switch (value.toInt()) {
-      case 2:
-        text = const Text('MAR', style: style);
+      case 3:
+        text = const Text('week 1', style: style);
         break;
-      case 5:
-        text = const Text('JUN', style: style);
+      case 11:
+        text = const Text('week 2', style: style);
         break;
-      case 8:
-        text = const Text('SEP', style: style);
+      case 19:
+        text = const Text('week 3', style: style);
+        break;
+      case 27:
+        text = const Text('week 4', style: style);
         break;
       default:
         text = const Text('', style: style);
@@ -111,14 +115,14 @@ class _LineChartSample2State extends State<LineChartSample2> {
     );
     String text;
     switch (value.toInt()) {
-      case 1:
-        text = 'best';
-        break;
       case 3:
-        text = 'good';
+        text = '🔥';
         break;
-      case 5:
-        text = 'low';
+      case 2:
+        text = '👍';
+        break;
+      case 1:
+        text = '👊';
         break;
       default:
         return Container();
@@ -128,16 +132,45 @@ class _LineChartSample2State extends State<LineChartSample2> {
   }
 
   LineChartData mainData() {
-    List<FlSpot> spots = journalFrequency.entries.map((entry) {
-      // Convert date to x value, e.g., by converting date to epoch or to a simpler index
-      // Convert frequency to y value
-      double x = entry.key.millisecondsSinceEpoch.toDouble();
-      double y = entry.value.toDouble();
+    DateTime now = DateTime.now();
+    // Calculate the start and end of the current week
+    DateTime startOfWeek = now.subtract(Duration(days: now.weekday - 1));
+    DateTime endOfWeek = startOfWeek.add(Duration(days: 6));
+
+    // Filter entries for the current week
+    var weekEntries = journalFrequency.entries.where((entry) =>
+        entry.key.isAfter(startOfWeek.subtract(Duration(days: 1))) &&
+        entry.key.isBefore(endOfWeek.add(Duration(days: 1))));
+
+    // Group and sum entries by day
+    var groupedWeekEntries =
+        groupBy(weekEntries, (MapEntry<DateTime, int> entry) => entry.key.day)
+            .map((day, entries) => MapEntry(
+                day,
+                entries.fold(
+                    0, (previousValue, entry) => previousValue + entry.value)));
+
+    // Convert grouped entries to FlSpot instances
+    List<FlSpot> weekSpots = groupedWeekEntries.entries.map((entry) {
+      double x = entry.key.toDouble(); // Day of the week
+      double y = entry.value.toDouble(); // Sum of values for the day
       return FlSpot(x, y);
     }).toList();
 
+    // Create a set of days that already have entries
+    Set<double> existingDays = weekSpots.map((spot) => spot.x).toSet();
+
+    // Fill in missing days of the week with 0 value
+    for (int day = startOfWeek.day; day <= endOfWeek.day; day++) {
+      if (!existingDays.contains(day.toDouble())) {
+        weekSpots.add(FlSpot(day.toDouble(), 0));
+      }
+    }
+
+    // Sort the spots by day of the week
+    weekSpots.sort((a, b) => a.x.compareTo(b.x));
     // Sort spots by x value to ensure they are in chronological order
-    spots.sort((a, b) => a.x.compareTo(b.x));
+    //print(weekSpots);
     return LineChartData(
       gridData: FlGridData(
         show: true,
@@ -163,14 +196,14 @@ class _LineChartSample2State extends State<LineChartSample2> {
         topTitles: const AxisTitles(
           sideTitles: SideTitles(showTitles: false),
         ),
-        bottomTitles: AxisTitles(
-          sideTitles: SideTitles(
-            showTitles: true,
-            reservedSize: 30,
-            interval: 1,
-            getTitlesWidget: bottomTitleWidgets,
-          ),
-        ),
+        // bottomTitles: AxisTitles(
+        //   sideTitles: SideTitles(
+        //     showTitles: true,
+        //     reservedSize: 30,
+        //     interval: 1,
+        //     getTitlesWidget: bottomTitleWidgets,
+        //   ),
+        // ),
         leftTitles: AxisTitles(
           sideTitles: SideTitles(
             showTitles: true,
@@ -184,13 +217,13 @@ class _LineChartSample2State extends State<LineChartSample2> {
         show: true,
         border: Border.all(color: const Color(0xff37434d)),
       ),
-      minX: 0,
-      maxX: 11,
+      minX: 1,
+      maxX: 7,
       minY: 0,
-      maxY: 6,
+      maxY: 4,
       lineBarsData: [
         LineChartBarData(
-          spots: spots,
+          spots: weekSpots,
           isCurved: true,
           gradient: LinearGradient(
             colors: gradientColors,
@@ -198,7 +231,7 @@ class _LineChartSample2State extends State<LineChartSample2> {
           barWidth: 5,
           isStrokeCapRound: true,
           dotData: const FlDotData(
-            show: false,
+            show: true,
           ),
           belowBarData: BarAreaData(
             show: true,
@@ -214,6 +247,39 @@ class _LineChartSample2State extends State<LineChartSample2> {
   }
 
   LineChartData avgData() {
+    DateTime now = DateTime.now();
+    var groupedEntries = groupBy(journalFrequency.entries,
+            (MapEntry<DateTime, int> entry) => entry.key.day)
+        .map((day, entries) => MapEntry(
+            day,
+            entries.fold(
+                0, (previousValue, entry) => previousValue + entry.value)));
+
+// Convert grouped entries to FlSpot instances
+    List<FlSpot> spots = groupedEntries.entries.map((entry) {
+      double x = entry.key.toDouble(); // Day of the month
+      double y = entry.value.toDouble(); // Sum of values for the day
+      return FlSpot(x, y);
+    }).toList();
+    List<FlSpot> filledSpots = List<FlSpot>.from(spots);
+
+// Find the range of days in the month
+    int totalDaysInMonth = DateTime(now.year, now.month + 1, 0).day;
+
+// Create a set of days that already have entries
+    Set<double> existingDays = spots.map((spot) => spot.x).toSet();
+
+// Fill in missing days with 0 value
+    for (int day = 1; day <= totalDaysInMonth; day++) {
+      if (!existingDays.contains(day.toDouble())) {
+        filledSpots.add(FlSpot(day.toDouble(), 0));
+      }
+    }
+
+// Sort the spots by day of the month
+    filledSpots.sort((a, b) => a.x.compareTo(b.x));
+
+    //print(filledSpots);
     return LineChartData(
       lineTouchData: const LineTouchData(enabled: false),
       gridData: FlGridData(
@@ -264,20 +330,12 @@ class _LineChartSample2State extends State<LineChartSample2> {
         border: Border.all(color: const Color(0xff37434d)),
       ),
       minX: 0,
-      maxX: 11,
+      maxX: 31,
       minY: 0,
-      maxY: 6,
+      maxY: 4,
       lineBarsData: [
         LineChartBarData(
-          spots: const [
-            FlSpot(0, 3.44),
-            FlSpot(2.6, 3.44),
-            FlSpot(4.9, 3.44),
-            FlSpot(6.8, 3.44),
-            FlSpot(8, 3.44),
-            FlSpot(9.5, 3.44),
-            FlSpot(11, 3.44),
-          ],
+          spots: filledSpots,
           isCurved: true,
           gradient: LinearGradient(
             colors: [
