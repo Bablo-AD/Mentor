@@ -10,6 +10,7 @@ import 'dart:io';
 
 import 'loader.dart';
 import 'data.dart';
+import 'ai/response.dart';
 
 class DataProcessor {
   final _loader = Loader();
@@ -66,7 +67,7 @@ class DataProcessor {
     return metaData;
   }
 
-  Future<http.Response> meet_with_server(
+  Future<String> meet_with_server(
       {Map<String, dynamic>? messageData, String? messages}) async {
     String message = await _loader.loadMessageHistory();
 
@@ -80,13 +81,15 @@ class DataProcessor {
     }
     // Convert the data to JSON
     String jsonData = jsonEncode(data);
+    print(jsonData);
     String serverUrl = "https://sample-lwyntbevca-uc.a.run.app/mentor";
 
-    var response = await http.post(
-      Uri.parse(serverUrl.toString()),
-      headers: {'Content-Type': 'application/json'},
-      body: jsonData,
-    );
+    // var response = await http.post(
+    //   Uri.parse(serverUrl.toString()),
+    //   headers: {'Content-Type': 'application/json'},
+    //   body: jsonData,
+    // );
+    var response = Response.getresponse(jsonData);
     return response;
   }
 
@@ -97,11 +100,11 @@ class DataProcessor {
     if (completionMemory['videos'] != null) {
       responseData = Map<String, dynamic>.from(completionMemory['videos']);
     }
-    if (completionMemory['notification']['title'] != null &&
-        completionMemory['notification']['title'] != '') {
-      Data.notification_title = completionMemory['notification']['title'];
-      Data.notification_body = completionMemory['notification']['message'];
-    }
+    // if (completionMemory['notification']['title'] != null &&
+    //     completionMemory['notification']['title'] != '') {
+    //   Data.notification_title = completionMemory['notification']['title'];
+    //   Data.notification_body = completionMemory['notification']['message'];
+    // }
     Data.completion_message = '';
     for (var message in completionMemory['reply']) {
       final mentorMessage = types.TextMessage(
@@ -133,13 +136,13 @@ class DataProcessor {
 
   execute([String send_message = ""]) async {
     Map<String, dynamic> messageData = await _preparing_data();
-    http.Response response = await meet_with_server(
+    String response = await meet_with_server(
         messageData: messageData, messages: send_message);
-    if (response.statusCode == 200) {
-      post_process_data(response.body);
-    } else {
-      Data.completion_message = 'Error: ${response.statusCode}';
-    }
+    //if (response.statusCode == 200) {
+    post_process_data(response);
+    // } else {
+    // Data.completion_message = 'Error: ${response.statusCode}';
+    // }
   }
 
   // Future<List<Map<String, dynamic>>> getJournalData(String userId) async {

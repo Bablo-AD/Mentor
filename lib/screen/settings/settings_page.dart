@@ -26,8 +26,8 @@ class _SettingsPageState extends State<SettingsPage> {
   void _saveSettings() async {
     if (_formKey.currentState!.validate()) {
       // Retrieve the input values
-      Data.serverurl = _serverurlController.text;
-      _loader.saveserverurl(_serverurlController.text);
+      Data.apikey = _serverurlController.text;
+      _loader.storeApiKey();
 
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Got it!')),

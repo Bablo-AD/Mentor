@@ -9,7 +9,6 @@ import 'screen/settings/preferred_time.dart';
 import 'screen/journal/journal_page.dart';
 import 'screen/settings/habitica_integration_page.dart';
 import 'screen/settings/apps_selection_page.dart';
-import 'utils/loader.dart';
 import 'utils/notifications.dart';
 import 'utils/data.dart';
 import 'utils/util.dart';
@@ -20,20 +19,17 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   await AndroidAlarmManager.initialize();
-  bool isLoggedIn = await SessionManager.getLoginState();
   await LocalNotificationService().init();
   IsolateNameServer.registerPortWithName(
     Data.port.sendPort,
     'background_isolate',
   );
 
-  runApp(MyApp(isLoggedIn: isLoggedIn));
+  runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
-  final bool isLoggedIn;
-
-  MyApp({Key? key, required this.isLoggedIn}) : super(key: key);
+  MyApp({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -50,7 +46,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Mentor',
       theme: brightness == Brightness.light ? theme.light() : theme.dark(),
-      home: HomePage(),
+      home: const HomePage(),
       routes: {
         //main pages
         '/home': (context) => const HomePage(),

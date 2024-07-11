@@ -63,6 +63,8 @@ dependencies:
   flutter_custom_clippers: ^2.1.0
   fl_chart: ^0.68.0
   collection: ^1.18.0
+  langchain: ^0.4.2
+  langchain_openai: ^0.4.1
 dev_dependencies:
   flutter_test:
     sdk: flutter

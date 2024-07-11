@@ -19,6 +19,7 @@ class Data {
   static Stream<List<Application>> get appStream => _appController.stream;
   static StreamSink<List<Application>> get appSink => _appController.sink;
   static Map<String, dynamic> journal = {};
+  static String? apikey = "";
   static List<Application> apps = [];
   static List<Application> selected_apps = [];
   static String response = "";

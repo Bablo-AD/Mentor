@@ -1,30 +1,28 @@
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'dart:isolate';
+import 'dart:ui';
+import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
+
 import 'dart:convert';
 import 'package:device_apps/device_apps.dart';
 import 'data.dart';
 import 'package:flutter/material.dart';
 import 'make_request.dart';
 import 'notifications.dart';
-import 'dart:isolate';
-import 'dart:ui';
-import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
-
-class SessionManager {
-  static const String loggedInKey = 'loggedIn';
-
-  static Future<void> saveLoginState(bool isLoggedIn) async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.setBool(loggedInKey, isLoggedIn);
-  }
-
-  static Future<bool> getLoginState() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    return prefs.getBool(loggedInKey) ?? false;
-  }
-}
 
 class Loader {
   final Future<SharedPreferences> prefs = SharedPreferences.getInstance();
+  final _storage = FlutterSecureStorage();
+  Future<void> storeApiKey({String apiKey = ''}) async {
+    final keyToStore = apiKey.isEmpty ? Data.apikey : apiKey;
+    await _storage.write(key: 'api_key', value: keyToStore);
+  }
+
+  Future<String?> getApiKey() async {
+    Data.apikey = await _storage.read(key: 'api_key');
+    return Data.apikey;
+  }
 
   @pragma('vm:entry-point')
   static void makerequest() async {
