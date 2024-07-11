@@ -70,6 +70,7 @@ class _MentorPageState extends State<MentorPage> {
     loader.loadjournal();
     super.initState();
     check_permissions();
+    loader.getApiKey();
     loader.loadVideoList().then((value) {
       setState(() {
         videos = value;

@@ -16,7 +16,7 @@ class DataProcessor {
   final _loader = Loader();
 
   //Processes the request to be sent to the server
-  Future<Map<String, dynamic>> _preparing_data() async {
+  Future<Map<String, dynamic>> preparingData() async {
     String habits = '';
     Map<String, String> phoneUsageData = {};
 
@@ -67,46 +67,47 @@ class DataProcessor {
     return metaData;
   }
 
-  Future<String> meet_with_server(
+  Future<String> processing(
       {Map<String, dynamic>? messageData, String? messages}) async {
-    String message = await _loader.loadMessageHistory();
+    String messageHistory = await _loader.loadMessageHistory();
 
-    Map<String, String> data = {"message_history": message};
-    if (messageData != null) {
-      data["user_data"] = jsonEncode(messageData);
-    }
+    // Map<String, String> data = {"message_history": messageHistory};
+    // if (messageData != null) {
+    //   data["user_data"] = jsonEncode(messageData);
+    // }
 
-    if (messages != null) {
-      data["messages"] = messages;
-    }
+    // if (messages != null) {
+    //   data["messages"] = messages;
+    // }
     // Convert the data to JSON
-    String jsonData = jsonEncode(data);
-    print(jsonData);
-    String serverUrl = "https://sample-lwyntbevca-uc.a.run.app/mentor";
+    //String jsonData = jsonEncode(data);
+    //print(jsonData);
+    //String serverUrl = "https://sample-lwyntbevca-uc.a.run.app/mentor";
 
     // var response = await http.post(
     //   Uri.parse(serverUrl.toString()),
     //   headers: {'Content-Type': 'application/json'},
     //   body: jsonData,
     // );
-    var response = Response.getresponse(jsonData);
+    var response =
+        await Response.getresponse(messages.toString(), messageHistory);
     return response;
   }
 
-  post_process_data(String response) async {
+  postprocessdata(String response) async {
     var completionMemory = jsonDecode(response);
     Map<String, dynamic> responseData = {};
     print(completionMemory);
     if (completionMemory['videos'] != null) {
       responseData = Map<String, dynamic>.from(completionMemory['videos']);
     }
-    // if (completionMemory['notification']['title'] != null &&
-    //     completionMemory['notification']['title'] != '') {
-    //   Data.notification_title = completionMemory['notification']['title'];
-    //   Data.notification_body = completionMemory['notification']['message'];
-    // }
+    if (completionMemory['notification']['title'] != null &&
+        completionMemory['notification']['title'] != '') {
+      Data.notification_title = completionMemory['notification']['title'];
+      Data.notification_body = completionMemory['notification']['message'];
+    }
     Data.completion_message = '';
-    for (var message in completionMemory['reply']) {
+    for (var message in completionMemory['response']) {
       final mentorMessage = types.TextMessage(
         author: const types.User(id: 'mentor'),
         createdAt: DateTime.now().millisecondsSinceEpoch,
@@ -134,12 +135,12 @@ class DataProcessor {
     }
   }
 
-  execute([String send_message = ""]) async {
-    Map<String, dynamic> messageData = await _preparing_data();
-    String response = await meet_with_server(
-        messageData: messageData, messages: send_message);
+  execute([String sendMessage = ""]) async {
+    Map<String, dynamic> messageData = await preparingData();
+    String response =
+        await processing(messageData: messageData, messages: sendMessage);
     //if (response.statusCode == 200) {
-    post_process_data(response);
+    postprocessdata(response);
     // } else {
     // Data.completion_message = 'Error: ${response.statusCode}';
     // }
