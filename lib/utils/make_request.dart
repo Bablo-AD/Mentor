@@ -90,14 +90,14 @@ class DataProcessor {
     //   body: jsonData,
     // );
     var response =
-        await Response.getresponse(messages.toString(), messageHistory);
+        await Response.getresponse(messageData.toString(), messageHistory);
     return response;
   }
 
   postprocessdata(String response) async {
     var completionMemory = jsonDecode(response);
     Map<String, dynamic> responseData = {};
-    print(completionMemory);
+    //print(completionMemory);
     if (completionMemory['videos'] != null) {
       responseData = Map<String, dynamic>.from(completionMemory['videos']);
     }

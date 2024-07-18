@@ -40,15 +40,23 @@ import '../data.dart';
 
 // This is a reference class to show the input and output structure
 class Response {
-  static Future<String> getresponse(String json, String messagehistory) async {
+  static Future<String> getresponse(
+      String message, String messagehistory) async {
     final openAiApiKey = Data.apikey;
     final llm = OpenAI(
       apiKey: openAiApiKey,
       defaultOptions: const OpenAIOptions(temperature: 0.9),
     );
     //print(openAiApiKey);
+    const template = '''
+I want you to act as a productivity assistant.
+this is user data {message}
+''';
+    final promptTemplate = PromptTemplate.fromTemplate(template);
+    final prompt = promptTemplate.format({'message': message});
+    print(prompt);
     final LLMResult res = await llm.invoke(
-      PromptValue.string(json),
+      PromptValue.string(prompt),
     );
     Map<String, dynamic> videos = {
       "videoId": "video1",
@@ -63,7 +71,7 @@ class Response {
       "message_history":
           "$messagehistory,{'role':'assistant','content':'${res.generations[0].output}'",
     };
-    print(output);
+
     return jsonEncode(output);
   }
 }
