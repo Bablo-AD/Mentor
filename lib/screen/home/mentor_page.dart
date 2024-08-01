@@ -297,34 +297,7 @@ class _AppsChooserState extends State<AppsChooser> {
           );
         }
         final appDocs = snapshot.data!;
-        return GridView.builder(
-          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 4,
-            childAspectRatio: 0.7,
-            crossAxisSpacing: 16,
-            mainAxisSpacing: 16,
-          ),
-          itemCount: 8, // 4x2 grid
-          itemBuilder: (context, index) {
-            if (index < appDocs.length) {
-              return Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Icon(appDocs[index].icon, size: 48),
-                  const SizedBox(height: 8),
-                  Text(
-                    appDocs[index].name,
-                    textAlign: TextAlign.center,
-                    style: const TextStyle(fontSize: 12),
-                  ),
-                ],
-              );
-            } else {
-              return const SizedBox.shrink(); // Empty space if less than 8 apps
-            }
-          },
-        );
-        Card(
+        return Card(
           child: ListTile(
             onLongPress: () {
               Navigator.push(
