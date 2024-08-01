@@ -39,33 +39,33 @@ class _HomePageState extends State<HomePage> {
           SettingsPage(), // Replace with your Settings page widget
         ],
       ),
-      bottomNavigationBar: NavigationBar(
-        selectedIndex: _selectedIndex,
-        onDestinationSelected: (int index) {
-          _pageController.animateToPage(
-            index,
-            duration: const Duration(milliseconds: 400),
-            curve: Curves.easeInOut,
-          );
-        },
-        destinations: const <Widget>[
-          NavigationDestination(
-            selectedIcon: Icon(Icons.home),
-            icon: Icon(Icons.home_outlined),
-            label: 'Home',
-          ),
-          NavigationDestination(
-            selectedIcon: Icon(Icons.book),
-            icon: Icon(Icons.book_outlined),
-            label: 'Journal',
-          ),
-          NavigationDestination(
-            selectedIcon: Icon(Icons.settings),
-            icon: Icon(Icons.settings_outlined),
-            label: 'Settings',
-          ),
-        ],
-      ),
+      // bottomNavigationBar: NavigationBar(
+      //   selectedIndex: _selectedIndex,
+      //   onDestinationSelected: (int index) {
+      //     _pageController.animateToPage(
+      //       index,
+      //       duration: const Duration(milliseconds: 400),
+      //       curve: Curves.easeInOut,
+      //     );
+      //   },
+      //   destinations: const <Widget>[
+      //     NavigationDestination(
+      //       selectedIcon: Icon(Icons.home),
+      //       icon: Icon(Icons.home_outlined),
+      //       label: 'Home',
+      //     ),
+      //     NavigationDestination(
+      //       selectedIcon: Icon(Icons.book),
+      //       icon: Icon(Icons.book_outlined),
+      //       label: 'Journal',
+      //     ),
+      //     NavigationDestination(
+      //       selectedIcon: Icon(Icons.settings),
+      //       icon: Icon(Icons.settings_outlined),
+      //       label: 'Settings',
+      //     ),
+      //   ],
+      // ),
     );
   }
 }

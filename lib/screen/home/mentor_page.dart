@@ -2,6 +2,7 @@ import 'package:intl/intl.dart';
 import 'package:usage_stats/usage_stats.dart';
 import 'package:device_apps/device_apps.dart';
 import 'package:flutter/material.dart';
+import '../../utils/widgets/line_chart.dart';
 
 import '../../utils/data.dart';
 import '../../utils/make_request.dart';
@@ -114,99 +115,46 @@ class _MentorPageState extends State<MentorPage> {
     }
   }
 
+  String getShortenedText(String text, int wordLimit) {
+    List<String> words = text.split(' ');
+    if (words.length > wordLimit) {
+      return words.sublist(0, wordLimit).join(' ') + '...';
+    } else {
+      return text;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Mentor')),
-      body: SingleChildScrollView(
+        body: Container(
+      decoration: const BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: [
+            Color(0xFF8FBC8F),
+            Color(0xFF006400), // Dark green color
+            // Light green color
+          ],
+        ),
+      ),
+      child: SingleChildScrollView(
         // Wrap the body with SingleChildScrollView
         child: Padding(
-          padding: const EdgeInsets.all(16.0),
+          padding: const EdgeInsets.fromLTRB(16.0, 60, 16, 0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const AppsChooser(),
+              CurrentDateTimeWidget(),
               const SizedBox(height: 16.0),
-              StreamBuilder<Map<String, dynamic>>(
-                stream: Data.journalStream,
-                builder: (context, snapshot) {
-                  if (snapshot.hasError) {
-                    return Text('Error: ${snapshot.error}');
-                  }
-
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return const Center(
-                      child: CircularProgressIndicator(),
-                    );
-                  }
-
-                  final journalDocs = snapshot.data;
-
-                  if (journalDocs == null || journalDocs.isEmpty) {
-                    return const Text(
-                        'Not wrote a journal yet? Go to journal page');
-                  }
-
-                  // Assuming the keys are timestamps in a sortable format
-                  final lastEntryKey = journalDocs.keys
-                      .reduce((a, b) => a.compareTo(b) > 0 ? a : b);
-                  final lastJournalData = journalDocs[lastEntryKey];
-
-                  // Assuming 'title' and 'content' are part of the journal data
-                  final lastJournalTitle = lastEntryKey;
-                  final lastJournalContent = lastJournalData;
-                  return Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Card(
-                        color: Theme.of(context).colorScheme.tertiaryContainer,
-                        child: ListTile(
-                          title: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text(
-                                DateFormat('yyyy-MM-dd')
-                                    .format(DateTime.parse(lastJournalTitle)),
-                                style: const TextStyle(fontSize: 25),
-                              ),
-                              IconButton(
-                                  tooltip: "Add",
-                                  onPressed: () {
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) =>
-                                            const JournalEditingPage(
-                                          journalTitle: '',
-                                          journalContent: '',
-                                        ),
-                                      ),
-                                    );
-                                  },
-                                  icon: const Icon(Icons.add)),
-                            ],
-                          ),
-                          subtitle: Text(lastJournalContent),
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => JournalEditingPage(
-                                  journalTitle: lastJournalTitle,
-                                  journalContent: lastJournalContent,
-                                ),
-                              ),
-                            );
-                          },
-                        ),
-                      ),
-                    ],
-                  );
-                },
-              ),
-              const SizedBox(height: 16.0),
+              const Center(
+                  child: Text(
+                'Your Progress',
+                style: TextStyle(color: Colors.white),
+              )),
+              const LineChartSample2(),
               if (isLoading)
                 const Column(children: [
                   SizedBox(height: 16),
@@ -253,10 +201,30 @@ class _MentorPageState extends State<MentorPage> {
                           ],
                         ),
                         subtitle: Text(
-                          "$result \n\n Click to chat with mentor",
+                          "${getShortenedText(result, 20)} \n\n Click to chat with mentor",
                         ),
                       ),
                     )),
+              const SizedBox(height: 16.0),
+              TextField(
+                decoration: InputDecoration(
+                  hintText: "What's on your mind?",
+                  filled: true,
+                  fillColor: Colors.white,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(30.0),
+                    borderSide: BorderSide.none,
+                  ),
+                  contentPadding:
+                      EdgeInsets.symmetric(horizontal: 20.0, vertical: 15.0),
+                  suffixIcon: IconButton(
+                    icon: Icon(Icons.send),
+                    onPressed: () {},
+                  ),
+                ),
+              ),
+              const SizedBox(height: 16.0),
+              const AppsChooser(),
               const SizedBox(height: 16.0),
               ListView.builder(
                 physics: const NeverScrollableScrollPhysics(),
@@ -290,7 +258,7 @@ class _MentorPageState extends State<MentorPage> {
           ),
         ),
       ),
-    );
+    ));
   }
 }
 
@@ -329,7 +297,34 @@ class _AppsChooserState extends State<AppsChooser> {
           );
         }
         final appDocs = snapshot.data!;
-        return Card(
+        return GridView.builder(
+          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 4,
+            childAspectRatio: 0.7,
+            crossAxisSpacing: 16,
+            mainAxisSpacing: 16,
+          ),
+          itemCount: 8, // 4x2 grid
+          itemBuilder: (context, index) {
+            if (index < appDocs.length) {
+              return Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(appDocs[index].icon, size: 48),
+                  const SizedBox(height: 8),
+                  Text(
+                    appDocs[index].name,
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(fontSize: 12),
+                  ),
+                ],
+              );
+            } else {
+              return const SizedBox.shrink(); // Empty space if less than 8 apps
+            }
+          },
+        );
+        Card(
           child: ListTile(
             onLongPress: () {
               Navigator.push(
@@ -381,6 +376,29 @@ class _AppsChooserState extends State<AppsChooser> {
           ),
         );
       },
+    );
+  }
+}
+
+class CurrentDateTimeWidget extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    final now = DateTime.now();
+    final timeFormat = DateFormat('hh:mm a');
+    final dateFormat = DateFormat('EEEE, MMMM d');
+
+    return Column(
+      children: [
+        Text(
+          timeFormat.format(now),
+          style: const TextStyle(
+              fontSize: 24, fontWeight: FontWeight.bold, color: Colors.white),
+        ),
+        Text(
+          dateFormat.format(now),
+          style: const TextStyle(fontSize: 18, color: Colors.white),
+        ),
+      ],
     );
   }
 }

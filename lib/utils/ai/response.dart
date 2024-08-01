@@ -5,6 +5,13 @@ import 'package:langchain/langchain.dart';
 import 'package:langchain_openai/langchain_openai.dart';
 
 import '../data.dart';
+// To Do:
+// 1. AI response history
+// OUTPUT PARSING
+// 2. RAG Implement(userdata)
+// 3. Content Recommendation
+// 4. Progress points
+// 5. RAG (external data)
 
 // /// The most basic building block of LangChain is calling an LLM on some input.
 // Future<void> _example1() async {
@@ -40,12 +47,10 @@ import '../data.dart';
 
 // This is a reference class to show the input and output structure
 class Response {
-  static Future<String> getresponse(
-      String message, String messagehistory) async {
+  static Future<String> getresponse(String message) async {
     final openAiApiKey = Data.apikey;
-    final llm = OpenAI(
+    final llm = ChatOpenAI(
       apiKey: openAiApiKey,
-      defaultOptions: const OpenAIOptions(temperature: 0.9),
     );
     //print(openAiApiKey);
     const template = '''
@@ -54,24 +59,14 @@ this is user data {message}
 ''';
     final promptTemplate = PromptTemplate.fromTemplate(template);
     final prompt = promptTemplate.format({'message': message});
-    print(prompt);
-    final LLMResult res = await llm.invoke(
-      PromptValue.string(prompt),
+    Data.chatmessages.insert(0, ChatMessage.system(prompt));
+    final res = await llm.invoke(
+      PromptValue.chat(Data.chatmessages),
     );
-    Map<String, dynamic> videos = {
-      "videoId": "video1",
-      "title": "First Video",
-      "videoDescription": "https://example.com/video1"
-    };
+    print(res);
+    Data.chatmessages
+        .insert(0, ChatMessage.ai(res.generations[0].output.content));
 
-    Map<String, dynamic> output = {
-      "response": [res.generations[0].output],
-      "videos": videos,
-      "notification": {"title": "This is title", "message": "Message"},
-      "message_history":
-          "$messagehistory,{'role':'assistant','content':'${res.generations[0].output}'",
-    };
-
-    return jsonEncode(output);
+    return res.generations[0].output.content;
   }
 }

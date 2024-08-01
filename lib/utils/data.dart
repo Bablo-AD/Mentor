@@ -4,6 +4,7 @@ import 'dart:isolate';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:uuid/uuid.dart';
 import 'dart:async';
+import 'package:langchain/langchain.dart';
 
 class Data {
   Loader load = Loader();
@@ -25,6 +26,7 @@ class Data {
   static String response = "";
   static String interest = "";
   static List<types.Message> messages_data = [];
+  static List<ChatMessage> chatmessages = [];
   static String serverurl = "";
   static String completion_message = "";
   static List<Video> videoList = [];

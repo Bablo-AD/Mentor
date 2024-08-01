@@ -67,8 +67,7 @@ class DataProcessor {
     return metaData;
   }
 
-  Future<String> processing(
-      {Map<String, dynamic>? messageData, String? messages}) async {
+  Future<String> processing(String messages) async {
     String messageHistory = await _loader.loadMessageHistory();
 
     // Map<String, String> data = {"message_history": messageHistory};
@@ -89,8 +88,7 @@ class DataProcessor {
     //   headers: {'Content-Type': 'application/json'},
     //   body: jsonData,
     // );
-    var response =
-        await Response.getresponse(messageData.toString(), messageHistory);
+    var response = await Response.getresponse(messages);
     return response;
   }
 
@@ -114,6 +112,7 @@ class DataProcessor {
         id: Data.uuid.v1(),
         text: message,
       );
+
       Data.completion_message += message;
       Data.messages_data.insert(0, mentorMessage);
     }
@@ -136,9 +135,14 @@ class DataProcessor {
   }
 
   execute([String sendMessage = ""]) async {
-    Map<String, dynamic> messageData = await preparingData();
-    String response =
-        await processing(messageData: messageData, messages: sendMessage);
+    String response = "";
+    if (sendMessage != "") {
+      response = await processing(sendMessage);
+    } else {
+      Map<String, dynamic> messageData = await preparingData();
+      response = await processing(messageData.toString());
+    }
+
     //if (response.statusCode == 200) {
     postprocessdata(response);
     // } else {

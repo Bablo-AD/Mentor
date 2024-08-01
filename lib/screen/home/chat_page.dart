@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:flutter_chat_ui/flutter_chat_ui.dart';
+import 'package:langchain/langchain.dart';
+import 'dart:convert';
+
 import '../../utils/data.dart';
 import '../../utils/make_request.dart';
-import 'dart:convert';
-import 'package:http/http.dart' as http;
 import '../../utils/loader.dart';
 import 'dart:math';
 
@@ -53,6 +54,7 @@ class _ChatPageState extends State<ChatPage> {
           messages: Data.messages_data,
           onSendPressed: _handleSendPressed,
           user: _user,
+          theme: const DarkChatTheme(),
           typingIndicatorOptions:
               TypingIndicatorOptions(typingUsers: typing_users),
         ),
@@ -66,11 +68,19 @@ class _ChatPageState extends State<ChatPage> {
       text: message.text,
     );
     setState(() {
+      Data.chatmessages.insert(0, ChatMessage.humanText(message.text));
       Data.messages_data.insert(0, textMessage);
       typing_users = [_mentor];
     });
 
-    await sender.execute(message.text);
+    String? response = await sender.processing(message.text);
+    final mentorMessage = types.TextMessage(
+      author: const types.User(id: 'mentor'),
+      createdAt: DateTime.now().millisecondsSinceEpoch,
+      id: Data.uuid.v1(),
+      text: response.toString(),
+    );
+    Data.messages_data.insert(0, mentorMessage);
     if (mounted) {
       setState(() {
         Data.messages_data;
