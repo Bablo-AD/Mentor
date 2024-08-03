@@ -14,8 +14,8 @@ class LineChartSample2 extends StatefulWidget {
 
 class _LineChartSample2State extends State<LineChartSample2> {
   List<Color> gradientColors = [
-    Colors.brown!,
-    Colors.brown[900]!,
+    const Color.fromARGB(255, 253, 249, 209),
+    Colors.white,
   ];
 
   bool showAvg = false;
@@ -49,7 +49,7 @@ class _LineChartSample2State extends State<LineChartSample2> {
             padding: const EdgeInsets.only(
               right: 18,
               left: 12,
-              top: 24,
+              top: 10,
               bottom: 12,
             ),
             child: LineChart(
@@ -67,7 +67,7 @@ class _LineChartSample2State extends State<LineChartSample2> {
               });
             },
             child: Text(
-              'avg',
+              'Avg',
               style: TextStyle(
                 fontSize: 12,
                 color: showAvg ? Colors.white.withOpacity(0.5) : Colors.white,
@@ -141,17 +141,17 @@ class _LineChartSample2State extends State<LineChartSample2> {
         entry.key.isAfter(startOfWeek.subtract(Duration(days: 1))) &&
         entry.key.isBefore(endOfWeek.add(Duration(days: 1))));
 
-    // Group and sum entries by day
-    var groupedWeekEntries =
-        groupBy(weekEntries, (MapEntry<DateTime, int> entry) => entry.key.day)
-            .map((day, entries) => MapEntry(
-                day,
-                entries.fold(
-                    0, (previousValue, entry) => previousValue + entry.value)));
+    // Group and sum entries by weekday
+    var groupedWeekEntries = groupBy(
+            weekEntries, (MapEntry<DateTime, int> entry) => entry.key.weekday)
+        .map((weekday, entries) => MapEntry(
+            weekday,
+            entries.fold(
+                0, (previousValue, entry) => previousValue + entry.value)));
 
     // Convert grouped entries to FlSpot instances
     List<FlSpot> weekSpots = groupedWeekEntries.entries.map((entry) {
-      double x = entry.key.toDouble(); // Day of the week
+      double x = entry.key.toDouble(); // Weekday (1 for Monday, 7 for Sunday)
       double y = entry.value.toDouble(); // Sum of values for the day
       return FlSpot(x, y);
     }).toList();
@@ -160,20 +160,20 @@ class _LineChartSample2State extends State<LineChartSample2> {
     Set<double> existingDays = weekSpots.map((spot) => spot.x).toSet();
 
     // Fill in missing days of the week with 0 value
-    for (int day = startOfWeek.day; day <= endOfWeek.day; day++) {
+    for (int day = 1; day <= 7; day++) {
       if (!existingDays.contains(day.toDouble())) {
         weekSpots.add(FlSpot(day.toDouble(), 0));
       }
     }
 
-    // Sort the spots by day of the week
+    // Sort the spots by weekday
     weekSpots.sort((a, b) => a.x.compareTo(b.x));
-    // Sort spots by x value to ensure they are in chronological order
-    //print(weekSpots);
+    print(weekSpots);
     return LineChartData(
       gridData: FlGridData(
         show: true,
-        drawVerticalLine: true,
+        drawVerticalLine: false,
+        drawHorizontalLine: false,
         horizontalInterval: 1,
         verticalInterval: 1,
         getDrawingHorizontalLine: (value) {
@@ -188,21 +188,13 @@ class _LineChartSample2State extends State<LineChartSample2> {
         },
       ),
       titlesData: FlTitlesData(
-        show: true,
+        show: false,
         rightTitles: const AxisTitles(
           sideTitles: SideTitles(showTitles: false),
         ),
         topTitles: const AxisTitles(
           sideTitles: SideTitles(showTitles: false),
         ),
-        // bottomTitles: AxisTitles(
-        //   sideTitles: SideTitles(
-        //     showTitles: true,
-        //     reservedSize: 30,
-        //     interval: 1,
-        //     getTitlesWidget: bottomTitleWidgets,
-        //   ),
-        // ),
         leftTitles: AxisTitles(
           sideTitles: SideTitles(
             showTitles: true,
@@ -213,7 +205,7 @@ class _LineChartSample2State extends State<LineChartSample2> {
         ),
       ),
       borderData: FlBorderData(
-        show: true,
+        show: false,
         border: Border.all(color: const Color(0xff37434d)),
       ),
       minX: 1,
@@ -282,7 +274,7 @@ class _LineChartSample2State extends State<LineChartSample2> {
     return LineChartData(
       lineTouchData: const LineTouchData(enabled: false),
       gridData: FlGridData(
-        show: true,
+        show: false,
         drawHorizontalLine: true,
         verticalInterval: 1,
         horizontalInterval: 1,
@@ -300,7 +292,7 @@ class _LineChartSample2State extends State<LineChartSample2> {
         },
       ),
       titlesData: FlTitlesData(
-        show: true,
+        show: false,
         bottomTitles: AxisTitles(
           sideTitles: SideTitles(
             showTitles: true,
@@ -325,7 +317,7 @@ class _LineChartSample2State extends State<LineChartSample2> {
         ),
       ),
       borderData: FlBorderData(
-        show: true,
+        show: false,
         border: Border.all(color: const Color(0xff37434d)),
       ),
       minX: 0,

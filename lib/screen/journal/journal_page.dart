@@ -4,7 +4,6 @@ import 'journal_editing_page.dart';
 import '../../utils/data.dart';
 import '../../utils/loader.dart';
 import 'package:intl/intl.dart';
-import '../../utils/widgets/line_chart.dart';
 
 class JournalPage extends StatefulWidget {
   const JournalPage({super.key});
@@ -38,7 +37,6 @@ class _JournalPageState extends State<JournalPage> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const LineChartSample2(),
               const SizedBox(height: 16.0),
               StreamBuilder<Map<String, dynamic>>(
                 stream: Data.journalStream,

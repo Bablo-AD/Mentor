@@ -86,9 +86,11 @@ class Loader {
 
   static Future<List<Application>> loadApps() async {
     List<Application> loadedApps = await DeviceApps.getInstalledApplications(
+      includeAppIcons: true,
       includeSystemApps: true,
       onlyAppsWithLaunchIntent: true,
     );
+
     List<Application> sortedApps = List<Application>.from(loadedApps);
     sortedApps.sort((a, b) => a.appName.compareTo(b.appName));
     Data.apps = sortedApps;

@@ -6,8 +6,6 @@ import '../../utils/widgets/line_chart.dart';
 
 import '../../utils/data.dart';
 import '../../utils/make_request.dart';
-import '../journal/journal_editing_page.dart';
-import 'video_page.dart';
 import 'chat_page.dart';
 import '../../utils/loader.dart';
 import 'apps_page.dart';
@@ -24,18 +22,14 @@ class MentorPage extends StatefulWidget {
 class _MentorPageState extends State<MentorPage> {
   final interestController = TextEditingController();
 
-  String interest = '';
   String result = '';
   bool isLoading = false;
   List<Video> videos = Data.videoList;
   Loader loader = Loader();
-
-  String serverurl = '';
   LocalNotificationService notifier = LocalNotificationService();
-  List<Application> loadedApps = [];
 
   //Gets user's usage data
-  void _Makerequest(String interest) async {
+  void _Makerequest() async {
     setState(() {
       isLoading = true;
       videos.clear(); // Clear previous videos
@@ -72,18 +66,14 @@ class _MentorPageState extends State<MentorPage> {
     super.initState();
     check_permissions();
     loader.getApiKey();
-    loader.loadVideoList().then((value) {
-      setState(() {
-        videos = value;
-      });
-    });
+
     loader.loadcompletion().then((completionMessage) {
       setState(() {
         Data.completion_message = completionMessage ?? "";
         result = Data.completion_message;
         if (result == '') {
           isLoading = true;
-          _Makerequest(interest);
+          _Makerequest();
         }
       });
     });
@@ -124,6 +114,18 @@ class _MentorPageState extends State<MentorPage> {
     }
   }
 
+  void saveJournalEntry() async {
+    if (interestController.text.isNotEmpty) {
+      loader.addJournal(interestController.text);
+
+      loader.saveJournal();
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Got it!')),
+      );
+      interestController.clear();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -139,125 +141,110 @@ class _MentorPageState extends State<MentorPage> {
           ],
         ),
       ),
-      child: SingleChildScrollView(
-        // Wrap the body with SingleChildScrollView
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(16.0, 60, 16, 0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              CurrentDateTimeWidget(),
-              const SizedBox(height: 16.0),
-              const Center(
-                  child: Text(
-                'Your Progress',
-                style: TextStyle(color: Colors.white),
-              )),
-              const LineChartSample2(),
-              if (isLoading)
-                const Column(children: [
-                  SizedBox(height: 16),
-                  Center(
-                    child: CircularProgressIndicator(),
-                  ),
-                  SizedBox(height: 10.0),
-                  Text(
-                    "Mentor is scratching his head",
-                  ),
-                  SizedBox(height: 5.0),
-                  Text(
-                    "Please hang on for a while",
-                  )
-                ])
-              else
-                GestureDetector(
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => const ChatPage()),
-                      );
-                    },
-                    child: Card(
-                      color: Theme.of(context).colorScheme.surfaceVariant,
-                      child: ListTile(
-                        title: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            const Text(
-                              "Mentor",
-                              style: TextStyle(fontSize: 25),
-                            ),
-                            IconButton(
-                                tooltip: "Reload",
-                                onPressed: () {
-                                  setState(() {
-                                    isLoading = true;
-                                    _Makerequest(interest);
-                                  });
-                                },
-                                icon: const Icon(Icons.refresh)),
-                          ],
-                        ),
-                        subtitle: Text(
-                          "${getShortenedText(result, 20)} \n\n Click to chat with mentor",
-                        ),
-                      ),
-                    )),
-              const SizedBox(height: 16.0),
-              TextField(
-                decoration: InputDecoration(
-                  hintText: "What's on your mind?",
-                  filled: true,
-                  fillColor: Colors.white,
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(30.0),
-                    borderSide: BorderSide.none,
-                  ),
-                  contentPadding:
-                      EdgeInsets.symmetric(horizontal: 20.0, vertical: 15.0),
-                  suffixIcon: IconButton(
-                    icon: Icon(Icons.send),
-                    onPressed: () {},
-                  ),
+      child: GestureDetector(
+          onVerticalDragEnd: (details) {
+            if (details.primaryVelocity! < 0) {
+              // Swiped up
+              Navigator.push(
+                context,
+                BottomToTopPageRoute(
+                  page: const AppsPage(),
                 ),
-              ),
-              const SizedBox(height: 16.0),
-              const AppsChooser(),
-              const SizedBox(height: 16.0),
-              ListView.builder(
-                physics: const NeverScrollableScrollPhysics(),
-                shrinkWrap: true,
-                itemCount: videos.length,
-                itemBuilder: (context, index) {
-                  final video = videos[index];
-
-                  return Card(
-                      child: ListTile(
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => VideoPage(
-                              videoId: video.videoId,
-                              description: video.videoDescription),
-                        ),
-                      );
-                    },
-                    title: Text(
-                      video.title,
-                      style: const TextStyle(
-                        fontWeight: FontWeight.bold,
+              );
+            }
+          },
+          child: SingleChildScrollView(
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(16.0, 40, 16, 0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const CurrentDateTimeWidget(),
+                  const SizedBox(height: 12.0),
+                  const Center(
+                      child: Text(
+                    'Your Progress',
+                    style: TextStyle(color: Colors.white),
+                  )),
+                  const LineChartSample2(),
+                  const SizedBox(height: 12.0),
+                  if (isLoading)
+                    const Column(children: [
+                      SizedBox(height: 16),
+                      Center(
+                        child: CircularProgressIndicator(),
+                      ),
+                      SizedBox(height: 10.0),
+                      Text(
+                        "Mentor is scratching his head",
+                      ),
+                      SizedBox(height: 5.0),
+                      Text(
+                        "Please hang on for a while",
+                      )
+                    ])
+                  else
+                    GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => const ChatPage()),
+                          );
+                        },
+                        child: Card(
+                          child: ListTile(
+                            title: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                const Text(
+                                  "Mentor",
+                                  style: TextStyle(fontSize: 25),
+                                ),
+                                IconButton(
+                                    tooltip: "Reload",
+                                    onPressed: () {
+                                      setState(() {
+                                        isLoading = true;
+                                        _Makerequest();
+                                      });
+                                    },
+                                    icon: const Icon(Icons.refresh)),
+                              ],
+                            ),
+                            subtitle: Text(
+                              "${getShortenedText(result, 20)} \n\n Click to chat with mentor",
+                            ),
+                          ),
+                        )),
+                  const SizedBox(height: 12.0),
+                  TextField(
+                    controller: interestController,
+                    decoration: InputDecoration(
+                      hintText: "What's on your mind?",
+                      filled: true,
+                      fillColor: Theme.of(context).cardColor,
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(30.0),
+                        borderSide: BorderSide.none,
+                      ),
+                      contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 20.0, vertical: 15.0),
+                      suffixIcon: IconButton(
+                        icon: const Icon(Icons.send),
+                        onPressed: () {
+                          saveJournalEntry();
+                        },
                       ),
                     ),
-                  ));
-                },
-              )
-            ],
-          ),
-        ),
-      ),
+                  ),
+                  const SizedBox(height: 12.0),
+                  const AppsChooser(),
+                ],
+              ),
+            ),
+          )),
     ));
   }
 }
@@ -298,62 +285,69 @@ class _AppsChooserState extends State<AppsChooser> {
         }
         final appDocs = snapshot.data!;
         return Card(
-          child: ListTile(
-            onLongPress: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const AppSelectionPage(),
-                ),
-              );
-            },
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const AppsPage()),
-              );
-            },
-            title: const Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  "Apps",
-                  style: TextStyle(fontSize: 25),
-                ),
-                Icon(
-                  Icons.expand,
-                )
-              ],
-            ),
-            subtitle: appDocs.isEmpty
-                ? const Text(
-                    'Select the apps you want to display by long pressing. If changes didn\'t show up click the home again')
-                : ListView.builder(
-                    physics: const NeverScrollableScrollPhysics(),
-                    shrinkWrap: true,
-                    itemCount: appDocs.length,
-                    itemBuilder: (context, index) {
-                      final Application app = appDocs[index];
-                      return ListTile(
-                        onTap: () async {
-                          bool isInstalled =
-                              await DeviceApps.isAppInstalled(app.packageName);
-                          if (isInstalled) {
-                            DeviceApps.openApp(app.packageName);
-                          }
-                        },
-                        title: Text('- ${app.appName}'),
-                      );
-                    },
-                  ),
-          ),
-        );
+            child: InkWell(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const AppsPage()),
+                  );
+                },
+                onLongPress: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const AppSelectionPage(),
+                    ),
+                  );
+                },
+                child: appDocs.isEmpty
+                    ? const Text(
+                        'Select the apps you want to display by long pressing. If changes didn\'t show up click the home again')
+                    : Padding(
+                        padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
+                        child: GridView.builder(
+                          physics: const NeverScrollableScrollPhysics(),
+                          shrinkWrap: true,
+                          gridDelegate:
+                              const SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount: 4,
+                            childAspectRatio: 1,
+                            crossAxisSpacing: 20,
+                            mainAxisSpacing: 20,
+                          ),
+                          itemCount: 8, // 4x2 grid
+                          itemBuilder: (context, index) {
+                            if (index < appDocs.length) {
+                              final Application app = appDocs[index];
+
+                              return GestureDetector(
+                                  onTap: () async {
+                                    bool isInstalled =
+                                        await DeviceApps.isAppInstalled(
+                                            app.packageName);
+                                    if (isInstalled) {
+                                      DeviceApps.openApp(app.packageName);
+                                    }
+                                  },
+                                  child: app is ApplicationWithIcon
+                                      ? Image.memory(
+                                          app.icon,
+                                        )
+                                      : const Icon(Icons.app_blocking));
+                            } else {
+                              return const SizedBox
+                                  .shrink(); // Empty space if less than 8 apps
+                            }
+                          },
+                        ))));
       },
     );
   }
 }
 
 class CurrentDateTimeWidget extends StatelessWidget {
+  const CurrentDateTimeWidget({super.key});
+
   @override
   Widget build(BuildContext context) {
     final now = DateTime.now();
@@ -374,4 +368,27 @@ class CurrentDateTimeWidget extends StatelessWidget {
       ],
     );
   }
+}
+
+class BottomToTopPageRoute<T> extends PageRouteBuilder<T> {
+  final Widget page;
+
+  BottomToTopPageRoute({required this.page})
+      : super(
+          pageBuilder: (context, animation, secondaryAnimation) => page,
+          transitionsBuilder: (context, animation, secondaryAnimation, child) {
+            const begin = Offset(0.0, 1.0);
+            const end = Offset.zero;
+            const curve = Curves.ease;
+
+            var tween =
+                Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+            var offsetAnimation = animation.drive(tween);
+
+            return SlideTransition(
+              position: offsetAnimation,
+              child: child,
+            );
+          },
+        );
 }
