@@ -8,12 +8,13 @@ import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'dart:convert';
 import 'dart:io';
 
-import 'loader.dart';
-import 'data.dart';
-import 'ai/response.dart';
+import '../loader.dart';
+import '../data.dart';
+import 'response.dart';
 
 class DataProcessor {
   final _loader = Loader();
+  final _responser = Response();
 
   //Processes the request to be sent to the server
   Future<Map<String, dynamic>> preparingData() async {
@@ -68,8 +69,6 @@ class DataProcessor {
   }
 
   Future<String> processing(String messages) async {
-    String messageHistory = await _loader.loadMessageHistory();
-
     // Map<String, String> data = {"message_history": messageHistory};
     // if (messageData != null) {
     //   data["user_data"] = jsonEncode(messageData);
@@ -88,8 +87,8 @@ class DataProcessor {
     //   headers: {'Content-Type': 'application/json'},
     //   body: jsonData,
     // );
-    var response = await Response.getresponse(messages);
-    return response;
+    var response = await _responser.formatresponse(messages);
+    return jsonEncode(response);
   }
 
   postprocessdata(String response) async {
@@ -118,7 +117,7 @@ class DataProcessor {
     }
     Loader loader = Loader();
     loader.saveMessages(Data.messages_data);
-    loader.saveMessageHistory(completionMemory['message_history']);
+
     loader.savecompletion(Data.completion_message);
 
     Data.videoList = (responseData)

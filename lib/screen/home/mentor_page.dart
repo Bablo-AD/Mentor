@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import '../../utils/widgets/line_chart.dart';
 
 import '../../utils/data.dart';
-import '../../utils/make_request.dart';
+import '../../utils/ai/make_request.dart';
 import 'chat_page.dart';
 import '../../utils/loader.dart';
 import 'apps_page.dart';
@@ -65,7 +65,7 @@ class _MentorPageState extends State<MentorPage> {
     loader.loadjournal();
     super.initState();
     check_permissions();
-    loader.getApiKey();
+    // loader.getApiKey();
 
     loader.loadcompletion().then((completionMessage) {
       setState(() {
@@ -141,110 +141,113 @@ class _MentorPageState extends State<MentorPage> {
           ],
         ),
       ),
-      child: GestureDetector(
-          onVerticalDragEnd: (details) {
-            if (details.primaryVelocity! < 0) {
-              // Swiped up
-              Navigator.push(
-                context,
-                BottomToTopPageRoute(
-                  page: const AppsPage(),
-                ),
-              );
-            }
-          },
-          child: SingleChildScrollView(
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(16.0, 40, 16, 0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const CurrentDateTimeWidget(),
-                  const SizedBox(height: 12.0),
-                  const Center(
-                      child: Text(
-                    'Your Progress',
-                    style: TextStyle(color: Colors.white),
-                  )),
-                  const LineChartSample2(),
-                  const SizedBox(height: 12.0),
-                  if (isLoading)
-                    const Column(children: [
-                      SizedBox(height: 16),
-                      Center(
-                        child: CircularProgressIndicator(),
-                      ),
-                      SizedBox(height: 10.0),
-                      Text(
-                        "Mentor is scratching his head",
-                      ),
-                      SizedBox(height: 5.0),
-                      Text(
-                        "Please hang on for a while",
-                      )
-                    ])
-                  else
-                    GestureDetector(
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => const ChatPage()),
-                          );
-                        },
-                        child: Card(
-                          child: ListTile(
-                            title: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                const Text(
-                                  "Mentor",
-                                  style: TextStyle(fontSize: 25),
-                                ),
-                                IconButton(
-                                    tooltip: "Reload",
-                                    onPressed: () {
-                                      setState(() {
-                                        isLoading = true;
-                                        _Makerequest();
-                                      });
-                                    },
-                                    icon: const Icon(Icons.refresh)),
-                              ],
-                            ),
-                            subtitle: Text(
-                              "${getShortenedText(result, 20)} \n\n Click to chat with mentor",
-                            ),
-                          ),
-                        )),
-                  const SizedBox(height: 12.0),
-                  TextField(
-                    controller: interestController,
-                    decoration: InputDecoration(
-                      hintText: "What's on your mind?",
-                      filled: true,
-                      fillColor: Theme.of(context).cardColor,
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(30.0),
-                        borderSide: BorderSide.none,
-                      ),
-                      contentPadding: const EdgeInsets.symmetric(
-                          horizontal: 20.0, vertical: 15.0),
-                      suffixIcon: IconButton(
-                        icon: const Icon(Icons.send),
-                        onPressed: () {
-                          saveJournalEntry();
-                        },
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 12.0),
-                  const AppsChooser(),
-                ],
+      child: SingleChildScrollView(
+          child: GestureDetector(
+        onVerticalDragEnd: (details) {
+          if (details.primaryVelocity! < 0) {
+            // Swiped up
+            Navigator.push(
+              context,
+              BottomToTopPageRoute(
+                page: const AppsPage(),
               ),
-            ),
-          )),
+            );
+          }
+        },
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(16.0, 40, 16, 0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const CurrentDateTimeWidget(),
+              const SizedBox(height: 12.0),
+              const Center(
+                  child: Text(
+                'Your Progress',
+                style: TextStyle(color: Colors.white),
+              )),
+              const LineChartSample2(),
+              const SizedBox(height: 12.0),
+              if (isLoading)
+                const Card(
+                    child: Padding(
+                        padding: EdgeInsets.all(20),
+                        child: Column(children: [
+                          SizedBox(height: 16),
+                          Center(
+                            child: CircularProgressIndicator(),
+                          ),
+                          SizedBox(height: 10.0),
+                          Text(
+                            "Mentor is scratching his head",
+                          ),
+                          SizedBox(height: 5.0),
+                          Text(
+                            "Please hang on for a while",
+                          )
+                        ])))
+              else
+                GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const ChatPage()),
+                      );
+                    },
+                    child: Card(
+                      child: ListTile(
+                        title: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            const Text(
+                              "Mentor",
+                              style: TextStyle(fontSize: 25),
+                            ),
+                            IconButton(
+                                tooltip: "Reload",
+                                onPressed: () {
+                                  setState(() {
+                                    isLoading = true;
+                                    _Makerequest();
+                                  });
+                                },
+                                icon: const Icon(Icons.refresh)),
+                          ],
+                        ),
+                        subtitle: Text(
+                          "${getShortenedText(result, 20)} \n\n Click to chat with mentor",
+                        ),
+                      ),
+                    )),
+              const SizedBox(height: 8.0),
+              TextField(
+                controller: interestController,
+                decoration: InputDecoration(
+                  hintText: "What's on your mind?",
+                  filled: true,
+                  fillColor: Theme.of(context).cardColor,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(30.0),
+                    borderSide: BorderSide.none,
+                  ),
+                  contentPadding: const EdgeInsets.symmetric(
+                      horizontal: 20.0, vertical: 15.0),
+                  suffixIcon: IconButton(
+                    icon: const Icon(Icons.send),
+                    onPressed: () {
+                      saveJournalEntry();
+                    },
+                  ),
+                ),
+              ),
+              const SizedBox(height: 12.0),
+              const AppsChooser(),
+            ],
+          ),
+        ),
+      )),
     ));
   }
 }
@@ -301,8 +304,10 @@ class _AppsChooserState extends State<AppsChooser> {
                   );
                 },
                 child: appDocs.isEmpty
-                    ? const Text(
-                        'Select the apps you want to display by long pressing. If changes didn\'t show up click the home again')
+                    ? const Padding(
+                        padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
+                        child: Text(
+                            'Select the apps you want to display by long pressing. If changes didn\'t show up click the home again'))
                     : Padding(
                         padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
                         child: GridView.builder(

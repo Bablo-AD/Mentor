@@ -5,7 +5,7 @@ import 'package:langchain/langchain.dart';
 import 'dart:convert';
 
 import '../../utils/data.dart';
-import '../../utils/make_request.dart';
+import '../../utils/ai/make_request.dart';
 import '../../utils/loader.dart';
 import 'dart:math';
 
@@ -54,7 +54,9 @@ class _ChatPageState extends State<ChatPage> {
           messages: Data.messages_data,
           onSendPressed: _handleSendPressed,
           user: _user,
-          theme: const DarkChatTheme(),
+          theme: const DefaultChatTheme(
+            inputBackgroundColor: Color(0xFF006400),
+          ),
           typingIndicatorOptions:
               TypingIndicatorOptions(typingUsers: typing_users),
         ),
@@ -74,11 +76,12 @@ class _ChatPageState extends State<ChatPage> {
     });
 
     String? response = await sender.processing(message.text);
+    Map<String, dynamic> responseMap = jsonDecode(response);
     final mentorMessage = types.TextMessage(
       author: const types.User(id: 'mentor'),
       createdAt: DateTime.now().millisecondsSinceEpoch,
       id: Data.uuid.v1(),
-      text: response.toString(),
+      text: responseMap['response'][0],
     );
     Data.messages_data.insert(0, mentorMessage);
     if (mounted) {
