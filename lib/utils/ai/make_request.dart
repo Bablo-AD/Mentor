@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import 'package:csv/csv.dart';
-import 'package:usage_stats/usage_stats.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 
 import 'dart:convert';
@@ -31,10 +30,10 @@ class DataProcessor {
     }
 
     //Preparing phone usage data
-    if (Platform.isAndroid) {
-      PhoneUsage phoneUsage = PhoneUsage();
-      phoneUsageData = await phoneUsage.getUsage();
-    }
+    // if (Platform.isAndroid) {
+    //   PhoneUsage phoneUsage = PhoneUsage();
+    //   phoneUsageData = await phoneUsage.getUsage();
+    // }
 
     //Preparing journal Data
     String journalDataList = jsonEncode(Data.journal);
@@ -278,63 +277,66 @@ class HabiticaData {
   }
 }
 
-class PhoneUsage {
-  Future<Map<String, String>> getUsage() async {
-    DateTime endDate = DateTime.now();
-    Map<String, String> usageData = {};
+// class PhoneUsage {
+//   Future<Map<String, String>> getUsage() async {
+//     DateTime endDate = DateTime.now();
+//     Map<String, String> usageData = {};
 
-    for (int i = 0; i < 5; i++) {
-      DateTime startDate = endDate.subtract(const Duration(days: 1));
-      String date = DateFormat('yyyy-MM-dd').format(startDate);
-      String usage = await getUsageStats(startDate, endDate);
-      usageData[date] = usage;
-      endDate = startDate;
-    }
+//     for (int i = 0; i < 5; i++) {
+//       DateTime startDate = endDate.subtract(const Duration(days: 1));
+//       String date = DateFormat('yyyy-MM-dd').format(startDate);
+//       String usage = await getUsageStats(startDate, endDate);
+//       usageData[date] = usage;
+//       endDate = startDate;
+//     }
 
-    return usageData;
-  }
+//     return usageData;
+//   }
 
-  static Future<void> showPermissionDialog(BuildContext context) async {
-    return showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('Permission for tracking your phone usage'),
-          content: const Text(
-              'Mentor needs permission to track your phone usage to understand you. This data is not stored.'),
-          actions: [
-            TextButton(
-              child: const Text('OK'),
-              onPressed: () {
-                Navigator.pop(context);
-                UsageStats.grantUsagePermission();
-              },
-            ),
-          ],
-        );
-      },
-    );
-  }
+//   // static Future<void> showPermissionDialog(BuildContext context) async {
+//   //   return showDialog(
+//   //     context: context,
+//   //     builder: (BuildContext context) {
+//   //       return AlertDialog(
+//   //         title: const Text('Permission for tracking your phone usage'),
+//   //         content: const Text(
+//   //             'Mentor needs permission to track your phone usage to understand you. This data is not stored.'),
+//   //         actions: [
+//   //           TextButton(
+//   //             child: const Text('OK'),
+//   //             onPressed: () {
+//   //               Navigator.pop(context);
+//   //               UsageStats.grantUsagePermission();
+//   //             },
+//   //           ),
+//   //         ],
+//   //       );
+//   //     },
+//   //   );
+//   // }
 
-  Future<String> getUsageStats(DateTime startDate, DateTime endDate) async {
-    String outputString = "";
-    List<UsageInfo> usageStats =
-        await UsageStats.queryUsageStats(startDate, endDate);
-    if (usageStats.isNotEmpty) {
-      for (UsageInfo appUsage in usageStats) {
-        if (int.parse(appUsage.totalTimeInForeground!) > 0) {
-          Duration duration = Duration(
-              milliseconds:
-                  int.parse(appUsage.totalTimeInForeground.toString()));
-          int hours = duration.inHours;
-          int minutes = duration.inMinutes.remainder(60);
-          if (hours > 0 || minutes > 0) {
-            outputString += 'App name: ${appUsage.packageName} ';
-            outputString += 'Total time used: $hours hours $minutes minutes\n';
-          }
-        }
-      }
-    }
-    return outputString;
-  }
-}
+//   // Future<String> getUsageStats(DateTime startDate, DateTime endDate) async {
+//   //   String outputString = "";
+//   //   try {
+//   //     List<AppUsageInfo> usageStats =
+//   //         await AppUsage().getAppUsage(startDate, endDate);
+//   //     if (usageStats.isNotEmpty) {
+//   //       for (AppUsageInfo appUsage in usageStats) {
+//   //         if (appUsage.usage.inMilliseconds > 0) {
+//   //           Duration duration = appUsage.usage;
+//   //           int hours = duration.inHours;
+//   //           int minutes = duration.inMinutes.remainder(60);
+//   //           if (hours > 0 || minutes > 0) {
+//   //             outputString += 'App name: ${appUsage.appName} ';
+//   //             outputString +=
+//   //                 'Total time used: $hours hours $minutes minutes\n';
+//   //           }
+//   //         }
+//   //       }
+//   //     }
+//   //   } catch (e) {
+//   //     print('Failed to get app usage: $e');
+//   //   }
+//   //   return outputString;
+//   // }
+// }

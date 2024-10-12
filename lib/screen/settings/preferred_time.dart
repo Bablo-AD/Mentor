@@ -1,7 +1,6 @@
-import 'package:Mentor/utils/loader.dart';
+import '../../utils/loader.dart';
 import 'package:flutter/material.dart';
 import 'package:android_alarm_manager_plus/android_alarm_manager_plus.dart';
-
 
 class PreferredTimePage extends StatefulWidget {
   const PreferredTimePage({super.key});

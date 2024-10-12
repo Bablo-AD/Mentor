@@ -1,6 +1,6 @@
 {
-    "name": "anti_distractor",
-    "short_name": "anti_distractor",
+    "name": "mentor",
+    "short_name": "mentor",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#hexcode",

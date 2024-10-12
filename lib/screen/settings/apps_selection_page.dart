@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:device_apps/device_apps.dart';
+import 'package:installed_apps/installed_apps.dart';
+import 'package:installed_apps/app_info.dart';
 import '../../utils/data.dart';
 import '../../utils/loader.dart';
 
@@ -16,7 +17,9 @@ class _AppSelectionPageState extends State<AppSelectionPage> {
   @override
   void initState() {
     super.initState();
-    _loader.loadSelectedApps();
+    _loader.loadSelectedApps().then((_) {
+      setState(() {}); // Refresh the UI after loading selected apps
+    });
   }
 
   @override
@@ -33,12 +36,12 @@ class _AppSelectionPageState extends State<AppSelectionPage> {
             child: ListView.builder(
               itemCount: Data.apps.length,
               itemBuilder: (context, index) {
-                final Application app = Data.apps[index];
+                final AppInfo app = Data.apps[index];
                 return Column(
                   children: [
                     CheckboxListTile(
                       title: Text(
-                        app.appName,
+                        app.name, // Use 'name' instead of 'appName'
                       ),
                       value: Data.selected_apps.contains(app),
                       onChanged: (bool? value) {

@@ -1,10 +1,10 @@
 import 'loader.dart';
-import 'package:device_apps/device_apps.dart';
 import 'dart:isolate';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:uuid/uuid.dart';
 import 'dart:async';
 import 'package:langchain/langchain.dart';
+import 'package:installed_apps/app_info.dart';
 
 class Data {
   Loader load = Loader();
@@ -15,14 +15,14 @@ class Data {
       _journalController.stream;
   static StreamSink<Map<String, dynamic>> get journalSink =>
       _journalController.sink;
-  static final StreamController<List<Application>> _appController =
+  static final StreamController<List<AppInfo>> _appController =
       StreamController.broadcast();
-  static Stream<List<Application>> get appStream => _appController.stream;
-  static StreamSink<List<Application>> get appSink => _appController.sink;
+  static Stream<List<AppInfo>> get appStream => _appController.stream;
+  static StreamSink<List<AppInfo>> get appSink => _appController.sink;
   static Map<String, dynamic> journal = {};
   static String? apikey = "";
-  static List<Application> apps = [];
-  static List<Application> selected_apps = [];
+  static List<AppInfo> apps = [];
+  static List<AppInfo> selected_apps = [];
   static String response = "";
   static String interest = "";
   static List<types.Message> messages_data = [];

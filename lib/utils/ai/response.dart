@@ -21,9 +21,6 @@ class Response {
       apiKey: openAiApiKey,
       defaultOptions: const ChatOpenAIOptions(
         model: 'gpt-4o-mini',
-        responseFormat: ChatOpenAIResponseFormat(
-          type: ChatOpenAIResponseFormatType.jsonObject,
-        ),
       ),
     );
 
@@ -38,7 +35,7 @@ this is user data {message}
       final res = await llm.invoke(
         PromptValue.chat(Data.chatmessages),
       );
-      out = res.generations[0].output.content;
+      out = res.outputAsString;
       Data.chatmessages.insert(0, ChatMessage.ai(out));
     } catch (e) {
       out =

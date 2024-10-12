@@ -1,8 +1,8 @@
 import 'package:intl/intl.dart';
-import 'package:usage_stats/usage_stats.dart';
-import 'package:device_apps/device_apps.dart';
 import 'package:flutter/material.dart';
 import '../../utils/widgets/line_chart.dart';
+import 'package:installed_apps/installed_apps.dart';
+import 'package:installed_apps/app_info.dart';
 
 import '../../utils/data.dart';
 import '../../utils/ai/make_request.dart';
@@ -35,7 +35,7 @@ class _MentorPageState extends State<MentorPage> {
       videos.clear(); // Clear previous videos
       Data.videoList.clear();
     });
-    check_permissions();
+    //check_permissions();
     DataProcessor dataGetter = DataProcessor();
     //try {
     await dataGetter.execute();
@@ -64,7 +64,7 @@ class _MentorPageState extends State<MentorPage> {
   void initState() {
     loader.loadjournal();
     super.initState();
-    check_permissions();
+    // check_permissions();
     // loader.getApiKey();
 
     loader.loadcompletion().then((completionMessage) {
@@ -98,12 +98,12 @@ class _MentorPageState extends State<MentorPage> {
     });
   }
 
-  void check_permissions() async {
-    bool? isPermission = await UsageStats.checkUsagePermission();
-    if (isPermission == false) {
-      PhoneUsage.showPermissionDialog(context);
-    }
-  }
+  // void check_permissions() async {
+  //   bool? isPermission = await AppUsage.checkUsagePermission();
+  //   if (isPermission == false) {
+  //     PhoneUsage.showPermissionDialog(context);
+  //   }
+  // }
 
   String getShortenedText(String text, int wordLimit) {
     List<String> words = text.split(' ');
@@ -274,7 +274,7 @@ class _AppsChooserState extends State<AppsChooser> {
 
   @override
   Widget build(BuildContext context) {
-    return StreamBuilder<List<Application>>(
+    return StreamBuilder<List<AppInfo>>(
       stream: Data.appStream,
       builder: (context, snapshot) {
         if (snapshot.hasError) {
@@ -288,63 +288,67 @@ class _AppsChooserState extends State<AppsChooser> {
         }
         final appDocs = snapshot.data!;
         return Card(
-            child: InkWell(
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => const AppsPage()),
-                  );
-                },
-                onLongPress: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const AppSelectionPage(),
-                    ),
-                  );
-                },
-                child: appDocs.isEmpty
-                    ? const Padding(
-                        padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
-                        child: Text(
-                            'Select the apps you want to display by long pressing. If changes didn\'t show up click the home again'))
-                    : Padding(
-                        padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
-                        child: GridView.builder(
-                          physics: const NeverScrollableScrollPhysics(),
-                          shrinkWrap: true,
-                          gridDelegate:
-                              const SliverGridDelegateWithFixedCrossAxisCount(
-                            crossAxisCount: 4,
-                            childAspectRatio: 1,
-                            crossAxisSpacing: 20,
-                            mainAxisSpacing: 20,
-                          ),
-                          itemCount: 8, // 4x2 grid
-                          itemBuilder: (context, index) {
-                            if (index < appDocs.length) {
-                              final Application app = appDocs[index];
+          child: InkWell(
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const AppsPage()),
+              );
+            },
+            onLongPress: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const AppSelectionPage(),
+                ),
+              );
+            },
+            child: appDocs.isEmpty
+                ? const Padding(
+                    padding: EdgeInsets.fromLTRB(20, 0, 20, 20),
+                    child: Text(
+                        'Select the apps you want to display by long pressing. If changes didn\'t show up click the home again'))
+                : Padding(
+                    padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
+                    child: GridView.builder(
+                      physics: const NeverScrollableScrollPhysics(),
+                      shrinkWrap: true,
+                      gridDelegate:
+                          const SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 4,
+                        childAspectRatio: 1,
+                        crossAxisSpacing: 20,
+                        mainAxisSpacing: 20,
+                      ),
+                      itemCount: 8, // 4x2 grid
+                      itemBuilder: (context, index) {
+                        if (index < appDocs.length) {
+                          final AppInfo app = appDocs[index];
 
-                              return GestureDetector(
-                                  onTap: () async {
-                                    bool isInstalled =
-                                        await DeviceApps.isAppInstalled(
-                                            app.packageName);
-                                    if (isInstalled) {
-                                      DeviceApps.openApp(app.packageName);
-                                    }
-                                  },
-                                  child: app is ApplicationWithIcon
-                                      ? Image.memory(
-                                          app.icon,
-                                        )
-                                      : const Icon(Icons.app_blocking));
-                            } else {
-                              return const SizedBox
-                                  .shrink(); // Empty space if less than 8 apps
-                            }
-                          },
-                        ))));
+                          return GestureDetector(
+                            onTap: () async {
+                              bool? isInstalled =
+                                  await InstalledApps.isAppInstalled(
+                                      app.packageName);
+                              if (isInstalled == true) {
+                                InstalledApps.startApp(app.packageName);
+                              }
+                            },
+                            child: app.icon != null
+                                ? Image.memory(
+                                    app.icon!,
+                                  )
+                                : const Icon(Icons.app_blocking),
+                          );
+                        } else {
+                          return const SizedBox
+                              .shrink(); // Empty space if less than 8 apps
+                        }
+                      },
+                    ),
+                  ),
+          ),
+        );
       },
     );
   }

@@ -1,4 +1,4 @@
-import 'package:Mentor/utils/data.dart';
+import '../../utils/data.dart';
 import 'package:flutter/material.dart';
 
 import '../../utils/loader.dart';

@@ -4,7 +4,9 @@ import 'dart:ui';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 
 import 'dart:convert';
-import 'package:device_apps/device_apps.dart';
+import 'package:installed_apps/installed_apps.dart';
+import 'package:installed_apps/app_info.dart';
+
 import 'data.dart';
 import 'package:flutter/material.dart';
 import 'ai/make_request.dart';
@@ -84,27 +86,22 @@ class Loader {
     return prefs.getString('message_history') ?? '';
   }
 
-  static Future<List<Application>> loadApps() async {
-    List<Application> loadedApps = await DeviceApps.getInstalledApplications(
-      includeAppIcons: true,
-      includeSystemApps: true,
-      onlyAppsWithLaunchIntent: true,
-    );
+  static Future<List<AppInfo>> loadApps() async {
+    List<AppInfo> loadedApps = await InstalledApps.getInstalledApps(true, true);
 
-    List<Application> sortedApps = List<Application>.from(loadedApps);
-    sortedApps.sort((a, b) => a.appName.compareTo(b.appName));
+    List<AppInfo> sortedApps = List<AppInfo>.from(loadedApps);
+    sortedApps.sort((a, b) => a.name.compareTo(b.name));
     Data.apps = sortedApps;
     return sortedApps;
   }
 
-  Future<List<Application>> loadSelectedApps() async {
+  Future<List<AppInfo>> loadSelectedApps() async {
     await Loader.loadApps();
-    final SharedPreferences prefss = await prefs;
+    final SharedPreferences prefss = await SharedPreferences.getInstance();
     List<String>? selectedAppNames = prefss.getStringList('selectedApps') ?? [];
 
-    List<Application> selectedApps = Data.apps
-        .where((app) => selectedAppNames.contains(app.appName))
-        .toList();
+    List<AppInfo> selectedApps =
+        Data.apps.where((app) => selectedAppNames.contains(app.name)).toList();
 
     Data.selected_apps = selectedApps;
     Data.appSink.add(selectedApps);
@@ -112,9 +109,9 @@ class Loader {
   }
 
   Future<void> saveSelectedApps() async {
-    final SharedPreferences prefss = await prefs;
+    final SharedPreferences prefss = await SharedPreferences.getInstance();
     List<String> selectedAppNames =
-        Data.selected_apps.map((app) => app.appName).toList();
+        Data.selected_apps.map((app) => app.name).toList();
     Data.appSink.add(Data.selected_apps);
     await prefss.setStringList('selectedApps', selectedAppNames);
   }

@@ -1,28 +1,33 @@
 import 'package:flutter/material.dart';
-import 'package:device_apps/device_apps.dart';
-import '../../utils/loader.dart';
+import 'package:installed_apps/installed_apps.dart';
+import 'package:installed_apps/app_info.dart';
 import '../../utils/data.dart';
+import '../../utils/loader.dart';
 
 class AppsPage extends StatefulWidget {
   const AppsPage({super.key});
 
   @override
-  State<AppsPage> createState() => _AppsPageState();
+  _AppsPageState createState() => _AppsPageState();
 }
 
 class _AppsPageState extends State<AppsPage> {
-  List<Application> filteredApps = Data.apps;
+  List<AppInfo> filteredApps = Data.apps;
+
   @override
   void initState() {
     super.initState();
-    Loader.loadApps();
+    Loader.loadApps().then((_) {
+      setState(() {
+        filteredApps = Data.apps;
+      });
+    });
   }
 
   void _filterApps(String query) {
     setState(() {
       filteredApps = Data.apps
-          .where(
-              (app) => app.appName.toLowerCase().contains(query.toLowerCase()))
+          .where((app) => app.name.toLowerCase().contains(query.toLowerCase()))
           .toList();
     });
   }
@@ -31,49 +36,24 @@ class _AppsPageState extends State<AppsPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
-          'Mentor/Apps',
-        ),
+        title: const Text('Apps Page'),
       ),
       body: Column(
         children: [
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: TextField(
-              onChanged: _filterApps, // Call _filterApps when the text changes
-              decoration: const InputDecoration(
-                labelText: 'Search',
-                prefixIcon: Icon(
-                  Icons.search,
-                ),
-                filled: true,
-              ),
+          TextField(
+            onChanged: _filterApps,
+            decoration: const InputDecoration(
+              labelText: 'Search',
+              prefixIcon: Icon(Icons.search),
             ),
           ),
           Expanded(
             child: ListView.builder(
               itemCount: filteredApps.length,
               itemBuilder: (context, index) {
-                final Application app = filteredApps[index];
-                return Column(
-                  children: [
-                    ListTile(
-                      onTap: () async {
-                        bool isInstalled =
-                            await DeviceApps.isAppInstalled(app.packageName);
-                        if (isInstalled) {
-                          DeviceApps.openApp(app.packageName);
-                        }
-                      },
-                      title: Text(
-                        app.appName,
-                        style: const TextStyle(
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 5),
-                  ],
+                final app = filteredApps[index];
+                return ListTile(
+                  title: Text(app.name),
                 );
               },
             ),
