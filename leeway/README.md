@@ -5,6 +5,7 @@
 Leeway is a daily planner that learns how long things *actually* take you, draws a line where your day really runs out, and lets the rest go without guilt.
 
 - **Live app (claude.ai):** https://claude.ai/artifact/HBn5ifP4TA9DcjY8okY34g
+- **Founder memo (research, decision, launch plan):** https://claude.ai/artifact/YP4xb4RkwM84bmgRPjN6Wv
 - **Why we built it:** [docs/market-research.md](docs/market-research.md)
 - **What it is:** [docs/product-spec.md](docs/product-spec.md)
 - **How we launch it:** [docs/launch-kit.md](docs/launch-kit.md)

@@ -2,7 +2,7 @@
 
 **[Leeway](leeway/) is a planner that learns how long things actually take you, then shows what really fits today.** It is the result of a market-research sprint into why productivity apps fail people: we plan with guesses that run about 60% optimistic, against a capacity that changes day to day, and the failure lands as guilt. Leeway corrects your guesses with your own track record (personal reference class forecasting), draws a line where your day really ends, and lets the rest go without guilt.
 
-Try it live: https://claude.ai/artifact/HBn5ifP4TA9DcjY8okY34g · Read: [why](leeway/docs/market-research.md), [what](leeway/docs/product-spec.md), [launch plan](leeway/docs/launch-kit.md)
+Try it live: https://claude.ai/artifact/HBn5ifP4TA9DcjY8okY34g · Founder memo: https://claude.ai/artifact/YP4xb4RkwM84bmgRPjN6Wv · Read: [why](leeway/docs/market-research.md), [what](leeway/docs/product-spec.md), [launch plan](leeway/docs/launch-kit.md)
 
 ---
 
