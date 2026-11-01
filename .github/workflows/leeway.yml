@@ -1,0 +1,54 @@
+name: Leeway
+run-name: Leeway checks for ${{ github.ref_name }}
+
+on:
+  push:
+    paths: ['leeway/**', '.github/workflows/leeway.yml']
+  pull_request:
+    paths: ['leeway/**', '.github/workflows/leeway.yml']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: leeway
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Unit tests
+        run: npm test
+      - name: Build
+        run: npm run build
+      - name: Browser tests
+        run: |
+          npm install --no-save playwright@1.49.1
+          npx playwright install --with-deps chromium
+          node test/e2e.mjs
+      # Deploys only after the owner opts in: Settings > Pages > Source: GitHub Actions,
+      # and a repository variable LEEWAY_PAGES=true.
+      - name: Upload site
+        if: github.ref == 'refs/heads/master' && github.event_name != 'pull_request' && vars.LEEWAY_PAGES == 'true'
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: leeway/dist
+
+  deploy:
+    if: github.ref == 'refs/heads/master' && github.event_name != 'pull_request' && vars.LEEWAY_PAGES == 'true'
+    needs: test
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

@@ -46,3 +46,7 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+
+# Leeway web app
+leeway/dist/
+leeway/node_modules/

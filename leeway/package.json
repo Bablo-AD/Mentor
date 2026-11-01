@@ -1,0 +1,13 @@
+{
+  "name": "leeway",
+  "version": "0.1.0",
+  "private": true,
+  "description": "A daily planner that learns how long things actually take you and shows what really fits today.",
+  "type": "module",
+  "scripts": {
+    "test": "node --test test/*.test.mjs",
+    "build": "node scripts/build.mjs",
+    "e2e": "node scripts/build.mjs && node test/e2e.mjs"
+  },
+  "license": "GPL-3.0-only"
+}
